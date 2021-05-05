@@ -1,0 +1,590 @@
+﻿<Window x:Class="ToolkitLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xml:lang="en-UK"
+        xmlns:local="clr-namespace:ToolkitLauncher"
+        xmlns:p="clr-namespace:ToolkitLauncher.Properties"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Osoyoos"
+        SizeToContent="WidthAndHeight"
+        FlowDirection="LeftToRight" Closing="MainWindow_Closing" Height="475" Width="550" MinHeight="475" MinWidth="550" MaxHeight="475">
+    <Window.Resources>
+        <Visibility x:Key="show_light_slider">Visible</Visibility>
+        <local:GameGenToIsEnabled x:Key="GameGenToIsEnabled" />
+        <local:ModelContentModifier x:Key="ModelContentModifier" />
+        <local:TextContentModifier x:Key="TextContentModifier" />
+        <local:PRTContentModifier x:Key="PRTContentModifier" />
+        <local:PhantomVisibility x:Key="PhantomVisibility" />
+        <local:PackageResourceVisibility x:Key="PackageResourceVisibility" />
+        <local:CommunityToolsToIsEnabled x:Key="CommunityToolsToIsEnabled" />
+        <local:CommunityToolsToVisibilityConverter x:Key="CommunityToolsToVisibilityConverter" />
+        <local:PRTToVisibilityConverter x:Key="PRTToVisibilityConverter" />
+        <local:H2VCommunityToolsToVisibilityConverter x:Key="H2VCommunityToolsToVisibilityConverter" />
+        <local:H2VDropdownSelectionToVisibilityConverter x:Key="H2VDropdownSelectionToVisibilityConverter" />
+        <local:RadiosityContentModifier x:Key="RadiosityContentModifier" />
+        <local:ToolkitToLevelSpaceConverter x:Key="ToolkitToLevelSpaceConverter" />
+        <local:ToolkitToSoundSpaceConverter x:Key="ToolkitToSoundSpaceConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="1" Grid.Row="1" MaxHeight="90" VerticalAlignment="Top">
+            <GroupBox x:Name="programs_box" Header="Run Programs">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Column="1" Grid.Row="1" Content="Run Sapien" Click="RunSapien" Padding="4" HorizontalAlignment="Left"/>
+                    <Button Grid.Column="2" Grid.Row="1" Content="Run Guerilla" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right"/>
+                    <Button Grid.Column="1" Grid.Row="3" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left"/>
+                    <Button Grid.Column="2" Grid.Row="3" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Right"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="3" Height="Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <GroupBox x:Name="tasks_box" Header="Tasks">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="1" Grid.Row="1">
+                        <TabControl TabStripPlacement="Left">
+                            <TabItem Header="Compile Level" Margin="-2,-2,1,-2">
+                                <Grid Background="#FFE5E5E5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="1" Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="browse_level_compile" Grid.Column="0" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_level_compile_Click" MinWidth="75" MinHeight="26"/>
+                                            <Grid Grid.Column="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Select level file to compile." Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" Padding="4"/>
+                                            </Grid>
+                                            <TextBox Name="compile_level_path" Grid.Column="2" BorderBrush="{StaticResource brushWatermarkBorder}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                        </Grid>
+                                        <Grid Grid.Row="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToLevelSpaceConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox x:Name="light_quality_select_box" Header="Light Quality" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+                                                        <Slider x:Name="light_quality_slider" Foreground="Black" IsSnapToTickEnabled="True" Ticks="0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="0.1" Maximum="1" Value="1" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
+                                                    </StackPanel>
+                                                    <ToggleButton Grid.Row="2" x:Name ="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom"/>
+                                                    <ComboBox Grid.Row="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                        <ComboBoxItem Content="Checkerboard"/>
+                                                        <ComboBoxItem Content="Cuban"/>
+                                                        <ComboBoxItem Content="Draft Low"/>
+                                                        <ComboBoxItem Content="Draft Medium"/>
+                                                        <ComboBoxItem Content="Draft High"/>
+                                                        <ComboBoxItem Content="Draft Super"/>
+                                                        <ComboBoxItem Content="Direct Only"/>
+                                                        <ComboBoxItem Content="Low"/>
+                                                        <ComboBoxItem Content="Medium"/>
+                                                        <ComboBoxItem Content="High"/>
+                                                        <ComboBoxItem Content="Super"/>
+                                                        <ComboBoxItem Content="Custom"/>
+                                                    </ComboBox>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox x:Name="instance_number" Header="Instance Count" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" IsEnabled="{Binding SelectedIndex, Converter={StaticResource GameGenToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                <GroupBox.BindingGroup>
+                                                    <BindingGroup/>
+                                                </GroupBox.BindingGroup>
+                                                <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
+                                            </GroupBox>
+                                            <GroupBox x:Name="structure_box" Header="Structure Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource PhantomVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                <CheckBox x:Name="phantom_hack" Content="Apply Phantom Fix" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <RadioButton Grid.Column="0" Grid.Row="1" Name="CompileOnly" Content="Compile Only" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True" Checked="CompileOnly_Checked"/>
+                                            <RadioButton Grid.Column="1" Grid.Row="1" Name="LightOnly" Content="Light Only" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="LightOnly_Checked"/>
+                                            <RadioButton Grid.Column="2" Grid.Row="1" Name="CompileAndLight" Content="Compile and Light" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CompileAndLight_Checked"/>
+                                        </Grid>
+                                        <Button Grid.Row="5" Content="Compile Level" Click="HandleClickCompile" VerticalAlignment="Bottom" IsEnabled="{Binding ElementName=compile_level_path, Path=Text.Length}"/>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Compile Text" Margin="-2,0,1,-2" Height="24" VerticalAlignment="Bottom">
+                                <Grid Background="#FFE5E5E5">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="5"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="5"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="5"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Grid.Column="1" Grid.Row="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="8"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Grid.Column="0" x:Name="Browse_text" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="Browse_text_Click" MinWidth="75" MinHeight="26"/>
+                                                <Grid Grid.Column="3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="1" Name="compile_text_description" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_text_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4">
+                                                        <TextBlock.Text>
+                                                            <MultiBinding Converter="{StaticResource TextContentModifier}">
+                                                                <Binding ElementName="string_encoding" Path="SelectedIndex" />
+                                                                <Binding ElementName="toolkit_selection" Path="SelectedIndex" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </Grid>
+                                                <TextBox Grid.Column="3" Name="compile_text_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            </Grid>
+                                            <GroupBox Grid.Row="2" x:Name="string_box" Header="String Encoding" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                <ComboBox x:Name="string_encoding" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:StringType}}}" SelectionChanged="string_SelectionChanged"/>
+                                            </GroupBox>
+                                            <Button Grid.Row="3" Content="Compile Text" Click="CompileText" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_text_path, Mode=OneWay, ValidatesOnNotifyDataErrors=False}"/>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Compile Bitmap" Margin="-2,2,1,-6">
+                                <Grid Background="#FFE5E5E5">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="5"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="5"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="5"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Grid.Column="1" Grid.Row="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="8"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Grid.Column="0" x:Name="browse_bitmap" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_bitmap_Click" MinWidth="75" MinHeight="26"/>
+                                                <Grid Grid.Column="2">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image to compile." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                                </Grid>
+                                                <TextBox Grid.Column="2" Name="compile_image_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            </Grid>
+                                            <GroupBox Grid.Row="2" x:Name="bitmap_select_box" Header="Bitmap Type" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                <GroupBox.BindingGroup>
+                                                    <BindingGroup/>
+                                                </GroupBox.BindingGroup>
+                                                <ComboBox x:Name="bitmap_compile_type" VerticalAlignment="Center" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}">
+                                                    <ComboBoxItem Content="2D Textures"/>
+                                                    <ComboBoxItem Content="3D Textures"/>
+                                                    <ComboBoxItem Content="Cubemaps"/>
+                                                    <ComboBoxItem Content="Sprites"/>
+                                                    <ComboBoxItem Content="Interface"/>
+                                                </ComboBox>
+                                            </GroupBox>                                            
+                                            <Button Grid.Row="3" Content="Compile Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}"/>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Compile Model" Margin="-2,6,1,-6" Height="24" VerticalAlignment="Top" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                <Grid Background="#FFE5E5E5">
+                                    <Grid IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="5"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="5"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="5"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Grid.Column="1" Grid.Row="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="8"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>                                                
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Grid.Column="0" x:Name="browse_model" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_model_Click" MinWidth="75" MinHeight="26"/>
+                                                <Grid Grid.Column="2">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="2"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="1" Text="Select model to compile." VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_model_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
+                                                </Grid>
+                                                <TextBox Grid.Column="2" Name="compile_model_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            </Grid>
+                                            <Grid Grid.Row="2">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="8"/>                                                    
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="1*"/>
+                                                    <ColumnDefinition Width="7"/>
+                                                    <ColumnDefinition Width="1*"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <RadioButton Grid.Column="2" x:Name="model_compile_collision" Content="Collision" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="model_compile_collision_Checked"/>
+                                                <RadioButton Grid.Column="3" x:Name="model_compile_physics" Content="Physics" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="model_compile_physics_Checked"/>
+                                                <RadioButton Grid.Column="4" Grid.Row="2" x:Name="model_compile_animations" Content="Animations" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_animations_Checked"/>
+                                                <RadioButton Grid.Column="0" x:Name="model_compile_render" Content="{Binding SelectedIndex, Converter={StaticResource ModelContentModifier}, ConverterParameter=1, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Checked="model_compile_render_Checked"/>
+                                                <RadioButton Grid.Column="0" Grid.Row="2" x:Name="model_compile_all" Content="All" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_all_Checked"/>
+                                            </Grid>
+                                            <Grid Grid.Row="3">
+                                                <GroupBox x:Name="render_type_select_box" Header="Render Type" HorizontalAlignment="Left" VerticalAlignment="Center" MinHeight="55" Visibility="{Binding SelectedIndex, Converter={StaticResource PRTToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                    <ToggleButton x:Name ="render_prt" Content ="{Binding IsChecked, Converter={StaticResource PRTContentModifier}, ConverterParameter=1, ElementName=render_prt}" HorizontalAlignment="Left" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Stretch"/>
+                                                </GroupBox>
+                                            </Grid>
+                                            <Grid Grid.Row="4">
+                                                <Button x:Name="compile_model" Content="Compile Model" Grid.Row="3" Click="compile_model_Click" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_model_path, Mode=OneWay}"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Compile Sound" Margin="-2,6,1,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                <Grid Background="#FFE5E5E5" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="1" Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSoundSpaceConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" x:Name="browse_sound" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_Click" MinWidth="75" MinHeight="26"/>
+                                            <Grid Grid.Column="3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="1" Text="Select sound file to compile" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                            </Grid>
+                                            <TextBox Grid.Column="3" Name="import_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                        </Grid>
+                                        <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource H2VCommunityToolsToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" x:Name="browse_ltf" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Click="browse_ltf_Click" MinWidth="75" MinHeight="26"/>
+                                            <Grid Grid.Column="3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="1" Text="Select LTF file to compile" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_ltf_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                            </Grid>
+                                            <TextBox Grid.Column="3" Name="import_ltf_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Top" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                        </Grid>
+                                        <Grid Grid.Row="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Column="0" x:Name="platform_select_box" Header="Platform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                <Grid>
+                                                    <ComboBox x:Name="platform_type" SelectedIndex="0" VerticalAlignment="Center">
+                                                        <ComboBoxItem Content="Xbox"/>
+                                                        <ComboBoxItem Content="WAV"/>
+                                                        <ComboBoxItem Content="OGG"/>
+                                                    </ComboBox>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="2" x:Name="bitrate_box" Header="Bitrate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                <StackPanel>
+                                                    <Slider x:Name="bitrate_slider" Foreground="Black" IsSnapToTickEnabled="True" Ticks="-0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="-0.1" Maximum="1" Value="1"/>
+                                                </StackPanel>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Column="0" x:Name="class_type" Header="Class" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource H2VDropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                <ComboBox x:Name="class_dropdown" SelectedIndex="0" VerticalAlignment="Center">
+                                                    <ComboBoxItem Content="Projectile Impact"/>
+                                                    <ComboBoxItem Content="Projectile Detonation"/>
+                                                    <ComboBoxItem Content="Projectile Flyby"/>
+                                                    <ComboBoxItem Content="Unused"/>
+                                                    <ComboBoxItem Content="Weapon Fire"/>
+                                                    <ComboBoxItem Content="Weapon Ready"/>
+                                                    <ComboBoxItem Content="Weapon Reload"/>
+                                                    <ComboBoxItem Content="Weapon Empty"/>
+                                                    <ComboBoxItem Content="Weapon Charge"/>
+                                                    <ComboBoxItem Content="Weapon Overheat"/>
+                                                    <ComboBoxItem Content="Weapon Idle"/>
+                                                    <ComboBoxItem Content="Weapon Melee"/>
+                                                    <ComboBoxItem Content="Weapon Animation"/>
+                                                    <ComboBoxItem Content="Object Impacts"/>
+                                                    <ComboBoxItem Content="Particle Impacts"/>
+                                                    <ComboBoxItem Content="Unit Footsteps"/>
+                                                    <ComboBoxItem Content="Unit Dialog"/>
+                                                    <ComboBoxItem Content="Unit Animation"/>
+                                                    <ComboBoxItem Content="Vehicle Collision"/>
+                                                    <ComboBoxItem Content="Vehicle Engine"/>
+                                                    <ComboBoxItem Content="Vehicle Animation"/>
+                                                    <ComboBoxItem Content="Device Door"/>
+                                                    <ComboBoxItem Content="Device Machinery"/>
+                                                    <ComboBoxItem Content="Device Stationary"/>
+                                                    <ComboBoxItem Content="Music"/>
+                                                    <ComboBoxItem Content="Ambient Nature"/>
+                                                    <ComboBoxItem Content="Ambient Machinery"/>
+                                                    <ComboBoxItem Content="Huge Ass"/>
+                                                    <ComboBoxItem Content="Object Looping"/>
+                                                    <ComboBoxItem Content="Cinematic Music"/>
+                                                    <ComboBoxItem Content="Cortana Mission"/>
+                                                    <ComboBoxItem Content="Cortana Cinematic"/>
+                                                    <ComboBoxItem Content="Mission Dialog"/>
+                                                    <ComboBoxItem Content="Cinematic Dialog"/>
+                                                    <ComboBoxItem Content="Scripted Cinematic Foley"/>
+                                                    <ComboBoxItem Content="Game Event"/>
+                                                    <ComboBoxItem Content="UI"/>
+                                                    <ComboBoxItem Content="Test"/>
+                                                    <ComboBoxItem Content="Multilingual Test"/>
+                                                </ComboBox>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="2" x:Name="import_box" Header="Import Type" VerticalAlignment="Stretch"  Visibility="{Binding SelectedIndex, Converter={StaticResource H2VDropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                <ComboBox x:Name="sound_import_type" VerticalAlignment="Center" SelectedIndex="0">
+                                                    <ComboBoxItem Content="Single Shot"/>
+                                                    <ComboBoxItem Content="Single Layer"/>
+                                                    <ComboBoxItem Content="Multi Layer"/>
+                                                </ComboBox>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="6">
+                                            <Button x:Name="import_sound" Content="Compile Sound" VerticalAlignment="Bottom" Click="import_sound_Click" IsEnabled="{Binding Text.Length, ElementName=import_sound_path, Mode=OneWay}"/>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Packaging" Margin="-2,10,1,-14">
+                                <Grid Background="#FFE5E5E5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="1" Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="browse_package_level" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_Click" MinWidth="75" MinHeight="26"/>
+                                            <Grid Grid.Column="3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="3" Text="Select a scenario file to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
+                                            </Grid>
+                                            <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                        </Grid>
+                                        <GroupBox Grid.Row="2" x:Name="package_box" Header="Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource PackageResourceVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="5"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="8"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <CheckBox Grid.Row="1" x:Name="update_resource_maps" Content="Update resource maps (advanced)" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <ComboBox Grid.Row="3" x:Name="cache_type" SelectedIndex="0" VerticalAlignment="Center">
+                                                    <ComboBoxItem Content="PC"/>
+                                                    <ComboBoxItem Content="MCC"/>
+                                                </ComboBox>
+                                            </Grid>
+                                        </GroupBox>
+                                        <Button Grid.Row="3" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}"/>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="5" MaxHeight="80" VerticalAlignment="Bottom">
+            <GroupBox Header="Settings">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Profile" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26"/>
+                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148"/>
+                    <Button Grid.Column="3" Grid.Row="1" x:Name="toolkit_profiles" Content="Toolkit Profiles" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="toolkit_profiles_Click"/>
+                    <Button Grid.Column="4" Grid.Row="1" Content="About" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="about_Click"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <Grid Grid.ColumnSpan="3" Grid.RowSpan="7" x:Name="Custom_Command" Visibility="Collapsed">
+            <Grid Background="Black" Opacity="0.5"/>
+            <Border
+            MinWidth="250"
+            Background="#FFE5E5E5" 
+            BorderBrush="Black" 
+            BorderThickness="1" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center" RenderTransformOrigin="0.508,-0.635" Margin="138,42,153,291" Height="80">
+                <StackPanel>
+                    <TextBlock Margin="5" Text="Run Custom Command" FontWeight="Bold" FontFamily="Cambria" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.351,0.429" />
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="custom_command_text" Height="21" Width="215"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="custom_run" Margin="5" Content="Run" Background="{x:Null}" RenderTransformOrigin="0.24,0.45" Click="custom_run_Click"/>
+                        <Button x:Name="custom_cancel" Margin="5" Content="Cancel" Background="{x:Null}" Click="custom_cancel_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,19 @@
+version: 1.1.{build}
+image: Visual Studio 2017
+configuration: Release
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+build:
+  verbosity: minimal
+before_build:
+- cmd: git submodule update --init --recursive
+before_package:
+- ps: Add-Content version $env:APPVEYOR_BUILD_VERSION -NoNewLine
+
+artifacts:
+- path: '\Launcher\bin\Release\*'
+- path: '\version'

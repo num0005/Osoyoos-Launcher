@@ -1,0 +1,19 @@
+﻿<Application x:Class="ToolkitLauncher.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ToolkitLauncher"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
+        <SolidColorBrush x:Key="brushWatermarkForeground" Color="LightSteelBlue" />
+        <SolidColorBrush x:Key="brushWatermarkBorder" Color="Indigo" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
+        <local:DropdownSelectionToVisibilityConverter x:Key="DropdownSelectionToVisibilityConverter" />
+        <Style x:Key="EntryFieldStyle" TargetType="Grid" >
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="20,0" />
+        </Style>
+    </Application.Resources>
+</Application>

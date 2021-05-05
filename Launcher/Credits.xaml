@@ -1,0 +1,55 @@
+﻿<Window x:Class="ToolkitLauncher.Credits"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolkitLauncher.ToolkitInterface"
+        mc:Ignorable="d"
+        Title="Credits" Height="350" ResizeMode="NoResize" SizeToContent="Width">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid x:Name="grid" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid Background="#FFE5E5E5">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="Launcher:"/></TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Written by Num0005."/></TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Misc features and QoL fixes added by General_101"/></TextBlock>
+                    <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text=""/></TextBlock>
+                    <TextBlock Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="Special thanks to :"/></TextBlock>
+                    <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• 343 Industries"/></TextBlock>
+                    <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Bungie"/></TextBlock>
+                    <TextBlock Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Saber Interactive"/></TextBlock>
+                    <TextBlock Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Certain Affinity"/></TextBlock>
+                    <TextBlock Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Ruffian Games"/></TextBlock>
+                    <TextBlock Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Splash Damage"/></TextBlock>
+                    <TextBlock Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• United Front Games"/></TextBlock>
+                    <TextBlock Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Blur Studio"/></TextBlock>
+                    <TextBlock Grid.Row="13" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Axis Animation"/></TextBlock>
+                    <TextBlock Grid.Row="14" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Gearbox Software"/></TextBlock>
+                    <TextBlock Grid.Row="15" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Hired Gun"/></TextBlock>
+                </Grid>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</Window>

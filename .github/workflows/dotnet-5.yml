@@ -1,0 +1,43 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT : true
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.100'
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Install nbgv
+      run: dotnet tool install -g nbgv
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    - name: Publish
+      run: dotnet publish -c Release -r win-x64 -P:PublishSingleFile=true -p:PublishTrimmed=false --self-contained false
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: launcher
+        path: Launcher\bin\Release\net5.0-windows\win-x64\publish\
+    - uses: ncipollo/release-action@v1
+      with:
+        prerelease: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: Launcher\bin\Release\net5.0-windows\win-x64\publish\*
+        tag: ${{ github.run_id }}

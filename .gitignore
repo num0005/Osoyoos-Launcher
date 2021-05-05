@@ -1,0 +1,7 @@
+*/bin/*
+*/obj/*
+*.vs/*
+*.zip
+*.exe
+*.dll
+!/packages/Resource.Embedder.2.1.1/tasks/net46/*.dll
