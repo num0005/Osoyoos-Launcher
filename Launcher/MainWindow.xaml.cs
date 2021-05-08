@@ -667,6 +667,24 @@ namespace ToolkitLauncher
         {
             string_encoding_index = string_encoding.SelectedIndex;
         }
+
+        private void light_quality_level_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (light_quality_level.SelectedIndex == 11)
+            {
+                btn_edit_lightmap.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                btn_edit_lightmap.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void btn_edit_lightmap_Click(object sender, RoutedEventArgs e)
+        {
+            var LightmapSettings = new EditLightmapSettings();
+            LightmapSettings.ShowDialog();
+        }
     }
 
     /*

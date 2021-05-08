@@ -313,63 +313,70 @@ namespace ToolkitLauncher
                     break;
             }
 
-            string[] fileEntries = Directory.GetFiles(root_directory_path);
-            bool tool_hash_matched = false;
-            bool guerilla_hash_matched = false;
-            bool sapien_hash_matched = false;
-            foreach (string fileName in fileEntries)
-                if (Path.GetExtension(fileName) == ".exe")
-                {
-                    var md5 = System.Security.Cryptography.MD5.Create();
-                    var stream = File.OpenRead(fileName);
-                    string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "");
-
-                    if (!tool_hash_matched)
+            //Check to see if path for directory is empty to prevent crash in profile wizard
+            if (String.IsNullOrEmpty(root_directory_path))
+            {
+            }
+            else
+            {
+                string[] fileEntries = Directory.GetFiles(root_directory_path);
+                bool tool_hash_matched = false;
+                bool guerilla_hash_matched = false;
+                bool sapien_hash_matched = false;
+                foreach (string fileName in fileEntries)
+                    if (Path.GetExtension(fileName) == ".exe")
                     {
-                        foreach (string hek_tool_md5 in hek_tool_md5_array)
+                        var md5 = System.Security.Cryptography.MD5.Create();
+                        var stream = File.OpenRead(fileName);
+                        string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "");
+
+                        if (!tool_hash_matched)
                         {
-                            if (hek_tool_md5.Contains(hash))
+                            foreach (string hek_tool_md5 in hek_tool_md5_array)
                             {
-                                hek_tool_path = fileName;
-                                tool_hash_matched = true;
-                                break;
+                                if (hek_tool_md5.Contains(hash))
+                                {
+                                    hek_tool_path = fileName;
+                                    tool_hash_matched = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!guerilla_hash_matched)
+                        {
+                            foreach (string hek_guerilla_md5 in hek_guerilla_md5_array)
+                            {
+
+                                if (hek_guerilla_md5.Contains(hash))
+                                {
+                                    hek_guerilla_path = fileName;
+                                    guerilla_hash_matched = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!sapien_hash_matched)
+                        {
+                            foreach (string hek_sapien_md5 in hek_sapien_md5_array)
+                            {
+                                if (hek_sapien_md5.Contains(hash))
+                                {
+                                    hek_sapien_path = fileName;
+                                    sapien_hash_matched = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                    if (!guerilla_hash_matched)
-                    {
-                        foreach (string hek_guerilla_md5 in hek_guerilla_md5_array)
-                        {
 
-                            if (hek_guerilla_md5.Contains(hash))
-                            {
-                                hek_guerilla_path = fileName;
-                                guerilla_hash_matched = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!sapien_hash_matched)
-                    {
-                        foreach (string hek_sapien_md5 in hek_sapien_md5_array)
-                        {
-                            if (hek_sapien_md5.Contains(hash))
-                            {
-                                hek_sapien_path = fileName;
-                                sapien_hash_matched = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            profile_name.Text = profile_name_template;
-            tool_path.Text = hek_tool_path;
-            sapien_path.Text = hek_sapien_path;
-            guerilla_path.Text = hek_guerilla_path; 
-            gen_type.SelectedIndex = gen_type_template;
-            build_type.SelectedIndex = build_type_template;
-            community_tools.IsChecked = community_tools_template;
+                profile_name.Text = profile_name_template;
+                tool_path.Text = hek_tool_path;
+                sapien_path.Text = hek_sapien_path;
+                guerilla_path.Text = hek_guerilla_path;
+                gen_type.SelectedIndex = gen_type_template;
+                build_type.SelectedIndex = build_type_template;
+                community_tools.IsChecked = community_tools_template;
+            }
         }
     }
 

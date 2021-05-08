@@ -136,7 +136,8 @@
                                                         <Slider x:Name="light_quality_slider" Foreground="Black" IsSnapToTickEnabled="True" Ticks="0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="0.1" Maximum="1" Value="1" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
                                                     </StackPanel>
                                                     <ToggleButton Grid.Row="2" x:Name ="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom"/>
-                                                    <ComboBox Grid.Row="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                    <Button x:Name="btn_edit_lightmap" Content="Edit Lightmap Settings" HorizontalAlignment="Center" Height="22" VerticalAlignment="Center" Width="115" Grid.Row="2" FontSize="11" Click="btn_edit_lightmap_Click"/>
+                                                    <ComboBox x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}" SelectionChanged="light_quality_level_SelectionChanged" Grid.Row="1">
                                                         <ComboBoxItem Content="Checkerboard"/>
                                                         <ComboBoxItem Content="Cuban"/>
                                                         <ComboBoxItem Content="Draft Low"/>
@@ -156,7 +157,7 @@
                                                 <GroupBox.BindingGroup>
                                                     <BindingGroup/>
                                                 </GroupBox.BindingGroup>
-                                                <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
+                                                <TextBox x:Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
                                             </GroupBox>
                                             <GroupBox x:Name="structure_box" Header="Structure Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource PhantomVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
                                                 <CheckBox x:Name="phantom_hack" Content="Apply Phantom Fix" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -274,7 +275,7 @@
                                                     <ComboBoxItem Content="Sprites"/>
                                                     <ComboBoxItem Content="Interface"/>
                                                 </ComboBox>
-                                            </GroupBox>                                            
+                                            </GroupBox>
                                             <Button Grid.Row="3" Content="Compile Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}"/>
                                         </Grid>
                                     </Grid>
@@ -298,7 +299,7 @@
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="8"/>
                                                 <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>                                                
+                                                <RowDefinition Height="Auto"/>
                                                 <RowDefinition/>
                                             </Grid.RowDefinitions>
                                             <Grid>
@@ -320,7 +321,7 @@
                                             <Grid Grid.Row="2">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="8"/>                                                    
+                                                    <RowDefinition Height="8"/>
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>

@@ -1,0 +1,38 @@
+﻿<Window x:Class="ToolkitLauncher.EditLightmapSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolkitLauncher"
+        mc:Ignorable="d"
+        Title="EditLightmapSettings" Height="403" Width="368">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="135*"/>
+            <RowDefinition Height="34*"/>
+        </Grid.RowDefinitions>
+        <GroupBox x:Name="grp_lightmap_values" Header="Values" HorizontalAlignment="Left" Height="143" Margin="15,9,0,0" VerticalAlignment="Top" Width="309">
+            <Grid HorizontalAlignment="Left" Height="116" VerticalAlignment="Top" Width="299">
+                <Label x:Name="lbl_sample_count" Content="Sample Count:" HorizontalAlignment="Left" Height="28" Margin="10,2,0,0" VerticalAlignment="Top" Width="124"/>
+                <Label x:Name="lbl_photon_count" Content="Photon Count:" HorizontalAlignment="Left" Height="28" Margin="10,0,0,58" VerticalAlignment="Bottom" Width="124"/>
+                <Label x:Name="lbl_AA_sample_count" Content="Antialiasing Samples:" HorizontalAlignment="Left" Height="28" Margin="10,58,0,0" VerticalAlignment="Top" Width="124"/>
+                <Label x:Name="lbl_gather_distance" Content="Gather Distance:" HorizontalAlignment="Left" Height="28" Margin="10,86,0,0" VerticalAlignment="Top" Width="124"/>
+                <TextBox x:Name="txt_sample_count" HorizontalAlignment="Left" Height="20" Margin="139,6,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142"/>
+                <TextBox x:Name="txt_photon_count" HorizontalAlignment="Left" Height="20" Margin="139,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142"/>
+                <TextBox x:Name="txt_AA_sample_count" HorizontalAlignment="Left" Height="20" Margin="139,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142"/>
+                <TextBox x:Name="txt_gather_distance" HorizontalAlignment="Left" Height="20" Margin="139,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="grp_lightmap_flags" Header="Flags" HorizontalAlignment="Left" Height="109" Margin="15,161,0,0" VerticalAlignment="Top" Width="309">
+            <Grid HorizontalAlignment="Left" Width="299" Height="99">
+                <CheckBox x:Name="chk_is_checkboard" Content="Checkerboard" HorizontalAlignment="Left" Margin="6,10,0,71" Width="134"/>
+                <CheckBox x:Name="chk_is_direct_only" Content="Only Direct Lighting" HorizontalAlignment="Left" Margin="6,34,0,48" Width="134"/>
+                <CheckBox x:Name="chk_is_draft" Content="Draft Quality" HorizontalAlignment="Left" Margin="6,58,0,23" Width="134"/>
+            </Grid>
+        </GroupBox>
+        <Grid HorizontalAlignment="Left" Height="69" Margin="15,283,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="309">
+            <Button x:Name="btn_save_settings" Content="Save Settings" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="101" Click="btn_save_changes_Click"/>
+            <Button x:Name="btn_reset_settings" Content="Reset Settings" HorizontalAlignment="Left" Height="30" Margin="208,0,0,0" VerticalAlignment="Center" Width="101" Click="btn_reset_changes_Click"/>
+        </Grid>
+    </Grid>
+</Window>

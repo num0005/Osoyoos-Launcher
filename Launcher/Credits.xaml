@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ToolkitLauncher.ToolkitInterface"
         mc:Ignorable="d"
-        Title="Credits" Height="350" ResizeMode="NoResize" SizeToContent="Width">
+        Title="Credits" Height="405" ResizeMode="NoResize" SizeToContent="Width" d:DesignWidth="451.35">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid x:Name="grid" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid Background="#FFE5E5E5">
