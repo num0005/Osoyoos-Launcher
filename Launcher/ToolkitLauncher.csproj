@@ -35,7 +35,13 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Images\gear.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="icon.ico" />
+    <Resource Include="Images\gear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

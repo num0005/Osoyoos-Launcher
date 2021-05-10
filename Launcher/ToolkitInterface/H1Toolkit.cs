@@ -31,7 +31,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     throw new Exception("Unreachable!");
             }
 
-            if (update_resources && profile.build_type == "release_mcc" && profile.game_gen == 0 || update_resources && profile.build_type == "debug_mcc" && profile.game_gen == 0)
+            if (update_resources && profile.build_type == build_type.release_mcc && profile.game_gen == 0)
             {
                 build_command = "build-cache-file-nopack";
                 await RunTool(ToolType.Tool, new List<string>() { build_command, path, platform_string });

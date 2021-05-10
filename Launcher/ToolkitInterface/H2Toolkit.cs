@@ -17,11 +17,9 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             var profile = ToolkitProfiles.SettingsList[MainWindow.profile_index];
             string bitmaps_command = "bitmaps";
-            if (profile.community_tools && profile.build_type == "release_standalone" 
-                || profile.build_type == "release_mcc" 
-                || profile.build_type == "debug_mcc" 
-                || profile.build_type == "release_internal" 
-                || profile.build_type == "debug_internal")
+            if (profile.community_tools && profile.build_type == build_type.release_standalone 
+                || profile.build_type == build_type.release_mcc  
+                || profile.build_type == build_type.release_internal )
             {
                 bitmaps_command = "bitmaps-with-type";
                 await RunTool(ToolType.Tool, new List<string>() { bitmaps_command, path, type });
@@ -86,7 +84,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 bsp,
                 slave_count.ToString()
             };
-            if (profile.build_type == "release_standalone" && profile.community_tools)
+            if (profile.build_type == build_type.release_standalone && profile.community_tools)
             {
                 args = new List<string>()
                 {
@@ -112,7 +110,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     index.ToString(),
                     slave_count.ToString()
                 };
-            if (profile.build_type == "release_standalone" && profile.community_tools)
+            if (profile.build_type == build_type.release_standalone && profile.community_tools)
             {
                 args = new List<string>()
                 {
@@ -142,7 +140,7 @@ namespace ToolkitLauncher.ToolkitInterface
             string collision_command = "collision";
             string physics_command = "physics";
             string animations_command = "model-animations";
-            if (profile.build_type == "release_standalone" && profile.community_tools)
+            if (profile.build_type == build_type.release_standalone && profile.community_tools)
             {
                 render_command = "model-render";
                 collision_command = "model-collision";
@@ -150,10 +148,8 @@ namespace ToolkitLauncher.ToolkitInterface
                 animations_command = "append-animations";
             }
 
-            if (render_prt && profile.build_type == "release_mcc" 
-                || render_prt && profile.build_type == "debug_mcc" 
-                || render_prt && profile.build_type == "release_internal" 
-                || render_prt && profile.build_type == "debug_internal")
+            if (render_prt && profile.build_type == build_type.release_mcc 
+                || render_prt && profile.build_type == build_type.release_internal)
                 render_command = "render-prt";
 
             switch (import_type)
@@ -192,7 +188,7 @@ namespace ToolkitLauncher.ToolkitInterface
         public override async Task ImportSound(string sound_command, string path, string platform, string class_type, string bitrate, string ltf_path)
         {
             var profile = ToolkitProfiles.SettingsList[MainWindow.profile_index];
-            if (profile.community_tools && profile.build_type == "release_standalone")
+            if (profile.community_tools && profile.build_type == build_type.release_standalone)
                 await RunTool(ToolType.Tool, new List<string>() { "import-lipsync", path, ltf_path });
             else
                 await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type });

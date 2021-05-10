@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Markup;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ToolkitLauncher
 {
@@ -315,7 +316,7 @@ namespace ToolkitLauncher
             if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
             {
                 var profile = ToolkitProfiles.SettingsList[profile_index];
-                if (!profile.community_tools && profile.build_type == "release_standalone" && profile.game_gen == 1 || profile.build_type == "debug_internal" && profile.game_gen == 1)
+                if (!profile.community_tools && profile.build_type == build_type.release_standalone && profile.game_gen == 1 || profile.build_type == build_type.release_internal && profile.game_gen == 1)
                     instance_count = 1;
                 CompileLevel(compile_level_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count, phantom_hack.IsChecked is true);
             }
@@ -434,6 +435,29 @@ namespace ToolkitLauncher
             custom_command_text.Text = "";
         }
 
+        private void lightmap_config_Click(object sender, RoutedEventArgs e)
+        {
+            lightmap_config_ui.Visibility = Visibility.Visible;
+            LightmapConfigUI();
+        }
+
+        private async void lightmap_save_Click(object sender, RoutedEventArgs e)
+        {
+            lightmap_config_ui.Visibility = Visibility.Collapsed;
+            await SaveConfig(toolkit.GetBaseDirectory() + "\\" + "custom_lightmap_quality.conf");
+        }
+
+        private void lightmap_reset_Click(object sender, RoutedEventArgs e)
+        {
+            lightmap_is_checkboard.IsChecked = false;
+            lightmap_is_direct_only.IsChecked = false;
+            lightmap_is_draft.IsChecked = false;
+            lightmap_primary_monte_carlo_count.Text = "8";
+            lightmap_proton_count.Text = "20000000";
+            lightmap_secondary_monte_carlo_count.Text = "4";
+            lightmap_unk7_count.Text = "4.000000";
+        }
+
         private void model_compile_collision_Checked(object sender, RoutedEventArgs e)
         {
             model_compile_type = model_compile.collision;
@@ -478,10 +502,22 @@ namespace ToolkitLauncher
             await toolkit.ImportSound(sound_command.ToString(), sound_path, platform.ToString(), class_name.ToString(), bitrate_value, "data\\" + ltf_path);
         }
 
+        private void spaces_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+                e.Handled = true;
+        }
+
         private void numbers_only(object sender, TextCompositionEventArgs e)
         {
-            var textBox = sender as TextBox;
+            var textBox = sender as TextBox;      
             e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
+        }
+
+        private void decimals_only(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9.]+");
         }
 
         readonly FilePicker.Options soundDataOptions = FilePicker.Options.FolderSelect(
@@ -508,7 +544,7 @@ namespace ToolkitLauncher
             var profile = ToolkitProfiles.SettingsList[profile_index];
             int asset_type = 0;
             var soundOptions = soundDataOptions;
-            if (profile.game_gen == 1 && profile.build_type == "release_standalone" && profile.community_tools) // Switching from sound compiling to LTF importing for H2Codez
+            if (profile.game_gen == 1 && profile.build_type == build_type.release_standalone && profile.community_tools) // Switching from sound compiling to LTF importing for H2Codez
             {
                 soundOptions = soundTagOptions;
                 asset_type = 1;
@@ -636,7 +672,7 @@ namespace ToolkitLauncher
                 ComboBoxItem cuban_quality = (ComboBoxItem)light_quality_level.Items[1];
                 ComboBoxItem custom_quality = (ComboBoxItem)light_quality_level.Items[11];
                 cuban_quality.IsEnabled = false;
-                if (profile.build_type == "debug_internal" && profile.game_gen == 1)
+                if (profile.build_type == build_type.release_internal && profile.game_gen == 1)
                 {
                     cuban_quality.IsEnabled = true;
                 }
@@ -649,7 +685,7 @@ namespace ToolkitLauncher
                 }
 
                 custom_quality.IsEnabled = false;
-                if (profile.build_type == "release_standalone" && profile.game_gen == 1 && profile.community_tools)
+                if (profile.build_type == build_type.release_standalone && profile.game_gen == 1 && profile.community_tools)
                 {
                     custom_quality.IsEnabled = true;
                 }
@@ -666,6 +702,38 @@ namespace ToolkitLauncher
         private void string_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string_encoding_index = string_encoding.SelectedIndex;
+        }
+
+        public void LightmapConfigUI()
+        {
+            
+            LightmapConfigSettings.ReadConfig(toolkit.GetBaseDirectory() + "\\" + "custom_lightmap_quality.conf");
+            LightmapSetUI();
+        }
+
+        private void LightmapSetUI()
+        {
+            lightmap_is_checkboard.IsChecked = LightmapConfigSettings.ConfigSettings.is_checkboard;
+            lightmap_is_direct_only.IsChecked = LightmapConfigSettings.ConfigSettings.is_direct_only;
+            lightmap_is_draft.IsChecked = LightmapConfigSettings.ConfigSettings.is_draft;
+            lightmap_primary_monte_carlo_count.Text = LightmapConfigSettings.ConfigSettings.main_monte_carlo_setting.ToString();
+            lightmap_proton_count.Text = LightmapConfigSettings.ConfigSettings.proton_count.ToString();
+            lightmap_secondary_monte_carlo_count.Text = LightmapConfigSettings.ConfigSettings.secondary_monte_carlo_setting.ToString();
+            lightmap_unk7_count.Text = LightmapConfigSettings.ConfigSettings.unk7.ToString();
+        }
+
+        private async Task SaveConfig(string path)
+        {
+            File.Delete(path);
+
+            using StreamWriter file = new(path, append: true);
+            await file.WriteLineAsync("is_checkboard = " + lightmap_is_checkboard.IsChecked.ToString().ToLower());
+            await file.WriteLineAsync("is_direct_only = " + lightmap_is_direct_only.IsChecked.ToString().ToLower());
+            await file.WriteLineAsync("is_draft = " + lightmap_is_draft.IsChecked.ToString().ToLower());
+            await file.WriteLineAsync("main_monte_carlo_setting = " + lightmap_primary_monte_carlo_count.Text);
+            await file.WriteLineAsync("proton_count = " + lightmap_proton_count.Text);
+            await file.WriteLineAsync("secondary_monte_carlo_setting = " + lightmap_secondary_monte_carlo_count.Text);
+            await file.WriteLineAsync("unk7 = " + lightmap_unk7_count.Text);
         }
     }
 
@@ -798,7 +866,7 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string build_type = "";
+            build_type build_type = (build_type)0;
             bool community_tools = false;
             int game_gen_index = 0;
             var vis = Visibility.Collapsed;
@@ -812,7 +880,7 @@ namespace ToolkitLauncher
             {
                 vis = Visibility.Visible;
             }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && !community_tools && build_type != "release_standalone" && build_type != "debug_standalone")
+            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && !community_tools && build_type != build_type.release_standalone)
                 return Visibility.Visible; 
             return vis;
         }
@@ -828,7 +896,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             bool community_tools = false;
             var space = new GridLength(0);
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
@@ -841,11 +909,9 @@ namespace ToolkitLauncher
             {
                 space = new GridLength(8);
             }
-            if (build_type == "release_mcc" && game_gen_index == 0
-                || build_type == "debug_mcc" && game_gen_index == 0
-                || community_tools && build_type == "release_standalone" && game_gen_index == 1
-                || build_type == "release_internal" && game_gen_index == 1
-                || build_type == "debug_internal" && game_gen_index == 1)
+            if (build_type == build_type.release_mcc && game_gen_index == 0
+                || community_tools && build_type == build_type.release_standalone && game_gen_index == 1
+                || build_type == build_type.release_internal && game_gen_index == 1)
                 return new GridLength(8);
             return space;
         }
@@ -861,7 +927,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             bool community_tools = false;
             var space = new GridLength(0);
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
@@ -874,7 +940,7 @@ namespace ToolkitLauncher
             {
                 space = new GridLength(8);
             }
-            if (game_gen_index == 1 && community_tools && build_type == "release_standalone")
+            if (game_gen_index == 1 && community_tools && build_type == build_type.release_standalone)
                 return new GridLength(8);
             return space;
         }
@@ -909,7 +975,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             bool community_tools = false;
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
             {
@@ -917,11 +983,31 @@ namespace ToolkitLauncher
                 build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
                 community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
             }
-            if (game_gen_index == 1 && !community_tools && build_type == "release_standalone" || game_gen_index == 1 && build_type == "debug_standalone")
+            if (game_gen_index == 1 && !community_tools && build_type == build_type.release_standalone)
                 return 0;
             return 1;
         }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class LightmapConfigModifier : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int lightmap_quality = (int)values[0];
+            int toolkit_selection = (int)values[1];
+            if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            {
+                if (ToolkitProfiles.SettingsList[toolkit_selection].game_gen >= 1 && lightmap_quality == 11)
+                    return true;
+                return false;
+            }
+            return false;
+        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -932,7 +1018,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             bool community_tools = false;
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
@@ -945,11 +1031,9 @@ namespace ToolkitLauncher
             {
                 vis = Visibility.Visible;
             }
-            if (game_gen_index == 1 && community_tools && build_type == "release_standalone" 
-                || game_gen_index == 1 && build_type == "release_mcc" 
-                || game_gen_index == 1 && build_type == "debug_mcc" 
-                || game_gen_index == 1 && build_type == "release_internal" 
-                || game_gen_index == 1 && build_type == "debug_internal")
+            if (game_gen_index == 1 && community_tools && build_type == build_type.release_standalone 
+                || game_gen_index == 1 && build_type == build_type.release_mcc
+                || game_gen_index == 1 && build_type == build_type.release_internal )
                 return Visibility.Visible;
             return vis;
         }
@@ -964,7 +1048,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             bool community_tools = false;
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
@@ -977,7 +1061,7 @@ namespace ToolkitLauncher
             {
                 vis = Visibility.Visible;
             }
-            if (game_gen_index == 1 && community_tools && build_type == "release_standalone")
+            if (game_gen_index == 1 && community_tools && build_type == build_type.release_standalone)
                 return Visibility.Visible;
             return vis;
         }
@@ -1069,7 +1153,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
             {
@@ -1080,10 +1164,8 @@ namespace ToolkitLauncher
             {
                 vis = Visibility.Visible;
             }
-            if (game_gen_index == 1 && build_type == "release_mcc" 
-                || game_gen_index == 1 && build_type == "debug_mcc" 
-                || game_gen_index == 1 && build_type == "release_internal" 
-                || game_gen_index == 1 && build_type == "debug_internal")
+            if (game_gen_index == 1 && build_type == build_type.release_mcc
+                || game_gen_index == 1 && build_type == build_type.release_internal )
                 return Visibility.Visible;
             return vis;
         }
@@ -1098,7 +1180,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
             {
@@ -1110,7 +1192,7 @@ namespace ToolkitLauncher
                 vis = Visibility.Visible;
             }
             if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
-                if (build_type == "release_mcc" || build_type == "debug_mcc")
+                if (build_type == build_type.release_mcc)
                     vis = Visibility.Visible;
             return vis;
         }
@@ -1126,7 +1208,7 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            string build_type = "";
+            build_type build_type = (build_type)0;
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
             {
@@ -1137,8 +1219,7 @@ namespace ToolkitLauncher
             {
                 vis = Visibility.Visible;
             }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && build_type == "release_mcc" 
-                || parameter is string && Int32.Parse(parameter as string) == game_gen_index && build_type == "debug_mcc")
+            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && build_type == build_type.release_mcc)
                 vis = Visibility.Visible;
             return vis;
         }
@@ -1146,6 +1227,102 @@ namespace ToolkitLauncher
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class LightmapConfigSettings
+    {
+        public static LightmapConfig ConfigSettings = new LightmapConfig();
+
+        public class LightmapConfig
+        {
+            public bool is_checkboard { get; set; }
+            public bool is_direct_only { get; set; }
+            public bool is_draft { get; set; }
+            public int main_monte_carlo_setting { get; set; }
+            public int proton_count { get; set; }
+            public int secondary_monte_carlo_setting { get; set; }
+            public float unk7 { get; set; }
+        }
+
+        public static void ReadConfig(string path)
+        {
+            if (File.Exists(path))
+            {
+                string theFile = path;
+                using (StreamReader sr = new StreamReader(theFile))
+                {
+                    string line = "";
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split('=');
+                        if (parts.Length == 2)
+                        {
+                            string key = parts[0].Trim();
+                            string value = parts[1].Trim();
+                            bool bool_pass;
+                            int int_pass;
+                            float float_pass;
+                            if (key == "is_checkboard")
+                            {
+                                if (bool.TryParse(value, out bool_pass))
+                                {
+                                    bool_pass = bool.Parse(value);
+                                }
+                                ConfigSettings.is_checkboard = bool_pass;
+                            }
+                            else if (key == "is_direct_only")
+                            {
+                                if (bool.TryParse(value, out bool_pass))
+                                {
+                                    bool_pass = bool.Parse(value);
+                                }
+                                ConfigSettings.is_direct_only = bool_pass;
+                            }
+                            else if (key == "is_draft")
+                            {
+                                if (bool.TryParse(value, out bool_pass))
+                                {
+                                    bool_pass = bool.Parse(value);
+                                }
+                                ConfigSettings.is_draft = bool_pass;
+                            }
+                            else if (key == "main_monte_carlo_setting")
+                            {
+                                if (int.TryParse(value, out int_pass))
+                                {
+                                    int_pass = int.Parse(value);
+                                }
+                                ConfigSettings.main_monte_carlo_setting = int_pass;
+                            }
+                            else if (key == "proton_count")
+                            {
+                                if (int.TryParse(value, out int_pass))
+                                {
+                                    int_pass = int.Parse(value);
+                                }
+                                ConfigSettings.proton_count = int_pass;
+                            }
+                            else if (key == "secondary_monte_carlo_setting")
+                            {
+                                if (int.TryParse(value, out int_pass))
+                                {
+                                    int_pass = int.Parse(value);
+                                }
+                                ConfigSettings.secondary_monte_carlo_setting = int_pass;
+                            }
+                            else if (key == "unk7")
+                            {
+                                if (float.TryParse(value, out float_pass))
+                                {
+                                    float_pass = float.Parse(value);
+                                }
+                                ConfigSettings.unk7 = float_pass;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
