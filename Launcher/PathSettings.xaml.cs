@@ -53,6 +53,7 @@ namespace ToolkitLauncher
             profile_wizard.IsEnabled = has_profiles;
             profile_name_box.IsEnabled = has_profiles;
             hek_box.IsEnabled = has_profiles;
+            build_type_box.IsEnabled = has_profiles;
             gen_type_box.IsEnabled = has_profiles;
             community_tools.IsEnabled = has_profiles;
         }
