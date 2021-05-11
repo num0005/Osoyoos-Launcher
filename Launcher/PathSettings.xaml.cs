@@ -366,6 +366,7 @@ namespace ToolkitLauncher
                 gen_type.SelectedIndex = gen_type_template;
                 build_type.SelectedIndex = build_type_template;
                 community_tools.IsChecked = community_tools_template;
+                ProfileSave();
             }
         }
     }

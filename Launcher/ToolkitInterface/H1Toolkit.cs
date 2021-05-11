@@ -15,7 +15,6 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task BuildCache(string scenario, int cache_type, bool update_resources)
         {
-            var profile = ToolkitProfiles.SettingsList[MainWindow.profile_index];
             string path = scenario.Replace(".scenario", "");
             string build_command = "build-cache-file";
             string platform_string = "pc";
@@ -31,7 +30,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     throw new Exception("Unreachable!");
             }
 
-            if (update_resources && profile.build_type == build_type.release_mcc && profile.game_gen == 0)
+            if (update_resources && MainWindow.halo_ce_mcc)
             {
                 build_command = "build-cache-file-nopack";
                 await RunTool(ToolType.Tool, new List<string>() { build_command, path, platform_string });

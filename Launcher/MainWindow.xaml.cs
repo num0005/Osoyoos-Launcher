@@ -65,7 +65,7 @@ namespace ToolkitLauncher
         ToolkitBase toolkit {
             get
             {
-                int game_gen_index = ToolkitProfiles.SettingsList[toolkit_selection.SelectedIndex].game_gen;
+                int game_gen_index = toolkit_profile.game_gen;
                 if (game_gen_index > 1)
                     game_gen_index = 1;
                 return toolkits[game_gen_index];
@@ -167,7 +167,91 @@ namespace ToolkitLauncher
             multilingual_test
         }
 
-        public static int profile_index { get; set; }
+        public static ToolkitProfiles.ProfileSettingsLauncher toolkit_profile
+        {
+            get
+            {
+                int profile_int = 0;
+                if (profile_index >= 0)
+                    profile_int = profile_index;
+
+                return ToolkitProfiles.SettingsList[profile_int];
+            }
+        }
+
+        public static bool halo_ce_mcc
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 0 && toolkit_profile.build_type == build_type.release_mcc;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_2_mcc
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_mcc;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_2_standalone
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_standalone;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_2_standalone_community
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 1 && toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_2_standalone_not_community
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 1 && !toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_2_internal
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_internal;
+                }
+                return false;
+            }
+        }
+
+        public static int profile_index;
         public static int string_encoding_index { get; set; }
         private bool handling_exception = false;
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -256,6 +340,7 @@ namespace ToolkitLauncher
             if (Settings.Default.set_profile >= 0)
                 default_index = Settings.Default.set_profile;
             toolkit_selection.SelectedIndex = default_index;
+            DataContext = new PackageResourceVisibility.MyViewModel();
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -315,8 +400,8 @@ namespace ToolkitLauncher
             Int32 instance_count = 1;
             if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
             {
-                var profile = ToolkitProfiles.SettingsList[profile_index];
-                if (!profile.community_tools && profile.build_type == build_type.release_standalone && profile.game_gen == 1 || profile.build_type == build_type.release_internal && profile.game_gen == 1)
+                if (halo_2_standalone_not_community)
+                    //If there is no instance support then set whatever got passed back to 1
                     instance_count = 1;
                 CompileLevel(compile_level_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count, phantom_hack.IsChecked is true);
             }
@@ -504,6 +589,7 @@ namespace ToolkitLauncher
 
         private void spaces_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            //Set handled to true if the key is space. Stops us from entering spaces in textboxes.
             if (e.Key == Key.Space)
                 e.Handled = true;
         }
@@ -541,10 +627,9 @@ namespace ToolkitLauncher
 
         private void browse_sound_Click(object sender, RoutedEventArgs e)
         {
-            var profile = ToolkitProfiles.SettingsList[profile_index];
             int asset_type = 0;
             var soundOptions = soundDataOptions;
-            if (profile.game_gen == 1 && profile.build_type == build_type.release_standalone && profile.community_tools) // Switching from sound compiling to LTF importing for H2Codez
+            if (halo_2_standalone_community) // Switching from sound compiling to LTF importing for H2Codez
             {
                 soundOptions = soundTagOptions;
                 asset_type = 1;
@@ -612,12 +697,11 @@ namespace ToolkitLauncher
         {
             string default_path = get_default_path(compile_image_path.Text, 0, 0);
             var bitmapOptions = gen1BitmapOptions;
-            var profile = ToolkitProfiles.SettingsList[profile_index];
-            if (profile.game_gen == 1 && profile.community_tools)
+            if (halo_2_standalone_community)
             {
                 bitmapOptions = gen2H2CodezBitmapOptions;
             }
-            else if (profile.game_gen >= 1 )
+            else if (halo_2_standalone_not_community)
             {
                 bitmapOptions = gen2BitmapOptions;
             }
@@ -665,35 +749,22 @@ namespace ToolkitLauncher
 
         private void toolkit_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            profile_index = toolkit_selection.SelectedIndex;
             if (light_quality_level != null && ToolkitProfiles.SettingsList.Count > 0 && profile_index >= 0)
             {
-                var profile = ToolkitProfiles.SettingsList[profile_index];
-                ComboBoxItem cuban_quality = (ComboBoxItem)light_quality_level.Items[1];
-                ComboBoxItem custom_quality = (ComboBoxItem)light_quality_level.Items[11];
-                cuban_quality.IsEnabled = false;
-                if (profile.build_type == build_type.release_internal && profile.game_gen == 1)
-                {
-                    cuban_quality.IsEnabled = true;
-                }
-                else
-                {
-                    if (light_quality_level.SelectedIndex == 1)
-                    {
-                        light_quality_level.SelectedIndex = 0;
-                    }
-                }
+                int super_index = 9;
+                int custom_index = 10;
 
+                ComboBoxItem custom_quality = (ComboBoxItem)light_quality_level.Items[custom_index];
                 custom_quality.IsEnabled = false;
-                if (profile.build_type == build_type.release_standalone && profile.game_gen == 1 && profile.community_tools)
+                if (halo_2_standalone_community)
                 {
                     custom_quality.IsEnabled = true;
                 }
                 else
                 {
-                    if (light_quality_level.SelectedIndex == 11)
+                    if (light_quality_level.SelectedIndex == custom_index)
                     {
-                        light_quality_level.SelectedIndex = 10;
+                        light_quality_level.SelectedIndex = super_index;
                     }
                 }
             }
@@ -895,25 +966,17 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            var space = new GridLength(0);
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community || MainWindow.halo_2_internal)
+                return new GridLength(8);
+            if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
+                return new GridLength(0);
             }
             else
             {
-                space = new GridLength(8);
-            }
-            if (build_type == build_type.release_mcc && game_gen_index == 0
-                || community_tools && build_type == build_type.release_standalone && game_gen_index == 1
-                || build_type == build_type.release_internal && game_gen_index == 1)
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                 return new GridLength(8);
-            return space;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -926,23 +989,17 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            var space = new GridLength(0);
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (MainWindow.halo_2_standalone_community)
+                return new GridLength(8);
+            if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
+                return new GridLength(0);
             }
             else
             {
-                space = new GridLength(8);
-            }
-            if (game_gen_index == 1 && community_tools && build_type == build_type.release_standalone)
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                 return new GridLength(8);
-            return space;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -961,8 +1018,8 @@ namespace ToolkitLauncher
                 game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
             }
             if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
-                return 1;
-            return 0;
+                return true;
+            return false;
         }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -974,18 +1031,9 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-            {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
-            }
-            if (game_gen_index == 1 && !community_tools && build_type == build_type.release_standalone)
-                return 0;
-            return 1;
+            if (MainWindow.halo_2_standalone_not_community)
+                return false;
+            return true;
         }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -1001,7 +1049,7 @@ namespace ToolkitLauncher
             int toolkit_selection = (int)values[1];
             if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
             {
-                if (ToolkitProfiles.SettingsList[toolkit_selection].game_gen >= 1 && lightmap_quality == 11)
+                if (MainWindow.toolkit_profile.game_gen >= 1 && lightmap_quality == 10)
                     return true;
                 return false;
             }
@@ -1017,25 +1065,17 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_2_internal)
+                return Visibility.Visible;
+            if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
+                return Visibility.Collapsed;
             }
             else
             {
-                vis = Visibility.Visible;
-            }
-            if (game_gen_index == 1 && community_tools && build_type == build_type.release_standalone 
-                || game_gen_index == 1 && build_type == build_type.release_mcc
-                || game_gen_index == 1 && build_type == build_type.release_internal )
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                 return Visibility.Visible;
-            return vis;
+            }
         }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -1047,23 +1087,17 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (MainWindow.halo_2_standalone_community)
+                return Visibility.Visible;
+            if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
+                return Visibility.Collapsed;
             }
             else
             {
-                vis = Visibility.Visible;
-            }
-            if (game_gen_index == 1 && community_tools && build_type == build_type.release_standalone)
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                 return Visibility.Visible;
-            return vis;
+            }
         }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -1152,22 +1186,17 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (MainWindow.halo_2_mcc || MainWindow.halo_2_internal)
+                return Visibility.Visible;
+            if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
+                return Visibility.Collapsed;
             }
             else
             {
-                vis = Visibility.Visible;
-            }
-            if (game_gen_index == 1 && build_type == build_type.release_mcc
-                || game_gen_index == 1 && build_type == build_type.release_internal )
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                 return Visibility.Visible;
-            return vis;
+            }
         }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -1227,6 +1256,36 @@ namespace ToolkitLauncher
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+
+        public class MyViewModel : INotifyPropertyChanged
+        {
+            public MyViewModel()
+            {
+                SelectedProfileIndex = 0;
+            }
+            private int _SelectedProfileIndex;
+            public int SelectedProfileIndex
+            {
+                get
+                {
+                    return _SelectedProfileIndex;
+                }
+                set
+                {
+                    _SelectedProfileIndex = value;
+                    MainWindow.profile_index = value;
+                    Notify("SelectedProfileIndex");
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            private void Notify(string propertyName)
+            {
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 

@@ -147,7 +147,6 @@
                                                         </Grid.ColumnDefinitions>
                                                         <ComboBox Grid.Column="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
                                                             <ComboBoxItem Content="Checkerboard"/>
-                                                            <ComboBoxItem Content="Cuban"/>
                                                             <ComboBoxItem Content="Draft Low"/>
                                                             <ComboBoxItem Content="Draft Medium"/>
                                                             <ComboBoxItem Content="Draft High"/>
@@ -590,7 +589,7 @@
                         <RowDefinition Height="5"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Column="1" Grid.Row="1" Content="Profile" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26"/>
-                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148"/>
+                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="{Binding Path=SelectedProfileIndex, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148"/>
                     <Button Grid.Column="3" Grid.Row="1" x:Name="toolkit_profiles" Content="Toolkit Profiles" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="toolkit_profiles_Click"/>
                     <Button Grid.Column="4" Grid.Row="1" Content="About" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="about_Click"/>
                 </Grid>
