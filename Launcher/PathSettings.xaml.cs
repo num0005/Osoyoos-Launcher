@@ -207,7 +207,7 @@ namespace ToolkitLauncher
                 sapien_path = sapien_path.Text,
                 guerilla_path = guerilla_path.Text,
                 game_gen = gen_type.SelectedIndex,
-                build_type = (build_type)0,
+                build_type = (build_type)build_type.SelectedIndex,
                 community_tools = (bool)community_tools.IsChecked,
             };
             Debug.Assert(profile_select.SelectedIndex >= 0 && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex);
