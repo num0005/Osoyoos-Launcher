@@ -16,6 +16,7 @@
         <local:GameGenToIsEnabled x:Key="GameGenToIsEnabled" />
         <local:ModelContentModifier x:Key="ModelContentModifier" />
         <local:TextContentModifier x:Key="TextContentModifier" />
+        <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />        
         <local:PRTContentModifier x:Key="PRTContentModifier" />
         <local:PhantomVisibility x:Key="PhantomVisibility" />
         <local:PackageResourceVisibility x:Key="PackageResourceVisibility" />
@@ -136,27 +137,54 @@
                                                         <Slider x:Name="light_quality_slider" Foreground="Black" IsSnapToTickEnabled="True" Ticks="0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="0.1" Maximum="1" Value="1" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
                                                     </StackPanel>
                                                     <ToggleButton Grid.Row="2" x:Name ="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom"/>
-                                                    <ComboBox Grid.Row="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                        <ComboBoxItem Content="Checkerboard"/>
-                                                        <ComboBoxItem Content="Cuban"/>
-                                                        <ComboBoxItem Content="Draft Low"/>
-                                                        <ComboBoxItem Content="Draft Medium"/>
-                                                        <ComboBoxItem Content="Draft High"/>
-                                                        <ComboBoxItem Content="Draft Super"/>
-                                                        <ComboBoxItem Content="Direct Only"/>
-                                                        <ComboBoxItem Content="Low"/>
-                                                        <ComboBoxItem Content="Medium"/>
-                                                        <ComboBoxItem Content="High"/>
-                                                        <ComboBoxItem Content="Super"/>
-                                                        <ComboBoxItem Content="Custom"/>
-                                                    </ComboBox>
+                                                    <Grid Grid.Row="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="8"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ComboBox Grid.Column="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                            <ComboBoxItem Content="Checkerboard"/>
+                                                            <ComboBoxItem Content="Draft Low"/>
+                                                            <ComboBoxItem Content="Draft Medium"/>
+                                                            <ComboBoxItem Content="Draft High"/>
+                                                            <ComboBoxItem Content="Draft Super"/>
+                                                            <ComboBoxItem Content="Direct Only"/>
+                                                            <ComboBoxItem Content="Low"/>
+                                                            <ComboBoxItem Content="Medium"/>
+                                                            <ComboBoxItem Content="High"/>
+                                                            <ComboBoxItem Content="Super"/>
+                                                            <ComboBoxItem Content="Custom"/>
+                                                        </ComboBox>
+                                                        <Button Grid.Column="3" x:Name ="lightmap_config_button" HorizontalAlignment="Left" Height="22" Width="22" VerticalAlignment="Center" Click="lightmap_config_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource H2VCommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                            <Button.IsEnabled>
+                                                                <MultiBinding Converter="{StaticResource LightmapConfigModifier}">
+                                                                    <Binding ElementName="light_quality_level" Path="SelectedIndex" />
+                                                                    <Binding ElementName="toolkit_selection" Path="SelectedIndex" />
+                                                                </MultiBinding>
+                                                            </Button.IsEnabled>
+                                                            <Image Source="Images\gear.png" Stretch="Fill">
+                                                                <Image.Style>
+                                                                    <Style TargetType="Image">
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                                <Setter Property="Opacity" Value="0.5" />
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Image.Style>
+                                                            </Image>
+                                                        </Button>
+                                                    </Grid>
                                                 </Grid>
                                             </GroupBox>
                                             <GroupBox x:Name="instance_number" Header="Instance Count" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" IsEnabled="{Binding SelectedIndex, Converter={StaticResource GameGenToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
                                                 <GroupBox.BindingGroup>
                                                     <BindingGroup/>
                                                 </GroupBox.BindingGroup>
-                                                <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
+                                                <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
                                             </GroupBox>
                                             <GroupBox x:Name="structure_box" Header="Structure Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource PhantomVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
                                                 <CheckBox x:Name="phantom_hack" Content="Apply Phantom Fix" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -561,7 +589,7 @@
                         <RowDefinition Height="5"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Column="1" Grid.Row="1" Content="Profile" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26"/>
-                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148"/>
+                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="{Binding Path=SelectedProfileIndex, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148"/>
                     <Button Grid.Column="3" Grid.Row="1" x:Name="toolkit_profiles" Content="Toolkit Profiles" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="toolkit_profiles_Click"/>
                     <Button Grid.Column="4" Grid.Row="1" Content="About" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="about_Click"/>
                 </Grid>
@@ -586,5 +614,91 @@
                 </StackPanel>
             </Border>
         </Grid>
+        <Grid Grid.ColumnSpan="3" Grid.RowSpan="7" x:Name="lightmap_config_ui" Visibility="Collapsed">
+            <Grid Background="Black" Opacity="0.5"/>
+            <Border Height="Auto" Width="Auto" Background="#FFE5E5E5" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Column="1" Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>                                
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>                                
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" x:Name="lightmap_flags" Header="Lightmap Flags">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <CheckBox Grid.Column="1" Grid.Row="1" x:Name="lightmap_is_checkboard" Content="Checkerboard"/>
+                                    <CheckBox Grid.Column="1" Grid.Row="3" x:Name="lightmap_is_direct_only" Content="Only Direct Lighting"/>
+                                    <CheckBox Grid.Column="1" Grid.Row="5" x:Name="lightmap_is_draft" Content="Draft Quality"/>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" x:Name="lightmap_counts" Header="Lightmap Count">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Column="0" Grid.Row="0" x:Name="lightmap_primary_monte_carlo_count_label" Content="Sample Count:"/>
+                                    <Label Grid.Column="0" Grid.Row="2" x:Name="lightmap_proton_count_label" Content="Photon Count:"/>
+                                    <Label Grid.Column="0" Grid.Row="4" x:Name="lightmap_secondary_monte_carlo_count_label" Content="Antialiasing Samples:"/>
+                                    <Label Grid.Column="0" Grid.Row="6" x:Name="lightmap_unk7_count_label" Content="Gather Distance:"/>
+                                    <TextBox Grid.Column="2" Grid.Row="0" x:Name="lightmap_primary_monte_carlo_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
+                                    <TextBox Grid.Column="2" Grid.Row="2" x:Name="lightmap_proton_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
+                                    <TextBox Grid.Column="2" Grid.Row="4" x:Name="lightmap_secondary_monte_carlo_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
+                                    <TextBox Grid.Column="2" Grid.Row="6" x:Name="lightmap_unk7_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="decimals_only" MinWidth="100"/>
+                                </Grid>
+                            </GroupBox>
+                            <Grid Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="5"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="1" Grid.Row="1" x:Name="lightmap_save" Content="Save Settings" Padding="4" MinWidth="75" MinHeight="26" Click="lightmap_save_Click"/>
+                                <Button Grid.Column="3" Grid.Row="1" x:Name="lightmap_reset" Content="Reset Settings" Padding="4" MinWidth="75" MinHeight="26" Click="lightmap_reset_Click"/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>             
     </Grid>
 </Window>

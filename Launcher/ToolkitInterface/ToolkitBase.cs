@@ -144,9 +144,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>A string containing the executable file name including the extension</returns>
         public virtual string GetToolExecutable(ToolType tool)
         {
-            string tool_path = ToolkitProfiles.SettingsList[MainWindow.profile_index].tool_path;
-            string sapien_path = ToolkitProfiles.SettingsList[MainWindow.profile_index].sapien_path;
-            string guerilla_path = ToolkitProfiles.SettingsList[MainWindow.profile_index].guerilla_path;
+            string tool_path = MainWindow.toolkit_profile.tool_path;
+            string sapien_path = MainWindow.toolkit_profile.sapien_path;
+            string guerilla_path = MainWindow.toolkit_profile.guerilla_path;
 
             if (tool == ToolType.Sapien)
                 return Path.GetFileName(sapien_path);
@@ -162,7 +162,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>Returns the path</returns>
         public string GetBaseDirectory()
         {
-            string tool_path = ToolkitProfiles.SettingsList[MainWindow.profile_index].tool_path;
+            string tool_path = MainWindow.toolkit_profile.tool_path;
             string base_directory = "";
             if (!String.IsNullOrWhiteSpace(tool_path))
                 base_directory = Directory.GetParent(tool_path).FullName;

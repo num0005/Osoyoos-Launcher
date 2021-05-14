@@ -252,7 +252,7 @@
                                     <ColumnDefinition Width="8"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" x:Name="profile_wizard_ok" Content="Ok" Padding="4" MinWidth="75" MinHeight="26" Click="profile_wizard_ok_Click" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Button Grid.Column="0" x:Name="profile_wizard_ok" Content="Ok" Padding="4" MinWidth="75" MinHeight="26" Click="profile_wizard_ok_Click" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="{Binding ElementName=root_directory, Path=Text.Length}"/>
                                 <Button Grid.Column="2" x:Name="profile_wizard_cancel" Content="Cancel" Padding="4" MinWidth="75" MinHeight="26" Click="profile_wizard_cancel_Click" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
                         </Grid>
