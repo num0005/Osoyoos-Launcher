@@ -35,9 +35,24 @@ jobs:
       with:
         name: launcher
         path: Launcher\bin\Release\net5.0-windows\win-x64\publish\
+        
+  release:
+    if: |
+      github.event.action != 'pull_request' &&
+      github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: actions/download-artifact@v2
+      with:
+        name: launcher
+        path: Launcher_win64
     - uses: ncipollo/release-action@v1
       with:
         prerelease: true
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: Launcher\bin\Release\net5.0-windows\win-x64\publish\*
+        artifacts: Launcher_win64/*
         tag: ${{ github.run_id }}
+        
