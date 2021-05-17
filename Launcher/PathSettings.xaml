@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ToolkitLauncher.ToolkitInterface"
-        xmlns:toolkit_local="clr-namespace:ToolkitLauncher"        
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"        
+        xmlns:toolkit_local="clr-namespace:ToolkitLauncher"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Paths" SizeToContent="WidthAndHeight" MinHeight="460" MinWidth="370">
     <Window.Resources>
@@ -19,7 +19,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5"/>
-            <RowDefinition Height="Auto"/>            
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
@@ -36,7 +36,7 @@
                 <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="8"/>
-                <ColumnDefinition Width="Auto"/>                
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ComboBox Grid.Column="0" x:Name="profile_select" SelectionChanged="profile_selection_SelectionChanged" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Padding="4" MinWidth="128" MaxWidth="128" MinHeight="26"/>
             <Button Grid.Column="2" x:Name="add_button" Content="Add" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="add_button_Click"/>
@@ -47,13 +47,13 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
-                <RowDefinition Height="Auto"/>                    
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
-                <RowDefinition Height="Auto"/>                    
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" x:Name="first_launch" HorizontalAlignment="Center">Select the toolkit applications to continue.</Label>
             <GroupBox Grid.Row="2" x:Name="profile_name_box" Header="Profile Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
@@ -112,7 +112,7 @@
                             </Grid>
                             <TextBox Grid.Column="2" Grid.Row="2" Name="sapien_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler"/>
                         </Grid>
-                    </GroupBox>                    
+                    </GroupBox>
                     <GroupBox Grid.Column="2" Grid.Row="4" x:Name="guerilla_path_box" Header="Guerilla Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -130,7 +130,7 @@
                             </Grid>
                             <TextBox Grid.Column="2" Grid.Row="4" Name="guerilla_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler"/>
                         </Grid>
-                    </GroupBox>                     
+                    </GroupBox>
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="6">
@@ -144,7 +144,6 @@
                         <ComboBox x:Name="gen_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_data_SelectionChanged">
                             <ComboBoxItem Content="Gen 1"/>
                             <ComboBoxItem Content="Gen 2"/>
-                            <ComboBoxItem Content="Gen 3"/>
                         </ComboBox>
                     </Grid>
                 </GroupBox>
@@ -259,6 +258,6 @@
                     </StackPanel>
                 </Border>
             </Grid>
-        </Grid>        
+        </Grid>
     </Grid>
 </Window>

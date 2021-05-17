@@ -38,7 +38,7 @@ namespace ToolkitLauncher.ToolkitInterface
         public class MissingFile : ToolkitException
         {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="filename">Path to the file relative to the base directory</param>
             public MissingFile(string filename)
@@ -132,8 +132,8 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="platform"></param>
         /// <param name="class_type"></param>
-        /// <param name="bitrate"></param> 
-        /// <param name="ltf_path"></param> 
+        /// <param name="bitrate"></param>
+        /// <param name="ltf_path"></param>
         /// <returns></returns>
         public abstract Task ImportSound(string sound_command, string path, string platform, string class_type, string bitrate, string ltf_path);
 
@@ -262,7 +262,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 commnad_line += escape_arg(arg);
             await StartProcessWithShell(executable, commnad_line);
         }
-        
+
         /// <summary>
         /// Run a executable in a cmd.exe shell that pauses after the executable returns
         /// </summary>
@@ -325,7 +325,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     throw;
                 }
             }
-        
+
         }
     }
 }

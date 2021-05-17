@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using ToolkitLauncher.Properties;
 
 namespace ToolkitLauncher
 {

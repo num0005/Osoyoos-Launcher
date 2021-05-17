@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -19,7 +18,7 @@ namespace ToolkitLauncher
         [Description("Standalone")]
         release_standalone,
         [Description("Internal")]
-        release_internal,
+        release_internal
     }
 
     /// <summary>
@@ -55,7 +54,6 @@ namespace ToolkitLauncher
             hek_box.IsEnabled = has_profiles;
             build_type_box.IsEnabled = has_profiles;
             gen_type_box.IsEnabled = has_profiles;
-            community_tools.IsEnabled = has_profiles;
         }
 
         readonly FilePicker.Options toolExeOptions = FilePicker.Options.FileSelect(
@@ -469,7 +467,7 @@ namespace ToolkitLauncher
         }
 
         private static void WriteJSONFile()
-        {   
+        {
             List<ProfileSettingsJSON> JSONSettingsList = new List<ProfileSettingsJSON>();
             JsonSerializerOptions options = new()
             {

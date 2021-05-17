@@ -16,7 +16,7 @@
         <local:GameGenToIsEnabled x:Key="GameGenToIsEnabled" />
         <local:ModelContentModifier x:Key="ModelContentModifier" />
         <local:TextContentModifier x:Key="TextContentModifier" />
-        <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />        
+        <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />
         <local:PRTContentModifier x:Key="PRTContentModifier" />
         <local:PhantomVisibility x:Key="PhantomVisibility" />
         <local:PackageResourceVisibility x:Key="PackageResourceVisibility" />
@@ -133,10 +133,26 @@
                                                         <RowDefinition Height="*"/>
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
-                                                    <StackPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
-                                                        <Slider x:Name="light_quality_slider" Foreground="Black" IsSnapToTickEnabled="True" Ticks="0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="0.1" Maximum="1" Value="1" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
-                                                    </StackPanel>
-                                                    <ToggleButton Grid.Row="2" x:Name ="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom"/>
+                                                    <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="8"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid Grid.Row="0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Label Grid.Column="0" x:Name="low_quality" HorizontalAlignment="Left">Low</Label>
+                                                            <Label Grid.Column="1" x:Name="max_quality" HorizontalAlignment="Right">Max</Label>
+                                                        </Grid>
+                                                        <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+                                                            <Slider x:Name="light_quality_slider" Foreground="Black" IsDirectionReversed="True" IsSnapToTickEnabled="True" Ticks="0.000001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.999999" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="0.000001" Maximum="0.999999" Value="0.999999"/>
+                                                        </StackPanel>
+                                                        <ToggleButton Grid.Row="3" x:Name="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom"/>
+                                                    </Grid>
                                                     <Grid Grid.Row="1">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="5"/>
@@ -302,7 +318,7 @@
                                                     <ComboBoxItem Content="Sprites"/>
                                                     <ComboBoxItem Content="Interface"/>
                                                 </ComboBox>
-                                            </GroupBox>                                            
+                                            </GroupBox>
                                             <Button Grid.Row="3" Content="Compile Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}"/>
                                         </Grid>
                                     </Grid>
@@ -326,7 +342,7 @@
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="8"/>
                                                 <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>                                                
+                                                <RowDefinition Height="Auto"/>
                                                 <RowDefinition/>
                                             </Grid.RowDefinitions>
                                             <Grid>
@@ -348,7 +364,7 @@
                                             <Grid Grid.Row="2">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="8"/>                                                    
+                                                    <RowDefinition Height="8"/>
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
@@ -599,10 +615,10 @@
             <Grid Background="Black" Opacity="0.5"/>
             <Border
             MinWidth="250"
-            Background="#FFE5E5E5" 
-            BorderBrush="Black" 
-            BorderThickness="1" 
-            HorizontalAlignment="Center" 
+            Background="#FFE5E5E5"
+            BorderBrush="Black"
+            BorderThickness="1"
+            HorizontalAlignment="Center"
             VerticalAlignment="Center" RenderTransformOrigin="0.508,-0.635" Margin="138,42,153,291" Height="80">
                 <StackPanel>
                     <TextBlock Margin="5" Text="Run Custom Command" FontWeight="Bold" FontFamily="Cambria" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.351,0.429" />
@@ -632,9 +648,9 @@
                         <Grid Grid.Column="1" Grid.Row="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="8"/>                                
+                                <RowDefinition Height="8"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="8"/>                                
+                                <RowDefinition Height="8"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <GroupBox Grid.Row="0" x:Name="lightmap_flags" Header="Lightmap Flags">
@@ -699,6 +715,6 @@
                     </Grid>
                 </StackPanel>
             </Border>
-        </Grid>             
+        </Grid>
     </Grid>
 </Window>
