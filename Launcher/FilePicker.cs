@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using System.Windows.Controls;
 using ToolkitLauncher.ToolkitInterface;
 
 public class FilePicker
@@ -105,7 +104,7 @@ public class FilePicker
 	}
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	/// <param name="path"></param>
 	/// <param name="root"></param>

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using System.IO;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -16,7 +15,7 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportBitmaps(string path, string type)
         {
             string bitmaps_command = "bitmaps";
-            if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_2_internal )
+            if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_2_internal)
             {
                 bitmaps_command = "bitmaps-with-type";
                 await RunTool(ToolType.Tool, new List<string>() { bitmaps_command, path, type });
@@ -50,7 +49,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             return lightmapArgs.level_combobox.ToString().ToLower();
         }
-    
+
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args)
         {
             string quality = GetLightmapQuality(args);

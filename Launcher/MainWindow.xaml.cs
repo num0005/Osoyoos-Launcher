@@ -11,7 +11,6 @@ using ToolkitLauncher.ToolkitInterface;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Markup;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ToolkitLauncher
@@ -251,6 +250,18 @@ namespace ToolkitLauncher
             }
         }
 
+        public static bool halo_2
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0)
+                {
+                    return toolkit_profile.game_gen == 1;
+                }
+                return false;
+            }
+        }
+
         public static int profile_index;
         public static int string_encoding_index { get; set; }
         private bool handling_exception = false;
@@ -269,7 +280,7 @@ namespace ToolkitLauncher
                 MessageBox.Show(e.ToString(), "Permission denied!");
             }
 
-            if (e.Exception is ToolkitInterface.ToolkitBase.MissingFile)
+            if (e.Exception is ToolkitBase.MissingFile)
             {
                 e.Handled = true;
                 handling_exception = false;
@@ -283,19 +294,17 @@ namespace ToolkitLauncher
             handling_exception = false;
         }
 
-        private string get_default_path(string textbox_string, int asset_type, int path_type)
+        private string get_default_path(string textbox_string, bool tag_dir, bool is_file)
         {
-            string asset_folder = "data\\";
-            string path;
-            if (asset_type == 1)
+            string path = toolkit.GetDataDirectory();
+            if (tag_dir is true)
             {
-                asset_folder = "tags\\";
+                path = toolkit.GetTagDirectory();
             }
 
-            path = toolkit.GetBaseDirectory() + "\\" + asset_folder;
             if (!string.IsNullOrWhiteSpace(textbox_string))
             {
-                if (path_type == 0)
+                if (is_file == true)
                 {
                     path = path + Path.GetDirectoryName(textbox_string);
                 }
@@ -403,6 +412,13 @@ namespace ToolkitLauncher
                 if (halo_2_standalone_not_community)
                     //If there is no instance support then set whatever got passed back to 1
                     instance_count = 1;
+                else if (Environment.ProcessorCount < instance_count)
+                {
+                    //Prevent people from setting the instance count higher than their PC can realisticly run.
+                    MessageBox.Show(string.Format("Instance count exceeded logical processor count of {0}.", Environment.ProcessorCount) + "\n" + "Logical processor count is the cutoff." + "\n" + "This is for your own good.", "Woah there Partner", MessageBoxButton.OK);
+                    instance_value.Text = Environment.ProcessorCount.ToString();
+                    instance_count = Environment.ProcessorCount;
+                }
                 CompileLevel(compile_level_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count, phantom_hack.IsChecked is true);
             }
             else
@@ -596,7 +612,7 @@ namespace ToolkitLauncher
 
         private void numbers_only(object sender, TextCompositionEventArgs e)
         {
-            var textBox = sender as TextBox;      
+            var textBox = sender as TextBox;
             e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
         }
 
@@ -627,35 +643,53 @@ namespace ToolkitLauncher
 
         private void browse_sound_Click(object sender, RoutedEventArgs e)
         {
-            int asset_type = 0;
+            bool tag_dir = false;
+            bool is_file = false;
             var soundOptions = soundDataOptions;
             if (halo_2_standalone_community) // Switching from sound compiling to LTF importing for H2Codez
             {
                 soundOptions = soundTagOptions;
-                asset_type = 1;
+                tag_dir = true;
             }
 
-            string default_path = get_default_path(import_sound_path.Text, asset_type, 0);
+            string default_path = get_default_path(import_sound_path.Text, tag_dir, is_file);
             var picker = new FilePicker(import_sound_path, toolkit, soundOptions, default_path);
             picker.Prompt();
         }
 
         private void browse_ltf_Click(object sender, RoutedEventArgs e)
         {
-            string default_path = get_default_path(import_ltf_path.Text, 0, 0);
+            bool tag_dir = false;
+            bool is_file = false;
+            string default_path = get_default_path(import_ltf_path.Text, tag_dir, is_file);
             var picker = new FilePicker(import_ltf_path, toolkit, LTFOptions, default_path);
             picker.Prompt();
         }
 
-        readonly FilePicker.Options levelOptions = FilePicker.Options.FileSelect(
+        readonly FilePicker.Options ASSlevelOptions = FilePicker.Options.FileSelect(
             "Select Uncompiled level",
-            "Uncompiled map geometry|*.ASS;*.JMS",
+            "Uncompiled map geometry|*.ASS",
             FilePicker.Options.PathRoot.Data,
             strip_extension: false
             );
+
+        readonly FilePicker.Options JMSlevelOptions = FilePicker.Options.FileSelect(
+            "Select Uncompiled level",
+            "Uncompiled map geometry|*.JMS",
+            FilePicker.Options.PathRoot.Data,
+            strip_extension: false
+            );
+
         private void browse_level_compile_Click(object sender, RoutedEventArgs e)
         {
-            string default_path = get_default_path(compile_level_path.Text, 0, 0);
+            bool tag_dir = false;
+            bool is_file = true;
+            string default_path = get_default_path(compile_level_path.Text, tag_dir, is_file);
+            var levelOptions = JMSlevelOptions;
+            if (halo_2)
+            {
+                levelOptions = ASSlevelOptions;
+            }
             var picker = new FilePicker(compile_level_path, toolkit, levelOptions, default_path);
             picker.Prompt();
         }
@@ -667,7 +701,9 @@ namespace ToolkitLauncher
 
         private void Browse_text_Click(object sender, RoutedEventArgs e)
         {
-            string default_path = get_default_path(compile_text_path.Text, 0, 1);
+            bool tag_dir = false;
+            bool is_file = false;
+            string default_path = get_default_path(compile_text_path.Text, tag_dir, is_file);
             var picker = new FilePicker(compile_text_path, toolkit, txtOptions, default_path);
             picker.Prompt();
         }
@@ -695,7 +731,9 @@ namespace ToolkitLauncher
 
         private void browse_bitmap_Click(object sender, RoutedEventArgs e)
         {
-            string default_path = get_default_path(compile_image_path.Text, 0, 0);
+            bool tag_dir = false;
+            bool is_file = false;
+            string default_path = get_default_path(compile_image_path.Text, tag_dir, is_file);
             var bitmapOptions = gen1BitmapOptions;
             if (halo_2_standalone_community)
             {
@@ -717,7 +755,9 @@ namespace ToolkitLauncher
 
         private void browse_package_level_Click(object sender, RoutedEventArgs e)
         {
-            string default_path = get_default_path(package_level_path.Text, 1, 0);
+            bool tag_dir = true;
+            bool is_file = true;
+            string default_path = get_default_path(package_level_path.Text, tag_dir, is_file);
             var picker = new FilePicker(package_level_path, toolkit, packageOptions, default_path);
             picker.Prompt();
         }
@@ -729,7 +769,9 @@ namespace ToolkitLauncher
 
         private void browse_model_Click(object sender, RoutedEventArgs e)
         {
-            string default_path = get_default_path(compile_model_path.Text, 0, 0);
+            bool tag_dir = false;
+            bool is_file = false;
+            string default_path = get_default_path(compile_model_path.Text, tag_dir, is_file);
             var picker = new FilePicker(compile_model_path, toolkit, modelOptions, default_path);
             picker.Prompt();
         }
@@ -777,7 +819,7 @@ namespace ToolkitLauncher
 
         public void LightmapConfigUI()
         {
-            
+
             LightmapConfigSettings.ReadConfig(toolkit.GetBaseDirectory() + "\\" + "custom_lightmap_quality.conf");
             LightmapSetUI();
         }
@@ -891,8 +933,8 @@ namespace ToolkitLauncher
     {
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            // Always test MultiValueConverter inputs for non-null 
-            // (to avoid crash bugs for views in the designer) 
+            // Always test MultiValueConverter inputs for non-null
+            // (to avoid crash bugs for views in the designer)
             if (values[0] is bool && values[1] is bool)
             {
                 bool hasText = !(bool)values[0];
@@ -952,7 +994,7 @@ namespace ToolkitLauncher
                 vis = Visibility.Visible;
             }
             if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && !community_tools && build_type != build_type.release_standalone)
-                return Visibility.Visible; 
+                return Visibility.Visible;
             return vis;
         }
 
