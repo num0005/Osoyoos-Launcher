@@ -36,6 +36,18 @@
                     <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Written by Num0005."/></TextBlock>
                     <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Misc features and QoL fixes added by General_101"/></TextBlock>
                     <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text=""/></TextBlock>
+                    <TextBlock Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="Special thanks to :"/></TextBlock>
+                    <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• 343 Industries"/></TextBlock>
+                    <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Bungie"/></TextBlock>
+                    <TextBlock Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Saber Interactive"/></TextBlock>
+                    <TextBlock Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Certain Affinity"/></TextBlock>
+                    <TextBlock Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Ruffian Games"/></TextBlock>
+                    <TextBlock Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Splash Damage"/></TextBlock>
+                    <TextBlock Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• United Front Games"/></TextBlock>
+                    <TextBlock Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Blur Studio"/></TextBlock>
+                    <TextBlock Grid.Row="13" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Axis Animation"/></TextBlock>
+                    <TextBlock Grid.Row="14" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Gearbox Software"/></TextBlock>
+                    <TextBlock Grid.Row="15" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Hired Gun"/></TextBlock>
                 </Grid>
             </Grid>
         </Grid>
