@@ -6,19 +6,14 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace ToolkitLauncher
 {
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum build_type
     {
-        [Description("MCC")]
-        release_mcc,
         [Description("Standalone")]
-        release_standalone,
-        [Description("Internal")]
-        release_internal
+        release_standalone
     }
 
     /// <summary>
@@ -224,10 +219,10 @@ namespace ToolkitLauncher
                 case 1:
                     profile_description.Text = "The original HEK release for Halo Custom Edition on PC with Open Sauce extensions.";
                     break;
-                case 4:
+                case 2:
                     profile_description.Text = "The original HEK release for Halo 2 Vista on PC.";
                     break;
-                case 5:
+                case 3:
                     profile_description.Text = "The original HEK release for Halo 2 Vista on PC with H2Codez extensions.";
                     break;
                 default:
@@ -287,7 +282,7 @@ namespace ToolkitLauncher
                         build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
                         community_tools_template = true;
                         break;
-                    case 4:
+                    case 2:
                         profile_name_template = "H2VEK";
                         hek_tool_md5_array = h2vtool_md5_list;
                         hek_guerilla_md5_array = h2vguerilla_md5_list;
@@ -296,7 +291,7 @@ namespace ToolkitLauncher
                         build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
                         community_tools_template = false;
                         break;
-                    case 5:
+                    case 3:
                         profile_name_template = "H2VEK H2Codez";
                         hek_tool_md5_array = h2vtool_h2codez_md5_list;
                         hek_guerilla_md5_array = h2vguerilla_h2codez_md5_list;
@@ -494,32 +489,6 @@ namespace ToolkitLauncher
             Directory.CreateDirectory(Path.Combine(appdata_path, save_folder));
 
             File.WriteAllText(file_path, json_string);
-        }
-    }
-
-    public class BuildTypeToVisibility : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            var vis = Visibility.Collapsed;
-            string build_type = "release_mcc";
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-            {
-                build_type build_type_item = (build_type)value;
-                build_type = Enum.GetName(typeof(build_type), build_type_item);
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (build_type == "release_mcc")
-                vis = Visibility.Visible;
-            return vis;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -9,7 +9,6 @@
         mc:Ignorable="d"
         Title="Paths" SizeToContent="WidthAndHeight" MinHeight="460" MinWidth="370">
     <Window.Resources>
-        <toolkit_local:BuildTypeToVisibility x:Key="BuildTypeToVisibility" />
         <ObjectDataProvider x:Key="built_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="toolkit_local:build_type"/>
@@ -156,7 +155,7 @@
                             <RowDefinition Height="8"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <ComboBox Grid.Row="2" x:Name="build_type" ItemsSource="{Binding Source={StaticResource built_type_enum}}" SelectedIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="26" SelectionChanged="profile_data_SelectionChanged" IsEnabled="False"/>
+                        <ComboBox Grid.Row="2" x:Name="build_type" ItemsSource="{Binding Source={StaticResource built_type_enum}}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="26" SelectionChanged="profile_data_SelectionChanged"/>
                         <CheckBox Grid.Row="4" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click"/>
                     </Grid>
                 </GroupBox>
@@ -236,12 +235,8 @@
                                     <ComboBox Grid.Row="2" x:Name="profile_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_type_SelectionChanged">
                                         <ComboBoxItem Content="Gearbox H1EK"/>
                                         <ComboBoxItem Content="GearBox H1EK OS"/>
-                                        <ComboBoxItem Content="343 H1EK Release" Visibility="Collapsed"/>
-                                        <ComboBoxItem Content="343 H1EK Debug" Visibility="Collapsed"/>
                                         <ComboBoxItem Content="H2VEK"/>
                                         <ComboBoxItem Content="H2VEK H2Codez"/>
-                                        <ComboBoxItem Content="H2VEK Debug Stripped" Visibility="Collapsed"/>
-                                        <ComboBoxItem Content="H2VEK Debug Full" Visibility="Collapsed"/>
                                     </ComboBox>
                                 </Grid>
                             </GroupBox>

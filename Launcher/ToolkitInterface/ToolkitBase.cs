@@ -57,7 +57,6 @@ namespace ToolkitLauncher.ToolkitInterface
             public enum Level_Quality
             {
                 Checkerboard,
-                Cuban,
                 Draft_Low,
                 Draft_Medium,
                 Draft_High,
@@ -103,39 +102,33 @@ namespace ToolkitLauncher.ToolkitInterface
         /// Build a cache file from a scenario
         /// </summary>
         /// <param name="scenario">The scenario to be compiled into a cache file</param>
-        /// <param name="update_resources">CE: Whatever the resource maps (loc, bitmap, sound) should be updated</param>
-        /// <param name="cache_type">CE: What platform is the cahce file intended for</param>
-        public abstract Task BuildCache(string scenario, int cache_type, bool update_resources = false);
+        public abstract Task BuildCache(string scenario);
 
         /// <summary>
         /// Import a structure into a BSP tag
         /// </summary>
         /// <param name="data_file">The file to import</param>
         /// <param name="release">H2</param>
-        /// <param name="phantom_fix">CE: Whatever to apply the phantom fix</param>
         /// <returns></returns>
-        public abstract Task ImportStructure(string data_file, bool phantom_fix = false, bool release = true);
+        public abstract Task ImportStructure(string data_file, bool release = true);
 
         /// <summary>
         /// Import geometry to generate various types of model related tags
         /// </summary>
         /// <param name="path"></param>
         /// <param name="import_type"></param>
-        /// <param name="render_prt"></param>
         /// <returns></returns>
-        public abstract Task ImportModel(string path, string import_type, bool render_prt);
+        public abstract Task ImportModel(string path, string import_type);
 
         /// <summary>
-        /// Import a WAV or AIFF file to generate a sound tag
+        /// Import a WAV file to generate a sound tag
         /// </summary>
-        /// <param name="sound_command"></param>
         /// <param name="path"></param>
         /// <param name="platform"></param>
-        /// <param name="class_type"></param>
         /// <param name="bitrate"></param>
         /// <param name="ltf_path"></param>
         /// <returns></returns>
-        public abstract Task ImportSound(string sound_command, string path, string platform, string class_type, string bitrate, string ltf_path);
+        public abstract Task ImportSound(string path, string platform, string bitrate, string ltf_path);
 
         /// <summary>
         /// Get the file name of the executable
