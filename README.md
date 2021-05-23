@@ -13,7 +13,7 @@ The following profiles are or will be supported by this launcher:
  * Halo Custom Edition
  * Halo Custom Edition - Open Sauce (W.I.P.)
  * Halo 2 Vista
- * Halo 2 Vista - H2Codez 
+ * Halo 2 Vista - H2Codez
  * Halo Combat Evolved Anniversary MCC - Custom Edition (Will be added in future update)
  * Halo 2 Anniversary MCC - Classic (todo)
  * Halo 3 MCC (todo)
@@ -42,8 +42,8 @@ Launcher can do the following:
 
  * Discord user General_101#9814 (https://github.com/General-101)
    * For contributing to some launcher features, documentation and real world testing.
- 
+
  * Discord user con#4702 (https://github.com/csauve)
    * For valuable alpha testing and feedback.
 
-* 343i, Bungie and many others for their work on Halo and MCC (https://www.halowaypoint.com/en-us/games/halo-the-master-chief-collection/credits)
+ * 343i, Bungie and many others for their work on Halo and MCC (https://www.halowaypoint.com/en-us/games/halo-the-master-chief-collection/credits)

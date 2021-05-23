@@ -15,7 +15,7 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportBitmaps(string path, string type)
         {
             string bitmaps_command = "bitmaps";
-            if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_2_internal)
+            if (MainWindow.halo_2_standalone_community)
             {
                 bitmaps_command = "bitmaps-with-type";
                 await RunTool(ToolType.Tool, new List<string>() { bitmaps_command, path, type });
@@ -31,7 +31,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "new-strings", path });
         }
 
-        override public async Task ImportStructure(string data_file, bool phantom_fix, bool release)
+        override public async Task ImportStructure(string data_file, bool release)
         {
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
             string command = is_ass_file ? "structure-new-from-ass" : "structure-from-jms";
@@ -39,7 +39,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { command, data_file, use_release });
         }
 
-        public override async Task BuildCache(string scenario, int cache_type, bool update_resource)
+        public override async Task BuildCache(string scenario)
         {
             string path = scenario.Replace(".scenario", "");
             await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path });
@@ -74,48 +74,27 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             var args = new List<string>()
             {
-                "lightmap_merge",
-                scenario,
-                bsp,
-                slave_count.ToString()
+				"lightmaps-master",
+				scenario,
+				bsp,
+				quality,
+				slave_count.ToString(),
             };
-            if (MainWindow.halo_2_standalone_community)
-            {
-                args = new List<string>()
-                {
-                    "lightmaps-master",
-                    scenario,
-                    bsp,
-                    quality,
-                    slave_count.ToString(),
-                };
-            }
+
             await RunTool(ToolType.Tool, args);
         }
 
         private async Task RunSlaveLightmap(string scenario, string bsp, string quality, int slave_count, int index)
         {
             var args = new List<string>()
-                {
-                    "lightmap_slave",
-                    scenario,
-                    bsp,
-                    quality,
-                    index.ToString(),
-                    slave_count.ToString()
-                };
-            if (MainWindow.halo_2_standalone_community)
             {
-                args = new List<string>()
-                {
-                    "lightmaps-slave",
-                    scenario,
-                    bsp,
-                    quality,
-                    slave_count.ToString(),
-                    index.ToString()
-                };
-            }
+				"lightmaps-slave",
+				scenario,
+				bsp,
+				quality,
+				slave_count.ToString(),
+				index.ToString()
+            };
             await RunTool(ToolType.Tool, args);
         }
 
@@ -124,25 +103,14 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="path"></param>
         /// <param name="import_type"></param>
-        /// <param name="render_prt"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, string import_type, bool render_prt)
+        public override async Task ImportModel(string path, string import_type)
         {
             string command_string;
-            string render_command = "render";
-            string collision_command = "collision";
-            string physics_command = "physics";
-            string animations_command = "model-animations";
-            if (MainWindow.halo_2_standalone_community)
-            {
-                render_command = "model-render";
-                collision_command = "model-collision";
-                physics_command = "model-physics";
-                animations_command = "append-animations";
-            }
-
-            if (render_prt && MainWindow.halo_2_mcc || render_prt && MainWindow.halo_2_internal)
-                render_command = "render-prt";
+            string render_command = "model-render";
+            string collision_command = "model-collision";
+            string physics_command = "model-physics";
+            string animations_command = "append-animations";
 
             switch (import_type)
             {
@@ -177,12 +145,9 @@ namespace ToolkitLauncher.ToolkitInterface
             }
         }
 
-        public override async Task ImportSound(string sound_command, string path, string platform, string class_type, string bitrate, string ltf_path)
+        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path)
         {
-            if (MainWindow.halo_2_standalone_community)
-                await RunTool(ToolType.Tool, new List<string>() { "import-lipsync", path, ltf_path });
-            else
-                await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type });
+			await RunTool(ToolType.Tool, new List<string>() { "import-lipsync", path, ltf_path });
         }
     }
 }

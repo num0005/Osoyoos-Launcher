@@ -34,15 +34,6 @@ namespace ToolkitLauncher
     }
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum PRTContent
-    {
-        [Description("Render")]
-        render,
-        [Description("Render PRT")]
-        render_prt
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum RadiosityContent
     {
         [Description("Draft")]
@@ -109,61 +100,11 @@ namespace ToolkitLauncher
             creature
         }
 
-        enum sound_command_type
-        {
-            sounds_one_shot,
-            sounds_single_layer,
-            sounds_single_mixed,
-        }
-
         enum codec_type
         {
             xbox,
             wav,
             ogg
-        }
-
-        enum import_type
-        {
-            projectile_impact,
-            projectile_detonation,
-            projectile_flyby,
-            unused,
-            weapon_fire,
-            weapon_ready,
-            weapon_reload,
-            weapon_empty,
-            weapon_charge,
-            weapon_overheat,
-            weapon_idle,
-            weapon_melee,
-            weapon_animation,
-            object_impacts,
-            particle_impacts,
-            unit_footsteps,
-            unit_dialog,
-            unit_animation,
-            vehicle_collision,
-            vehicle_engine,
-            vehicle_animation,
-            device_door,
-            device_machinery,
-            device_stationary,
-            music,
-            ambient_nature,
-            ambient_machinery,
-            huge_ass,
-            object_looping,
-            cinematic_music,
-            cortana_mission,
-            cortana_cinematic,
-            mission_dialog,
-            cinematic_dialog,
-            scripted_cinematic_foley,
-            game_event,
-            ui,
-            test,
-            multilingual_test
         }
 
         public static ToolkitProfiles.ProfileSettingsLauncher toolkit_profile
@@ -175,30 +116,6 @@ namespace ToolkitLauncher
                     profile_int = profile_index;
 
                 return ToolkitProfiles.SettingsList[profile_int];
-            }
-        }
-
-        public static bool halo_ce_mcc
-        {
-            get
-            {
-                if (ToolkitProfiles.SettingsList.Count > 0)
-                {
-                    return toolkit_profile.game_gen == 0 && toolkit_profile.build_type == build_type.release_mcc;
-                }
-                return false;
-            }
-        }
-
-        public static bool halo_2_mcc
-        {
-            get
-            {
-                if (ToolkitProfiles.SettingsList.Count > 0)
-                {
-                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_mcc;
-                }
-                return false;
             }
         }
 
@@ -233,18 +150,6 @@ namespace ToolkitLauncher
                 if (ToolkitProfiles.SettingsList.Count > 0)
                 {
                     return toolkit_profile.game_gen == 1 && !toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
-                }
-                return false;
-            }
-        }
-
-        public static bool halo_2_internal
-        {
-            get
-            {
-                if (ToolkitProfiles.SettingsList.Count > 0)
-                {
-                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_internal;
                 }
                 return false;
             }
@@ -349,7 +254,7 @@ namespace ToolkitLauncher
             if (Settings.Default.set_profile >= 0)
                 default_index = Settings.Default.set_profile;
             toolkit_selection.SelectedIndex = default_index;
-            DataContext = new PackageResourceVisibility.MyViewModel();
+            DataContext = new MyViewModel();
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -419,7 +324,7 @@ namespace ToolkitLauncher
                     instance_value.Text = Environment.ProcessorCount.ToString();
                     instance_count = Environment.ProcessorCount;
                 }
-                CompileLevel(compile_level_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count, phantom_hack.IsChecked is true);
+                CompileLevel(compile_level_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count);
             }
             else
             {
@@ -427,11 +332,11 @@ namespace ToolkitLauncher
             }
         }
 
-        private async void CompileLevel(string level_path, ToolkitBase.LightmapArgs.Level_Quality Level_Quality, float level_slider, bool radiosity_quality_toggle, int instance_count, bool phantom_fix)
+        private async void CompileLevel(string level_path, ToolkitBase.LightmapArgs.Level_Quality Level_Quality, float level_slider, bool radiosity_quality_toggle, int instance_count)
         {
             if (levelCompileType.HasFlag(level_compile_type.compile))
             {
-                await toolkit.ImportStructure(level_path, phantom_fix);
+                await toolkit.ImportStructure(level_path);
             }
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
@@ -486,7 +391,7 @@ namespace ToolkitLauncher
 
         private async void PackageLevel(object sender, RoutedEventArgs e)
         {
-            await toolkit.BuildCache(package_level_path.Text, cache_type.SelectedIndex, update_resource_maps.IsChecked is true);
+            await toolkit.BuildCache(package_level_path.Text);
         }
 
         private void CompileOnly_Checked(object sender, RoutedEventArgs e)
@@ -588,19 +493,16 @@ namespace ToolkitLauncher
         {
             string path = compile_model_path.Text;
             string import_type = model_compile_type.ToString();
-            bool render_prt_toggle = (bool)render_prt.IsChecked;
-            await toolkit.ImportModel(path, import_type, render_prt_toggle);
+            await toolkit.ImportModel(path, import_type);
         }
 
         private async void import_sound_Click(object sender, RoutedEventArgs e)
         {
-            sound_command_type sound_command = (sound_command_type)sound_import_type.SelectedIndex;
             codec_type platform = (codec_type)platform_type.SelectedIndex;
-            import_type class_name = (import_type)class_dropdown.SelectedIndex;
             string sound_path = import_sound_path.Text;
             string bitrate_value = bitrate_slider.Value.ToString();
             string ltf_path = import_ltf_path.Text;
-            await toolkit.ImportSound(sound_command.ToString(), sound_path, platform.ToString(), class_name.ToString(), bitrate_value, "data\\" + ltf_path);
+            await toolkit.ImportSound(sound_path, platform.ToString(), bitrate_value, "data\\" + ltf_path);
         }
 
         private void spaces_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -646,8 +548,9 @@ namespace ToolkitLauncher
             bool tag_dir = false;
             bool is_file = false;
             var soundOptions = soundDataOptions;
-            if (halo_2_standalone_community) // Switching from sound compiling to LTF importing for H2Codez
+            if (halo_2_standalone_community)
             {
+				// Switching from sound compiling to LTF importing for H2Codez
                 soundOptions = soundTagOptions;
                 tag_dir = true;
             }
@@ -795,7 +698,6 @@ namespace ToolkitLauncher
             {
                 int super_index = 9;
                 int custom_index = 10;
-
                 ComboBoxItem custom_quality = (ComboBoxItem)light_quality_level.Items[custom_index];
                 custom_quality.IsEnabled = false;
                 if (halo_2_standalone_community)
@@ -956,8 +858,9 @@ namespace ToolkitLauncher
         {
             int game_gen_index = 0;
             var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
+				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
                 game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
             }
             else
@@ -983,8 +886,9 @@ namespace ToolkitLauncher
             bool community_tools = false;
             int game_gen_index = 0;
             var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
+				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
                 game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
                 build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
                 community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
@@ -1008,7 +912,7 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community || MainWindow.halo_2_internal)
+            if (MainWindow.halo_2_standalone_community)
                 return new GridLength(8);
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
@@ -1055,8 +959,9 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int game_gen_index = 0;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
+				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
                 game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
             }
             if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
@@ -1087,11 +992,13 @@ namespace ToolkitLauncher
     {
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            int custom_index = 10;
             int lightmap_quality = (int)values[0];
             int toolkit_selection = (int)values[1];
-            if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0)
             {
-                if (MainWindow.toolkit_profile.game_gen >= 1 && lightmap_quality == 10)
+				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+                if (MainWindow.toolkit_profile.game_gen >= 1 && lightmap_quality == custom_index)
                     return true;
                 return false;
             }
@@ -1107,7 +1014,7 @@ namespace ToolkitLauncher
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_2_internal)
+            if (MainWindow.halo_2_standalone_community)
                 return Visibility.Visible;
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
@@ -1152,8 +1059,9 @@ namespace ToolkitLauncher
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int index = 0;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
+				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
                 index = ToolkitProfiles.SettingsList[(int)value].game_gen;
             }
             return ((ModelContent)index);
@@ -1171,34 +1079,15 @@ namespace ToolkitLauncher
             int string_encoding = (int)values[0];
             int toolkit_selection = (int)values[1];
             string text_string = "Select a folder with an .hmt file to compile.";
-            if (ToolkitProfiles.SettingsList != null && string_encoding >= 0 && toolkit_selection >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+            if (ToolkitProfiles.SettingsList != null && string_encoding >= 0 && toolkit_selection >= 0)
             {
+				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
                 if (ToolkitProfiles.SettingsList[toolkit_selection].game_gen >= 1 || string_encoding == 1)
                     text_string = "Select a folder with .txt files to compile.";
             }
             return text_string;
         }
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class PRTContentModifier : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if ((bool)value == false)
-            {
-                return ((PRTContent)0);
-            }
-            else
-            {
-                return ((PRTContent)1);
-            }
-
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -1224,112 +1113,35 @@ namespace ToolkitLauncher
         }
     }
 
-    public class PRTToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2_mcc || MainWindow.halo_2_internal)
-                return Visibility.Visible;
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                return Visibility.Collapsed;
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                return Visibility.Visible;
-            }
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+	public class MyViewModel : INotifyPropertyChanged
+	{
+		public MyViewModel()
+		{
+			SelectedProfileIndex = 0;
+		}
+		private int _SelectedProfileIndex;
+		public int SelectedProfileIndex
+		{
+			get
+			{
+				return _SelectedProfileIndex;
+			}
+			set
+			{
+				_SelectedProfileIndex = value;
+				MainWindow.profile_index = value;
+				Notify("SelectedProfileIndex");
+			}
+		}
 
-    public class PhantomVisibility : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-            {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
-                if (build_type == build_type.release_mcc)
-                    vis = Visibility.Visible;
-            return vis;
-        }
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class PackageResourceVisibility : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0) //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-            {
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && build_type == build_type.release_mcc)
-                vis = Visibility.Visible;
-            return vis;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public class MyViewModel : INotifyPropertyChanged
-        {
-            public MyViewModel()
-            {
-                SelectedProfileIndex = 0;
-            }
-            private int _SelectedProfileIndex;
-            public int SelectedProfileIndex
-            {
-                get
-                {
-                    return _SelectedProfileIndex;
-                }
-                set
-                {
-                    _SelectedProfileIndex = value;
-                    MainWindow.profile_index = value;
-                    Notify("SelectedProfileIndex");
-                }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            private void Notify(string propertyName)
-            {
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
+		private void Notify(string propertyName)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
 
     public class LightmapConfigSettings
     {

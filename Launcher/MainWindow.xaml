@@ -17,12 +17,8 @@
         <local:ModelContentModifier x:Key="ModelContentModifier" />
         <local:TextContentModifier x:Key="TextContentModifier" />
         <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />
-        <local:PRTContentModifier x:Key="PRTContentModifier" />
-        <local:PhantomVisibility x:Key="PhantomVisibility" />
-        <local:PackageResourceVisibility x:Key="PackageResourceVisibility" />
         <local:CommunityToolsToIsEnabled x:Key="CommunityToolsToIsEnabled" />
         <local:CommunityToolsToVisibilityConverter x:Key="CommunityToolsToVisibilityConverter" />
-        <local:PRTToVisibilityConverter x:Key="PRTToVisibilityConverter" />
         <local:H2VCommunityToolsToVisibilityConverter x:Key="H2VCommunityToolsToVisibilityConverter" />
         <local:H2VDropdownSelectionToVisibilityConverter x:Key="H2VDropdownSelectionToVisibilityConverter" />
         <local:RadiosityContentModifier x:Key="RadiosityContentModifier" />
@@ -202,9 +198,6 @@
                                                 </GroupBox.BindingGroup>
                                                 <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
                                             </GroupBox>
-                                            <GroupBox x:Name="structure_box" Header="Structure Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource PhantomVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
-                                                <CheckBox x:Name="phantom_hack" Content="Apply Phantom Fix" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </GroupBox>
                                         </Grid>
                                         <Grid Grid.Row="2">
                                             <Grid.ColumnDefinitions>
@@ -379,11 +372,6 @@
                                                 <RadioButton Grid.Column="0" x:Name="model_compile_render" Content="{Binding SelectedIndex, Converter={StaticResource ModelContentModifier}, ConverterParameter=1, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Checked="model_compile_render_Checked"/>
                                                 <RadioButton Grid.Column="0" Grid.Row="2" x:Name="model_compile_all" Content="All" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_all_Checked"/>
                                             </Grid>
-                                            <Grid Grid.Row="3">
-                                                <GroupBox x:Name="render_type_select_box" Header="Render Type" HorizontalAlignment="Left" VerticalAlignment="Center" MinHeight="55" Visibility="{Binding SelectedIndex, Converter={StaticResource PRTToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                    <ToggleButton x:Name ="render_prt" Content ="{Binding IsChecked, Converter={StaticResource PRTContentModifier}, ConverterParameter=1, ElementName=render_prt}" HorizontalAlignment="Left" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Stretch"/>
-                                                </GroupBox>
-                                            </Grid>
                                             <Grid Grid.Row="4">
                                                 <Button x:Name="compile_model" Content="Compile Model" Grid.Row="3" Click="compile_model_Click" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_model_path, Mode=OneWay}"/>
                                             </Grid>
@@ -466,63 +454,6 @@
                                                 </StackPanel>
                                             </GroupBox>
                                         </Grid>
-                                        <Grid Grid.Row="5">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="8"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <GroupBox Grid.Column="0" x:Name="class_type" Header="Class" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource H2VDropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                <ComboBox x:Name="class_dropdown" SelectedIndex="0" VerticalAlignment="Center">
-                                                    <ComboBoxItem Content="Projectile Impact"/>
-                                                    <ComboBoxItem Content="Projectile Detonation"/>
-                                                    <ComboBoxItem Content="Projectile Flyby"/>
-                                                    <ComboBoxItem Content="Unused"/>
-                                                    <ComboBoxItem Content="Weapon Fire"/>
-                                                    <ComboBoxItem Content="Weapon Ready"/>
-                                                    <ComboBoxItem Content="Weapon Reload"/>
-                                                    <ComboBoxItem Content="Weapon Empty"/>
-                                                    <ComboBoxItem Content="Weapon Charge"/>
-                                                    <ComboBoxItem Content="Weapon Overheat"/>
-                                                    <ComboBoxItem Content="Weapon Idle"/>
-                                                    <ComboBoxItem Content="Weapon Melee"/>
-                                                    <ComboBoxItem Content="Weapon Animation"/>
-                                                    <ComboBoxItem Content="Object Impacts"/>
-                                                    <ComboBoxItem Content="Particle Impacts"/>
-                                                    <ComboBoxItem Content="Unit Footsteps"/>
-                                                    <ComboBoxItem Content="Unit Dialog"/>
-                                                    <ComboBoxItem Content="Unit Animation"/>
-                                                    <ComboBoxItem Content="Vehicle Collision"/>
-                                                    <ComboBoxItem Content="Vehicle Engine"/>
-                                                    <ComboBoxItem Content="Vehicle Animation"/>
-                                                    <ComboBoxItem Content="Device Door"/>
-                                                    <ComboBoxItem Content="Device Machinery"/>
-                                                    <ComboBoxItem Content="Device Stationary"/>
-                                                    <ComboBoxItem Content="Music"/>
-                                                    <ComboBoxItem Content="Ambient Nature"/>
-                                                    <ComboBoxItem Content="Ambient Machinery"/>
-                                                    <ComboBoxItem Content="Huge Ass"/>
-                                                    <ComboBoxItem Content="Object Looping"/>
-                                                    <ComboBoxItem Content="Cinematic Music"/>
-                                                    <ComboBoxItem Content="Cortana Mission"/>
-                                                    <ComboBoxItem Content="Cortana Cinematic"/>
-                                                    <ComboBoxItem Content="Mission Dialog"/>
-                                                    <ComboBoxItem Content="Cinematic Dialog"/>
-                                                    <ComboBoxItem Content="Scripted Cinematic Foley"/>
-                                                    <ComboBoxItem Content="Game Event"/>
-                                                    <ComboBoxItem Content="UI"/>
-                                                    <ComboBoxItem Content="Test"/>
-                                                    <ComboBoxItem Content="Multilingual Test"/>
-                                                </ComboBox>
-                                            </GroupBox>
-                                            <GroupBox Grid.Column="2" x:Name="import_box" Header="Import Type" VerticalAlignment="Stretch"  Visibility="{Binding SelectedIndex, Converter={StaticResource H2VDropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                <ComboBox x:Name="sound_import_type" VerticalAlignment="Center" SelectedIndex="0">
-                                                    <ComboBoxItem Content="Single Shot"/>
-                                                    <ComboBoxItem Content="Single Layer"/>
-                                                    <ComboBoxItem Content="Multi Layer"/>
-                                                </ComboBox>
-                                            </GroupBox>
-                                        </Grid>
                                         <Grid Grid.Row="6">
                                             <Button x:Name="import_sound" Content="Compile Sound" VerticalAlignment="Bottom" Click="import_sound_Click" IsEnabled="{Binding Text.Length, ElementName=import_sound_path, Mode=OneWay}"/>
                                         </Grid>
@@ -564,21 +495,6 @@
                                             </Grid>
                                             <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
                                         </Grid>
-                                        <GroupBox Grid.Row="2" x:Name="package_box" Header="Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource PackageResourceVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="5"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="8"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <CheckBox Grid.Row="1" x:Name="update_resource_maps" Content="Update resource maps (advanced)" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                <ComboBox Grid.Row="3" x:Name="cache_type" SelectedIndex="0" VerticalAlignment="Center">
-                                                    <ComboBoxItem Content="PC"/>
-                                                    <ComboBoxItem Content="MCC"/>
-                                                </ComboBox>
-                                            </Grid>
-                                        </GroupBox>
                                         <Button Grid.Row="3" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}"/>
                                     </Grid>
                                 </Grid>

@@ -6,38 +6,17 @@ namespace ToolkitLauncher.ToolkitInterface
 {
     class H1Toolkit: ToolkitBase
     {
-        override public async Task ImportStructure(string data_file, bool phantom_fix, bool release)
+        override public async Task ImportStructure(string data_file, bool release)
         {
             var info = SplitStructureFilename(data_file);
-            await RunTool(ToolType.Tool, new List<string>() { phantom_fix ? "structure-hack" : "structure" , info.ScenarioPath, info.BspName });
+            await RunTool(ToolType.Tool, new List<string>() { "structure", info.ScenarioPath, info.BspName });
         }
 
-        public override async Task BuildCache(string scenario, int cache_type, bool update_resources)
+        public override async Task BuildCache(string scenario)
         {
             string path = scenario.Replace(".scenario", "");
-            string build_command = "build-cache-file";
-            string platform_string = "pc";
-            switch (cache_type)
-            {
-                case 0:
-                    platform_string = "pc";
-                    break;
-                case 1:
-                    platform_string = "mcc";
-                    break;
-                default:
-                    throw new Exception("Unreachable!");
-            }
 
-            if (update_resources && MainWindow.halo_ce_mcc)
-            {
-                build_command = "build-cache-file-nopack";
-                await RunTool(ToolType.Tool, new List<string>() { build_command, path, platform_string });
-            }
-            else
-            {
-                await RunTool(ToolType.Tool, new List<string>() { build_command, path });
-            }
+			await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path });
         }
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args)
@@ -65,9 +44,8 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="path"></param>
         /// <param name="import_type"></param>
-        /// <param name="render_prt"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, string import_type, bool render_prt)
+        public override async Task ImportModel(string path, string import_type)
         {
             string command_string;
             switch (import_type)
@@ -108,7 +86,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public override async Task ImportSound(string sound_command, string path, string platform, string class_type, string bitrate, string ltf_path)
+        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path)
         {
             await RunTool(ToolType.Tool, new List<string>() { "sounds", path, platform, bitrate});
         }
