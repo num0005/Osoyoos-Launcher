@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.Management;
+using static ToolkitLauncher.ToolkitProfiles;
+
+#nullable enable
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -12,7 +13,8 @@ namespace ToolkitLauncher.ToolkitInterface
     {
         Tool,
         Sapien,
-        Guerilla
+        Guerilla,
+        Game
     }
 
     public enum BitmapType
@@ -23,9 +25,26 @@ namespace ToolkitLauncher.ToolkitInterface
         image_sprites,
         image_interface
     }
+
+    [Flags]
+    public enum ModelCompile
+    {
+        none = 0,
+        collision = 2,
+        physics = 4,
+        render = 8,
+        animations = 16,
+        all = 32,
+    }
     abstract public class ToolkitBase
     {
 
+        public ToolkitBase(ProfileSettingsLauncher sourceProfile, string baseDirectory, Dictionary<ToolType, string> toolPaths)
+        {
+            BaseDirectory = baseDirectory;
+            ToolPaths = toolPaths;
+            Profile = sourceProfile;
+        }
 
         /// <summary>
         /// Base class for exceptions relating to toolkit commands
@@ -88,37 +107,62 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="scenario">Path to the scenario</param>
         /// <param name="bsp">Name of the BSP</param>
         /// <param name="args">Lightmap settings</param>
+        /// <param name="noassert">Set tool args for -verbose and -noassert</param>
         /// <returns></returns>
-        public abstract Task BuildLightmap(string scenario, string bsp, LightmapArgs args);
+        public abstract Task BuildLightmap(string scenario, string bsp, LightmapArgs args, bool noassert = false);
 
         /// <summary>
         /// Imports bitmaps from a directory
         /// </summary>
         /// <param name="path">Directory containing the bitmaps</param>
         /// <param name="type">The type of bitmap to import it by</param>
-        public abstract Task ImportBitmaps(string path, string type);
+        /// <param name="debug_plate">MCC H1A: Whether or not we dump plate data to the data folder for inspection</param>
+        public abstract Task ImportBitmaps(string path, string type, bool debug_plate = false);
+
+        /// <summary>
+        /// How build cache will handle resources
+        /// </summary>
+        public enum ResourceMapUsage
+        {
+            /// <summary>
+            /// **All** resources will be internal
+            /// </summary>
+            None,
+            /// <summary>
+            /// Read existing resource files and use resources from those but don't create new ones
+            /// </summary>
+            Read,
+            /// <summary>
+            /// Read existing resource file and update them with any new resources
+            /// </summary>
+            ReadWrite
+        }
 
         /// <summary>
         /// Build a cache file from a scenario
         /// </summary>
         /// <param name="scenario">The scenario to be compiled into a cache file</param>
-        public abstract Task BuildCache(string scenario);
+        /// <param name="resourceUsage">CE: Whatever the resource maps (loc, bitmap, sound) should be updated or used</param>
+        /// <param name="log_tags">CE: Log tags that tool has to load for the scenario</param>
+        /// <param name="cache_type">CE: What platform is the cahce file intended for</param>
+        public abstract Task BuildCache(string scenario, CacheType cache_type, ResourceMapUsage resourceUsage, bool log_tags = false);
 
         /// <summary>
         /// Import a structure into a BSP tag
         /// </summary>
         /// <param name="data_file">The file to import</param>
         /// <param name="release">H2</param>
+        /// <param name="phantom_fix">CE: Whatever to apply the phantom fix</param>
         /// <returns></returns>
-        public abstract Task ImportStructure(string data_file, bool release = true);
+        public abstract Task ImportStructure(string data_file, bool phantom_fix = false, bool release = true);
 
         /// <summary>
         /// Import geometry to generate various types of model related tags
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="import_type"></param>
+        /// <param name="importType"></param>
         /// <returns></returns>
-        public abstract Task ImportModel(string path, string import_type);
+        public abstract Task ImportModel(string path, ModelCompile importType);
 
         /// <summary>
         /// Import a WAV file to generate a sound tag
@@ -131,54 +175,84 @@ namespace ToolkitLauncher.ToolkitInterface
         public abstract Task ImportSound(string path, string platform, string bitrate, string ltf_path);
 
         /// <summary>
+        /// Check whatever there is mutex preventing another instance of a tool from starting
+        /// </summary>
+        /// <param name="tool">Tool to check</param>
+        /// <returns>True if another instance can't be launched, otherwise false</returns>
+        public abstract bool IsMutexLocked(ToolType tool);
+
+        /// <summary>
         /// Get the file name of the executable
         /// </summary>
         /// <param name="tool">The tool we want</param>
         /// <returns>A string containing the executable file name including the extension</returns>
         public virtual string GetToolExecutable(ToolType tool)
         {
-            string tool_path = MainWindow.toolkit_profile.tool_path;
-            string sapien_path = MainWindow.toolkit_profile.sapien_path;
-            string guerilla_path = MainWindow.toolkit_profile.guerilla_path;
-
-            if (tool == ToolType.Sapien)
-                return Path.GetFileName(sapien_path);
-            else if (tool == ToolType.Guerilla)
-                return Path.GetFileName(guerilla_path);
-            else
-                return Path.GetFileName(tool_path);
+            return ToLocalPath(ToolPaths[tool]);
         }
 
         /// <summary>
-        /// Get the base directory for a given toolkit
+        /// Base directory for this toolkit
         /// </summary>
-        /// <returns>Returns the path</returns>
-        public string GetBaseDirectory()
-        {
-            string tool_path = MainWindow.toolkit_profile.tool_path;
-            string base_directory = "";
-            if (!String.IsNullOrWhiteSpace(tool_path))
-                base_directory = Directory.GetParent(tool_path).FullName;
+        public readonly string BaseDirectory;
 
-            return base_directory;
+        /// <summary>
+        /// The paths for different executables
+        /// </summary>
+        public readonly Dictionary<ToolType, string> ToolPaths;
+
+        /// <summary>
+        /// Get the default tags directory for the current base directory
+        /// </summary>
+        /// <returns>path</returns>
+        protected string GetDefaultTagDirectory()
+        {
+            return Path.Combine(BaseDirectory, "tags");
+        }
+
+        /// <summary>
+        /// Get the default data directory for the current base directory
+        /// </summary>
+        /// <returns>path</returns>
+        protected string GetDefaultDataDirectory()
+        {
+            return Path.Combine(BaseDirectory, "data");
+        }
+
+        /// <summary>
+        /// Checks whatever the default tag path is being used
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsDefaultTagDirectory()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Checks whatever the default data path is being used
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsDefaultDataDirectory()
+        {
+            return true;
         }
 
         /// <summary>
         /// Get the tag directory, use this instead of manipulating the paths yourself
         /// </summary>
-        /// <returns></returns>
-        public string GetTagDirectory()
+        /// <returns>Tag directory</returns>
+        public virtual string GetTagDirectory()
         {
-            return Path.Combine(GetBaseDirectory(), "tags");
+            return GetDefaultTagDirectory();
         }
 
         /// <summary>
         /// Get the data directory, use this instead of manipulating the paths yourself
         /// </summary>
-        /// <returns></returns>
-        public string GetDataDirectory()
+        /// <returns>Data directory</returns>
+        public virtual string GetDataDirectory()
         {
-            return Path.Combine(GetBaseDirectory(), "data");
+            return GetDefaultDataDirectory();
         }
 
         /// <summary>
@@ -186,10 +260,11 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <returns></returns>
         public bool IsEnabled()
-        {
-            bool base_exists = Directory.Exists(GetBaseDirectory());
-            bool tag_data_exists = Directory.Exists(GetTagDirectory()) || Directory.Exists(GetDataDirectory());
-            return base_exists && tag_data_exists;
+        {            
+            foreach (var exe in ToolPaths)
+                if (File.Exists(exe.Value))
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -199,7 +274,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>A path relative to the toolkit base directory</returns>
         protected virtual string ToLocalPath(string path)
         {
-            return Path.GetRelativePath(GetBaseDirectory(), path);
+            return Path.GetRelativePath(BaseDirectory, path);
         }
 
         /// <summary>
@@ -208,9 +283,48 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path">File to import</param>
         public abstract Task ImportUnicodeStrings(string path);
 
+        /// <summary>
+        /// Runs a custom tool command in a shell
+        /// </summary>
+        /// <param name="command">Command to run</param>
+        /// <returns></returns>
         public async Task RunCustomToolCommand(string command)
         {
-            await StartProcessWithShell(GetToolExecutable(ToolType.Tool), command);
+            await Utility.Process.StartProcessWithShell(BaseDirectory, GetToolExecutable(ToolType.Tool), Utility.Process.EscapeArgList(GetArgsToPrepend()) + " " + command);
+        }
+
+        /// <summary>
+        /// Get the args to prepend to every invokaing of a game tool
+        /// </summary>
+        /// <returns>List with all the args to add</returns>
+        private List<string> GetArgsToPrepend()
+        {
+            List<string> args = new();
+
+            if (!IsDefaultTagDirectory())
+            {
+                args.Add("-tags_dir");
+                args.Add(GetTagDirectory());
+            }
+
+            if (!IsDefaultDataDirectory())
+            {
+                args.Add("-data_dir");
+                args.Add(GetDataDirectory());
+            }
+
+            if (Profile.verbose && Profile.build_type == build_type.release_mcc)
+            {
+                args.Add("-verbose");
+            }
+
+            if (!string.IsNullOrWhiteSpace(Profile.game_path) && Directory.Exists(Profile.game_path) && Profile.build_type == build_type.release_mcc)
+            {
+                args.Add("-game_root_dir");
+                args.Add(Profile.game_path);
+            }
+
+            return args;
         }
 
         /// <summary>
@@ -219,20 +333,23 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="tool">Tool to run</param>
         /// <param name="args">Arguments to pass to the tool</param>
         /// <returns></returns>
-        public async Task RunTool(ToolType tool, List<string> args = null)
+        public async Task RunTool(ToolType tool, List<string>? args = null)
         {
-            if (args is null)
-                args = new List<string>();
-            string tool_path = GetToolExecutable(tool);
-            if (tool == ToolType.Tool)
-                await StartProcessWithShell(tool_path, args);
-            else
-                await StartProcess(tool_path, args);
-        }
+            // always include the prepend args
+            List<string> full_args = GetArgsToPrepend();
+            if (args is not null)
+                full_args.AddRange(args);
 
-        private static string escape_arg(string arg)
-        {
-            return " \"" + Regex.Replace(arg, @"(\\+)$", @"$1$1") + "\"";
+            string tool_path = GetToolExecutable(tool);
+
+            if (tool == ToolType.Tool)
+            {
+                await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args);
+            }
+            else
+            {
+                await Utility.Process.StartProcess(BaseDirectory, tool_path, full_args);
+            }
         }
 
         /// <summary>
@@ -240,85 +357,33 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="data_file"></param>
         /// <returns>(scenario_path, bsp_name)</returns>
-        public static (string ScenarioPath, string ScenarioName, string BspName) SplitStructureFilename(string data_file)
+        public static (string ScenarioPath, string ScenarioName, string BspName) SplitStructureFilename(string data_file, string bsp_data_file = "")
         {
-            string scenario_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file).ToLower());
-            string scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
-            string bsp_name = Path.GetFileNameWithoutExtension(data_file).ToLower();
+            string scenario_path = "";
+            string scenario_name = "";
+            string bsp_name = "";
+            if (data_file.EndsWith(".scenario"))
+            {
+                scenario_path = Path.GetDirectoryName(data_file).ToLower() ?? "";
+                scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
+                bsp_name = "all";
+                if (!string.IsNullOrEmpty(bsp_data_file))
+                {
+                    bsp_name = Path.GetFileNameWithoutExtension(bsp_data_file).ToLower();
+                }
+            }
+            else
+            {
+                scenario_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file).ToLower()) ?? "";
+                scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
+                bsp_name = Path.GetFileNameWithoutExtension(data_file).ToLower();
+            }
+            Debug.Assert(scenario_path is not null);
+            Debug.Assert(scenario_name is not null);
+            Debug.Assert(bsp_name is not null);
             return (scenario_path, scenario_name, bsp_name);
         }
 
-        private async Task StartProcessWithShell(string executable, List<string> args)
-        {
-            string commnad_line = "";
-            foreach (string arg in args)
-                commnad_line += escape_arg(arg);
-            await StartProcessWithShell(executable, commnad_line);
-        }
-
-        /// <summary>
-        /// Run a executable in a cmd.exe shell that pauses after the executable returns
-        /// </summary>
-        /// <param name="executable">unescaped name</param>
-        /// <param name="args">escaped arguments</param>
-        /// <returns></returns>
-        private async Task StartProcessWithShell(string executable, string args)
-        {
-            // build command line
-            string commnad_line = "/c \"" + escape_arg(executable) + " " + args + " & pause\"";
-
-            // run shell process
-            ProcessStartInfo info = new ProcessStartInfo("cmd", commnad_line);
-            info.WorkingDirectory = GetBaseDirectory();
-            Process proc = Process.Start(info);
-
-            // TODO: find a way to do this without System.Management or P/invoke
-            ManagementObjectSearcher mos = new ManagementObjectSearcher(
-                String.Format("Select * From Win32_Process Where ParentProcessID={0} And Caption=\"{1}\"",
-                proc.Id, executable));
-
-            // wait a bit so cmd has a chance to start the process
-            await Task.Delay(2000);
-
-            foreach (ManagementObject obj in mos.Get())
-            {
-                var child_process = Process.GetProcessById(Convert.ToInt32(obj["ProcessID"]));
-                try
-                {
-                    await child_process.WaitForExitAsync();
-                } catch {} // will get arg error if the process exits
-                return; // there shouldn't be more than one query result
-            }
-        }
-        private async Task StartProcess(string executable, List<string> args)
-        {
-            try
-            {
-                string executable_path = Path.Combine(GetBaseDirectory(), executable);
-                ProcessStartInfo info = new ProcessStartInfo(executable_path);
-                info.WorkingDirectory = GetBaseDirectory();
-                foreach (string arg in args)
-                    info.ArgumentList.Add(arg);
-
-                Process proc = Process.Start(info);
-                await proc.WaitForExitAsync();
-            }
-            catch (System.ComponentModel.Win32Exception ex)
-            {
-                /*
-                https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes
-                */
-                int ErrorCode = ex.NativeErrorCode;
-                if (ErrorCode == 2)
-                {
-                    throw new MissingFile(executable);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-        }
+        public ProfileSettingsLauncher Profile { get; }
     }
 }

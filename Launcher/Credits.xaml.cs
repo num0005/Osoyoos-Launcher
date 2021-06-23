@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Reflection;
+using System.Windows;
 
 namespace ToolkitLauncher
 {
@@ -10,6 +11,8 @@ namespace ToolkitLauncher
         public Credits()
         {
             InitializeComponent();
+            version.Text = Assembly.GetEntryAssembly()
+                .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
         }
     }
 }

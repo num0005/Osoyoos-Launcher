@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.IO;
-using System.Diagnostics;
 using ToolkitLauncher.Properties;
 using ToolkitLauncher.ToolkitInterface;
-using System.ComponentModel;
-using System.Reflection;
-using System.Windows.Markup;
-using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 namespace ToolkitLauncher
 {
@@ -34,6 +31,15 @@ namespace ToolkitLauncher
     }
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum LightmapContent
+    {
+        [Description("Light Threshold")]
+        light_threshold,
+        [Description("Light Quality")]
+        light_quality
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum RadiosityContent
     {
         [Description("Draft")]
@@ -42,23 +48,36 @@ namespace ToolkitLauncher
         final
     }
 
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum CacheType
+    {
+        [Description("Classic")]
+        classic,
+        [Description("Remastered")]
+        remastered
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum ThemeType
+    {
+        [Description("Light")]
+        light,
+        [Description("Dark")]
+        dark
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        ToolkitBase[] toolkits = new ToolkitBase[]
+        List<ToolkitBase> toolkits = new();
+        ToolkitBase toolkit
         {
-            new H1Toolkit(),
-            new H2Toolkit()
-        };
-        ToolkitBase toolkit {
             get
             {
-                int game_gen_index = toolkit_profile.game_gen;
-                if (game_gen_index > 1)
-                    game_gen_index = 1;
-                return toolkits[game_gen_index];
+                Debug.Assert(toolkit_selection.SelectedIndex != -1);
+                return toolkits[toolkit_selection.SelectedIndex];
             }
         }
 
@@ -71,18 +90,7 @@ namespace ToolkitLauncher
         }
         level_compile_type levelCompileType;
 
-        [Flags]
-        enum model_compile : Byte
-        {
-            none = 0,
-            collision = 2,
-            physics = 4,
-            render = 8,
-            animations = 16,
-            all = 32,
-        }
-        model_compile model_compile_type;
-
+        ModelCompile model_compile_type;
         enum object_type
         {
             biped,
@@ -107,15 +115,50 @@ namespace ToolkitLauncher
             ogg
         }
 
+        // todo(num0005) this is ugly, rework it
+        public static int profile_index = 0;
+        static List<int> profile_mapping = new();
         public static ToolkitProfiles.ProfileSettingsLauncher toolkit_profile
         {
             get
             {
-                int profile_int = 0;
-                if (profile_index >= 0)
-                    profile_int = profile_index;
+                return ToolkitProfiles.SettingsList[profile_index];
+            }
+        }
 
-                return ToolkitProfiles.SettingsList[profile_int];
+        public static bool halo_community
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
+                {
+                    return toolkit_profile.community_tools;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_ce_mcc
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
+                {
+                    return toolkit_profile.game_gen == 0 && toolkit_profile.build_type == build_type.release_mcc;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_2_mcc
+        {
+            get
+            {
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
+                {
+                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_mcc;
+                }
+                return false;
             }
         }
 
@@ -123,7 +166,7 @@ namespace ToolkitLauncher
         {
             get
             {
-                if (ToolkitProfiles.SettingsList.Count > 0)
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
                     return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_standalone;
                 }
@@ -135,7 +178,7 @@ namespace ToolkitLauncher
         {
             get
             {
-                if (ToolkitProfiles.SettingsList.Count > 0)
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
                     return toolkit_profile.game_gen == 1 && toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
                 }
@@ -143,11 +186,11 @@ namespace ToolkitLauncher
             }
         }
 
-        public static bool halo_2_standalone_not_community
+        public static bool halo_2_standalone_stock
         {
             get
             {
-                if (ToolkitProfiles.SettingsList.Count > 0)
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
                     return toolkit_profile.game_gen == 1 && !toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
                 }
@@ -159,7 +202,7 @@ namespace ToolkitLauncher
         {
             get
             {
-                if (ToolkitProfiles.SettingsList.Count > 0)
+                if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
                     return toolkit_profile.game_gen == 1;
                 }
@@ -167,7 +210,6 @@ namespace ToolkitLauncher
             }
         }
 
-        public static int profile_index;
         public static int string_encoding_index { get; set; }
         private bool handling_exception = false;
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -191,7 +233,9 @@ namespace ToolkitLauncher
                 handling_exception = false;
                 var missing_file_excep = e.Exception as ToolkitBase.MissingFile;
                 MessageBox.Show("The following executable is missing: " + missing_file_excep.FileName, "Corrupt Install");
-            } else {
+            }
+            else
+            {
                 MessageBoxResult result = MessageBox.Show(e.Exception.ToString(), "An unhandled exception has occurred!", MessageBoxButton.OKCancel);
                 if (result == MessageBoxResult.OK)
                     e.Handled = true;
@@ -201,25 +245,28 @@ namespace ToolkitLauncher
 
         private string get_default_path(string textbox_string, bool tag_dir, bool is_file)
         {
-            string path = toolkit.GetDataDirectory();
+            string base_path = toolkit.GetDataDirectory();
+            string local_path = "";
             if (tag_dir is true)
             {
-                path = toolkit.GetTagDirectory();
+                base_path = toolkit.GetTagDirectory();
             }
 
             if (!string.IsNullOrWhiteSpace(textbox_string))
             {
                 if (is_file == true)
                 {
-                    path = path + Path.GetDirectoryName(textbox_string);
+                    local_path = Path.GetDirectoryName(textbox_string);
                 }
                 else
                 {
-                    path = path + textbox_string;
+                    local_path = textbox_string;
                 }
             }
 
-            return path;
+            if (Directory.Exists(Path.Join(base_path, local_path)))
+                return Path.Join(base_path, local_path);
+            return base_path;
         }
 
         public MainWindow()
@@ -250,11 +297,8 @@ namespace ToolkitLauncher
 
             InitializeComponent();
             UpdateToolkitStatus();
-            int default_index = 0;
-            if (Settings.Default.set_profile >= 0)
-                default_index = Settings.Default.set_profile;
-            toolkit_selection.SelectedIndex = default_index;
-            DataContext = new MyViewModel();
+            theme.SelectedIndex = Settings.Default.set_theme;
+            DataContext = new ProfileIndexViewModel();
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -263,58 +307,147 @@ namespace ToolkitLauncher
             if (toolkit_selection.SelectedIndex >= 0)
                 last_index = toolkit_selection.SelectedIndex;
             Settings.Default.set_profile = last_index;
+            Settings.Default.set_theme = theme.SelectedIndex;
             Settings.Default.Save();
+        }
+
+        private ToolkitBase CreateToolkitFromProfile(ToolkitProfiles.ProfileSettingsLauncher profile)
+        {
+            string base_path = Path.GetDirectoryName(profile.tool_path);
+            Debug.Assert(base_path is not null, "base_path should never be null");
+
+            Dictionary<ToolType, string> tool_paths = new()
+            {
+                { ToolType.Tool, profile.tool_path },
+                { ToolType.Guerilla, profile.guerilla_path },
+                { ToolType.Sapien, profile.sapien_path },
+                { ToolType.Game, profile.game_exe_path }
+            };
+
+            switch (profile.game_gen)
+            {
+                case 0:
+                    return profile.build_type == build_type.release_standalone ?
+                        new H1Toolkit(profile, base_path, tool_paths) :
+                        new H1AToolkit(profile, base_path, tool_paths);
+                case 1:
+                    return new H2Toolkit(profile, base_path, tool_paths);
+            }
+            Debug.Fail("Unreachable");
+            throw new Exception();
         }
 
         private void UpdateToolkitStatus()
         {
+            int current_index = toolkit_selection.SelectedIndex;
+            toolkits.Clear(); // num0005: actually clear this, don't just think about it!
             toolkit_selection.Items.Clear();
+            profile_mapping.Clear();
             bool is_any_toolkit_enabled = false;
-            // always reset if we had no toolkits enabled before
-            bool reset_selection_index = toolkit_selection.SelectedIndex == -1;
-            int? lowest_valid_index = null;
             for (int i = 0; i < ToolkitProfiles.SettingsList.Count; i++)
             {
-                toolkit_selection.Items.Add(ToolkitProfiles.SettingsList[i].profile_name);
-                toolkit_selection.SelectedIndex = i;
-                if (toolkit.IsEnabled())
+                var current_profile = ToolkitProfiles.SettingsList[i];
+
+                var current_toolkit = CreateToolkitFromProfile(ToolkitProfiles.SettingsList[i]);
+                if (current_toolkit.IsEnabled())
                 {
+                    profile_mapping.Add(i);
+                    toolkit_selection.Items.Add(current_profile.profile_name);
+                    toolkits.Add(current_toolkit);
+
                     is_any_toolkit_enabled = true;
-                    lowest_valid_index = lowest_valid_index ?? i;
                 }
                 else
                 {
-                    if (i == toolkit_selection.SelectedIndex)
-                        reset_selection_index = true;
+                    Debug.Print($"Profile '{current_profile.profile_name}' has been disabled!");
                 }
             }
             programs_box.IsEnabled = is_any_toolkit_enabled;
             tasks_box.IsEnabled = is_any_toolkit_enabled;
-                if (reset_selection_index)
-                toolkit_selection.SelectedIndex = lowest_valid_index ?? -1;
+            if (current_index >= 0)
+            {
+                //Checking that the last index used isn't a negative value
+                if (ToolkitProfiles.SettingsList.Count <= current_index)
+                {
+                    //Checking that the last index used isn't equal or greater to the list count.
+                    //Since Comboboxes are zero indexed the count should always be greater
+                    toolkit_selection.SelectedIndex = ToolkitProfiles.SettingsList.Count - 1;
+                }
+                else
+                {
+                    //Last index used was still within a valid range
+                    //Set the value since comboboxes were cleared
+                    toolkit_selection.SelectedIndex = current_index;
+                }
+            }
+
             if (!is_any_toolkit_enabled)
                 MessageBox.Show("No valid profiles were found, please set one in \"toolkit profiles\" to proceed", "No valid profiles!", MessageBoxButton.OK);
         }
 
-
+        /// <summary>
+        /// Handles checking whatever the multi instance flag needs to be set
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void RunSapien(object sender, RoutedEventArgs e)
         {
-            await toolkit.RunTool(ToolType.Sapien);
+            if (toolkit.IsMutexLocked(ToolType.Sapien))
+            {
+                // oh no an instance is already running, lets see what we can do
+                if (toolkit is not H1AToolkit)
+                {
+                    // not H1A, can't do anything but let the user know
+                    var result = MessageBox.Show(
+                        "An instance of Sapien is already running, close that before trying to open another scenario.",
+                        "Sorry about this!",
+                        MessageBoxButton.OKCancel
+                        );
+                    if (result == MessageBoxResult.Cancel)
+                        return;
+                    // Launch Sapien anyways, no real harm in it
+                    await toolkit.RunTool(ToolType.Sapien);
+                }
+                else
+                {
+                    var result = MessageBox.Show(
+                        "An instance of Sapien is already running, do you wish to enable multi instance? This is experimental and may cause issues.",
+                        "Enable Multi-instance?",
+                        MessageBoxButton.YesNoCancel
+                        );
+                    if (result == MessageBoxResult.Cancel)
+                        return;
+                    if (result == MessageBoxResult.Yes)
+                        await toolkit.RunTool(ToolType.Sapien, new() { "-multipleinstance" });
+                    else
+                        await toolkit.RunTool(ToolType.Sapien); // well have your way user!
+                }
+            }
+            else
+            {
+                await toolkit.RunTool(ToolType.Sapien);
+            }
         }
         private async void RunGuerilla(object sender, RoutedEventArgs e)
         {
             await toolkit.RunTool(ToolType.Guerilla);
         }
 
+        private async void RunGame(object sender, RoutedEventArgs e)
+        {
+            await toolkit.RunTool(ToolType.Game);
+        }
+
         private void HandleClickCompile(object sender, RoutedEventArgs e)
         {
             var light_level_combobox = (ToolkitBase.LightmapArgs.Level_Quality)light_quality_level.SelectedIndex;
-            float light_level_slider = (float)light_quality_slider.Value;
+            // tool doesn't support a value of 0 or 1, the bounds are [0, 1], so we adjust the value a bit to get something reasonable
+            float light_level_slider = (float)Math.Max(Math.Min(light_quality_slider.ConvertedValue, 0.999999), 0.000001);
             bool radiosity_quality_toggle = (bool)radiosity_quality.IsChecked;
-            Int32 instance_count = 1;
+            int instance_count = 1;
             if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
             {
-                if (halo_2_standalone_not_community)
+                if (!halo_2_standalone_community)
                     //If there is no instance support then set whatever got passed back to 1
                     instance_count = 1;
                 else if (Environment.ProcessorCount < instance_count)
@@ -324,7 +457,8 @@ namespace ToolkitLauncher
                     instance_value.Text = Environment.ProcessorCount.ToString();
                     instance_count = Environment.ProcessorCount;
                 }
-                CompileLevel(compile_level_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count);
+
+                CompileLevel(compile_level_path.Text, bsp_path.Text, light_level_combobox, light_level_slider, radiosity_quality_toggle, instance_count, phantom_hack.IsChecked is true);
             }
             else
             {
@@ -332,21 +466,21 @@ namespace ToolkitLauncher
             }
         }
 
-        private async void CompileLevel(string level_path, ToolkitBase.LightmapArgs.Level_Quality Level_Quality, float level_slider, bool radiosity_quality_toggle, int instance_count)
+        private async void CompileLevel(string level_path, string bsp_path, ToolkitBase.LightmapArgs.Level_Quality Level_Quality, float level_slider, bool radiosity_quality_toggle, int instance_count, bool phantom_fix)
         {
             if (levelCompileType.HasFlag(level_compile_type.compile))
             {
-                await toolkit.ImportStructure(level_path);
+                await toolkit.ImportStructure(level_path, phantom_fix);
             }
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
                 var lightmaps_args = new ToolkitBase.LightmapArgs(Level_Quality, level_slider, radiosity_quality_toggle, .999f);
-                var info = ToolkitBase.SplitStructureFilename(level_path);
+                var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path);
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 H2Toolkit h2toolkit = toolkit as H2Toolkit;
                 if (instance_count < 2)
                 {
-                    await toolkit.BuildLightmap(scen_path, info.BspName, lightmaps_args);
+                    await toolkit.BuildLightmap(scen_path, info.BspName, lightmaps_args, (bool)disable_asserts.IsChecked);
                 }
                 else if (h2toolkit is not null)
                 {
@@ -386,12 +520,14 @@ namespace ToolkitLauncher
         private async void CompileImage(object sender, RoutedEventArgs e)
         {
             string listEntry = BitmapCompile.bitmapType[bitmap_compile_type.SelectedIndex];
-            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry);
+            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, debug_plate.IsChecked is true);
         }
 
         private async void PackageLevel(object sender, RoutedEventArgs e)
         {
-            await toolkit.BuildCache(package_level_path.Text);
+            CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
+            ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
+            await toolkit.BuildCache(package_level_path.Text, cache_type_item, usage, log_tag_loads.IsChecked ?? false);
         }
 
         private void CompileOnly_Checked(object sender, RoutedEventArgs e)
@@ -416,7 +552,7 @@ namespace ToolkitLauncher
         {
             var process = new ProcessStartInfo();
             process.FileName = "cmd";
-            process.Arguments = "/K \"cd /d \"" + toolkit.GetBaseDirectory() + "\"";
+            process.Arguments = "/K \"cd /d \"" + toolkit.BaseDirectory + "\"";
             Process.Start(process);
         }
 
@@ -447,53 +583,37 @@ namespace ToolkitLauncher
             LightmapConfigUI();
         }
 
-        private async void lightmap_save_Click(object sender, RoutedEventArgs e)
-        {
-            lightmap_config_ui.Visibility = Visibility.Collapsed;
-            await SaveConfig(toolkit.GetBaseDirectory() + "\\" + "custom_lightmap_quality.conf");
-        }
-
-        private void lightmap_reset_Click(object sender, RoutedEventArgs e)
-        {
-            lightmap_is_checkboard.IsChecked = false;
-            lightmap_is_direct_only.IsChecked = false;
-            lightmap_is_draft.IsChecked = false;
-            lightmap_primary_monte_carlo_count.Text = "8";
-            lightmap_proton_count.Text = "20000000";
-            lightmap_secondary_monte_carlo_count.Text = "4";
-            lightmap_unk7_count.Text = "4.000000";
-        }
-
         private void model_compile_collision_Checked(object sender, RoutedEventArgs e)
         {
-            model_compile_type = model_compile.collision;
+            model_compile_type = ModelCompile.collision;
         }
 
         private void model_compile_physics_Checked(object sender, RoutedEventArgs e)
         {
-            model_compile_type = model_compile.physics;
+            model_compile_type = ModelCompile.physics;
         }
 
         private void model_compile_animations_Checked(object sender, RoutedEventArgs e)
         {
-            model_compile_type = model_compile.animations;
+            model_compile_type = ModelCompile.animations;
         }
 
         private void model_compile_all_Checked(object sender, RoutedEventArgs e)
         {
-            model_compile_type = model_compile.all;
+            model_compile_type = ModelCompile.all;
         }
 
         private void model_compile_render_Checked(object sender, RoutedEventArgs e)
         {
-            model_compile_type = model_compile.render;
+            model_compile_type = ModelCompile.render;
         }
 
         private async void compile_model_Click(object sender, RoutedEventArgs e)
         {
-            string path = compile_model_path.Text;
-            string import_type = model_compile_type.ToString();
-            await toolkit.ImportModel(path, import_type);
+            if (toolkit is H1AToolkit h1)
+                await h1.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false);
+            else
+                await toolkit.ImportModel(compile_model_path.Text, model_compile_type);
         }
 
         private async void import_sound_Click(object sender, RoutedEventArgs e)
@@ -550,7 +670,7 @@ namespace ToolkitLauncher
             var soundOptions = soundDataOptions;
             if (halo_2_standalone_community)
             {
-				// Switching from sound compiling to LTF importing for H2Codez
+                // Switching from sound compiling to LTF importing for H2Codez
                 soundOptions = soundTagOptions;
                 tag_dir = true;
             }
@@ -570,22 +690,24 @@ namespace ToolkitLauncher
         }
 
         readonly FilePicker.Options ASSlevelOptions = FilePicker.Options.FileSelect(
-            "Select Uncompiled level",
-            "Uncompiled map geometry|*.ASS",
-            FilePicker.Options.PathRoot.Data,
+            "Select your level",
+            "map data|*.ASS;*.scenario",
+            FilePicker.Options.PathRoot.Tag_Data,
             strip_extension: false
             );
 
         readonly FilePicker.Options JMSlevelOptions = FilePicker.Options.FileSelect(
-            "Select Uncompiled level",
-            "Uncompiled map geometry|*.JMS",
-            FilePicker.Options.PathRoot.Data,
+            "Select your level",
+            "map data|*.JMS;*.scenario",
+            FilePicker.Options.PathRoot.Tag_Data,
             strip_extension: false
             );
 
         private void browse_level_compile_Click(object sender, RoutedEventArgs e)
         {
             bool tag_dir = false;
+            if (compile_level_path.Text.EndsWith(".scenario"))
+                tag_dir = true;
             bool is_file = true;
             string default_path = get_default_path(compile_level_path.Text, tag_dir, is_file);
             var levelOptions = JMSlevelOptions;
@@ -595,6 +717,8 @@ namespace ToolkitLauncher
             }
             var picker = new FilePicker(compile_level_path, toolkit, levelOptions, default_path);
             picker.Prompt();
+            if (compile_level_path.Text.EndsWith(".scenario"))
+                LightOnly.IsChecked = true;
         }
 
         readonly FilePicker.Options txtOptions = FilePicker.Options.FolderSelect(
@@ -642,7 +766,7 @@ namespace ToolkitLauncher
             {
                 bitmapOptions = gen2H2CodezBitmapOptions;
             }
-            else if (halo_2_standalone_not_community)
+            else if (halo_2_standalone_stock)
             {
                 bitmapOptions = gen2BitmapOptions;
             }
@@ -658,9 +782,7 @@ namespace ToolkitLauncher
 
         private void browse_package_level_Click(object sender, RoutedEventArgs e)
         {
-            bool tag_dir = true;
-            bool is_file = true;
-            string default_path = get_default_path(package_level_path.Text, tag_dir, is_file);
+            string default_path = get_default_path(package_level_path.Text, tag_dir: true, is_file: true);
             var picker = new FilePicker(package_level_path, toolkit, packageOptions, default_path);
             picker.Prompt();
         }
@@ -672,9 +794,7 @@ namespace ToolkitLauncher
 
         private void browse_model_Click(object sender, RoutedEventArgs e)
         {
-            bool tag_dir = false;
-            bool is_file = false;
-            string default_path = get_default_path(compile_model_path.Text, tag_dir, is_file);
+            string default_path = get_default_path(compile_model_path.Text, tag_dir: false, is_file: false);
             var picker = new FilePicker(compile_model_path, toolkit, modelOptions, default_path);
             picker.Prompt();
         }
@@ -692,9 +812,26 @@ namespace ToolkitLauncher
             credits.ShowDialog();
         }
 
+        readonly FilePicker.Options bspOptions = FilePicker.Options.FileSelect(
+           "Select BSP to light",
+           "Compiled level geometry|*.scenario_structure_bsp",
+           FilePicker.Options.PathRoot.Tag
+        );
+
+        private void browse_bsp_Click(object sender, RoutedEventArgs e)
+        {
+            string default_path = get_default_path(compile_level_path.Text, tag_dir: true, is_file: true);
+            var picker = new FilePicker(bsp_path, toolkit, bspOptions, default_path);
+            picker.Prompt();
+        }
+
         private void toolkit_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (light_quality_level != null && ToolkitProfiles.SettingsList.Count > 0 && profile_index >= 0)
+            if (toolkit_selection.SelectedIndex < 0 || ToolkitProfiles.SettingsList.Count <= 0 || toolkit_selection.SelectedIndex >= ToolkitProfiles.SettingsList.Count)
+                return;
+            // ugly!
+            profile_index = profile_mapping[toolkit_selection.SelectedIndex];
+            if (light_quality_level != null)
             {
                 int super_index = 9;
                 int custom_index = 10;
@@ -719,523 +856,131 @@ namespace ToolkitLauncher
             string_encoding_index = string_encoding.SelectedIndex;
         }
 
+        private void theme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ThemeType theme_type_item = (ThemeType)theme.SelectedIndex;
+            var ThemeConfig = new LauncherThemeSettings();
+            ThemeConfig.SetLauncherTheme(theme_type_item);
+        }
+
+        private LightmapConfigSettings lightmapConfig;
         public void LightmapConfigUI()
         {
 
-            LightmapConfigSettings.ReadConfig(toolkit.GetBaseDirectory() + "\\" + "custom_lightmap_quality.conf");
+            lightmapConfig = new(toolkit.BaseDirectory + "\\" + "custom_lightmap_quality.conf");
+            LightmapSetUI();
+        }
+
+        private void lightmap_save_Click(object sender, RoutedEventArgs e)
+        {
+            lightmap_config_ui.Visibility = Visibility.Collapsed;
+            SaveConfig();
+        }
+
+        private void lightmap_reset_Click(object sender, RoutedEventArgs e)
+        {
+            lightmapConfig.Reset();
             LightmapSetUI();
         }
 
         private void LightmapSetUI()
         {
-            lightmap_is_checkboard.IsChecked = LightmapConfigSettings.ConfigSettings.is_checkboard;
-            lightmap_is_direct_only.IsChecked = LightmapConfigSettings.ConfigSettings.is_direct_only;
-            lightmap_is_draft.IsChecked = LightmapConfigSettings.ConfigSettings.is_draft;
-            lightmap_primary_monte_carlo_count.Text = LightmapConfigSettings.ConfigSettings.main_monte_carlo_setting.ToString();
-            lightmap_proton_count.Text = LightmapConfigSettings.ConfigSettings.proton_count.ToString();
-            lightmap_secondary_monte_carlo_count.Text = LightmapConfigSettings.ConfigSettings.secondary_monte_carlo_setting.ToString();
-            lightmap_unk7_count.Text = LightmapConfigSettings.ConfigSettings.unk7.ToString();
+            lightmap_is_checkboard.IsChecked = lightmapConfig.IsCheckerboard;
+            lightmap_is_direct_only.IsChecked = lightmapConfig.IsDirectOnly;
+            lightmap_is_draft.IsChecked = lightmapConfig.IsDraft;
+            lightmap_sample_count.Text = lightmapConfig.SampleCount.ToString();
+            lightmap_photon_count.Text = lightmapConfig.PhotonCount.ToString();
+            lightmap_AA_sample_count.Text = lightmapConfig.AASampleCount.ToString();
+            lightmap_gather_dist.Text = lightmapConfig.GatherDistance.ToString();
         }
 
-        private async Task SaveConfig(string path)
+        private void SaveConfig()
         {
-            File.Delete(path);
+            lightmapConfig.IsCheckerboard = lightmap_is_checkboard.IsChecked ?? false;
+            lightmapConfig.IsDirectOnly = lightmap_is_direct_only.IsChecked ?? false;
+            lightmapConfig.IsDraft = lightmap_is_draft.IsChecked ?? false;
+            lightmapConfig.SampleCount = int.Parse(lightmap_sample_count.Text);
+            lightmapConfig.PhotonCount = int.Parse(lightmap_photon_count.Text);
+            lightmapConfig.AASampleCount = int.Parse(lightmap_AA_sample_count.Text);
+            lightmapConfig.GatherDistance = float.Parse(lightmap_gather_dist.Text);
 
-            using StreamWriter file = new(path, append: true);
-            await file.WriteLineAsync("is_checkboard = " + lightmap_is_checkboard.IsChecked.ToString().ToLower());
-            await file.WriteLineAsync("is_direct_only = " + lightmap_is_direct_only.IsChecked.ToString().ToLower());
-            await file.WriteLineAsync("is_draft = " + lightmap_is_draft.IsChecked.ToString().ToLower());
-            await file.WriteLineAsync("main_monte_carlo_setting = " + lightmap_primary_monte_carlo_count.Text);
-            await file.WriteLineAsync("proton_count = " + lightmap_proton_count.Text);
-            await file.WriteLineAsync("secondary_monte_carlo_setting = " + lightmap_secondary_monte_carlo_count.Text);
-            await file.WriteLineAsync("unk7 = " + lightmap_unk7_count.Text);
+            if (!lightmapConfig.Save())
+                MessageBox.Show($"Failed to save config to \"{lightmapConfig.Path}\". Check file system permissions!", "Error!");
         }
-    }
 
-    /*
-     * Based on https://brianlagunas.com/a-better-way-to-data-bind-enums-in-wpf/
-     */
-
-    public class EnumBindingSourceExtension : MarkupExtension
-    {
-        private Type _enumType;
-        public Type EnumType
+        private bool _askUserForNumber(string question, string title, ref int? value)
         {
-            get { return this._enumType; }
-            set
+            string input = Interaction.InputBox(question, title, value is null ? "" : value.ToString());
+            int parsed;
+            if (int.TryParse(input, out parsed))
             {
-                if (value != this._enumType)
-                {
-                    if (null != value)
-                    {
-                        Type enumType = Nullable.GetUnderlyingType(value) ?? value;
-
-                        if (!enumType.IsEnum)
-                            throw new ArgumentException("Type must be for an Enum.");
-                    }
-
-                    this._enumType = value;
-                }
-            }
-        }
-
-        public EnumBindingSourceExtension() { }
-
-        public EnumBindingSourceExtension(Type enumType)
-        {
-            this.EnumType = enumType;
-        }
-
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            if (null == this._enumType)
-                throw new InvalidOperationException("The EnumType must be specified.");
-
-            Type actualEnumType = Nullable.GetUnderlyingType(this._enumType) ?? this._enumType;
-            Array enumValues = Enum.GetValues(actualEnumType);
-
-            if (actualEnumType == this._enumType)
-                return enumValues;
-
-            Array tempArray = Array.CreateInstance(actualEnumType, enumValues.Length + 1);
-            enumValues.CopyTo(tempArray, 1);
-            return tempArray;
-        }
-    }
-
-    public class EnumDescriptionTypeConverter : EnumConverter
-    {
-        public EnumDescriptionTypeConverter(Type type)
-            : base(type)
-        {
-        }
-
-        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
-        {
-            if (destinationType == typeof(string))
-            {
-                if (value != null)
-                {
-                    FieldInfo fi = value.GetType().GetField(value.ToString());
-                    if (fi != null)
-                    {
-                        var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        return ((attributes.Length > 0) && (!String.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
-                    }
-                }
-
-                return string.Empty;
-            }
-
-            return base.ConvertTo(context, culture, value, destinationType);
-        }
-    }
-
-    public class TextInputToVisibilityConverter : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            // Always test MultiValueConverter inputs for non-null
-            // (to avoid crash bugs for views in the designer)
-            if (values[0] is bool && values[1] is bool)
-            {
-                bool hasText = !(bool)values[0];
-                bool hasFocus = (bool)values[1];
-                if (hasFocus || hasText)
-                    return Visibility.Collapsed;
-            }
-            return Visibility.Visible;
-        }
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class DropdownSelectionToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int game_gen_index = 0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
-                return Visibility.Visible;
-            return vis;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class H2VDropdownSelectionToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            int game_gen_index = 0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index && !community_tools && build_type != build_type.release_standalone)
-                return Visibility.Visible;
-            return vis;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ToolkitToLevelSpaceConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2_standalone_community)
-                return new GridLength(8);
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                return new GridLength(0);
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                return new GridLength(8);
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ToolkitToSoundSpaceConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2_standalone_community)
-                return new GridLength(8);
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                return new GridLength(0);
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                return new GridLength(8);
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class GameGenToIsEnabled : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int game_gen_index = 0;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
+                value = parsed;
                 return true;
-            return false;
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class CommunityToolsToIsEnabled : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2_standalone_not_community)
-                return false;
-            return true;
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class LightmapConfigModifier : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int custom_index = 10;
-            int lightmap_quality = (int)values[0];
-            int toolkit_selection = (int)values[1];
-            if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0)
-            {
-				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.game_gen >= 1 && lightmap_quality == custom_index)
-                    return true;
-                return false;
             }
             return false;
         }
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
-    public class CommunityToolsToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        private async void convert_from_fbx_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.halo_2_standalone_community)
-                return Visibility.Visible;
-            if (ToolkitProfiles.SettingsList.Count > 0)
+            var h1a_toolkit = toolkit as H1AToolkit;
+            if (h1a_toolkit is null)
             {
-                return Visibility.Collapsed;
+                Debug.Fail("toolkit is not H1A, FBX not supported!");
+                return;
             }
-            else
+            var openDialog = new System.Windows.Forms.OpenFileDialog();
+            openDialog.Title = "Select FBX (Filmbox)";
+            openDialog.Filter = "FBX (Filmbox)|*.fbx";
+            openDialog.InitialDirectory = Settings.Default.last_fbx_path;
+            if (openDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                return Visibility.Visible;
-            }
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+                string fbxFileName = openDialog.FileName;
 
-    public class H2VCommunityToolsToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2_standalone_community)
-                return Visibility.Visible;
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                return Visibility.Collapsed;
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                return Visibility.Visible;
-            }
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ModelContentModifier : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int index = 0;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-            }
-            return ((ModelContent)index);
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class TextContentModifier : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int string_encoding = (int)values[0];
-            int toolkit_selection = (int)values[1];
-            string text_string = "Select a folder with an .hmt file to compile.";
-            if (ToolkitProfiles.SettingsList != null && string_encoding >= 0 && toolkit_selection >= 0)
-            {
-				//Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (ToolkitProfiles.SettingsList[toolkit_selection].game_gen >= 1 || string_encoding == 1)
-                    text_string = "Select a folder with .txt files to compile.";
-            }
-            return text_string;
-        }
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class RadiosityContentModifier : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if ((bool)value == false)
-            {
-                return ((RadiosityContent)0);
-            }
-            else
-            {
-                return ((RadiosityContent)1);
-            }
-
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-	public class MyViewModel : INotifyPropertyChanged
-	{
-		public MyViewModel()
-		{
-			SelectedProfileIndex = 0;
-		}
-		private int _SelectedProfileIndex;
-		public int SelectedProfileIndex
-		{
-			get
-			{
-				return _SelectedProfileIndex;
-			}
-			set
-			{
-				_SelectedProfileIndex = value;
-				MainWindow.profile_index = value;
-				Notify("SelectedProfileIndex");
-			}
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void Notify(string propertyName)
-		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-	}
-
-    public class LightmapConfigSettings
-    {
-        public static LightmapConfig ConfigSettings = new LightmapConfig();
-
-        public class LightmapConfig
-        {
-            public bool is_checkboard { get; set; }
-            public bool is_direct_only { get; set; }
-            public bool is_draft { get; set; }
-            public int main_monte_carlo_setting { get; set; }
-            public int proton_count { get; set; }
-            public int secondary_monte_carlo_setting { get; set; }
-            public float unk7 { get; set; }
-        }
-
-        public static void ReadConfig(string path)
-        {
-            if (File.Exists(path))
-            {
-                string theFile = path;
-                using (StreamReader sr = new StreamReader(theFile))
+                // check if we need to update the initial directory
+                string? fbxFileDir = Path.GetDirectoryName(fbxFileName);
+                if (fbxFileDir != Settings.Default.last_fbx_path)
                 {
-                    string line = "";
-                    while ((line = sr.ReadLine()) != null)
+                    Settings.Default.last_fbx_path = fbxFileDir;
+                    Settings.Default.Save();
+                }
+
+                var saveDialog = new System.Windows.Forms.SaveFileDialog();
+                saveDialog.Title = "Select JMS/JMA save location";
+                saveDialog.OverwritePrompt = true;
+                saveDialog.Filter = "Jointed model skeleton|*.JMS|Jointed model animation|*.JMA";
+                saveDialog.InitialDirectory = toolkit.GetDataDirectory();
+                if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    string outputFileName = saveDialog.FileName;
+                    string ext = Path.GetExtension(outputFileName).ToLowerInvariant();
+                    switch (ext)
                     {
-                        string[] parts = line.Split('=');
-                        if (parts.Length == 2)
-                        {
-                            string key = parts[0].Trim();
-                            string value = parts[1].Trim();
-                            bool bool_pass;
-                            int int_pass;
-                            float float_pass;
-                            if (key == "is_checkboard")
+                        case ".jma":
                             {
-                                if (bool.TryParse(value, out bool_pass))
-                                {
-                                    bool_pass = bool.Parse(value);
-                                }
-                                ConfigSettings.is_checkboard = bool_pass;
+                                int? startFrame = 0;
+                                int? endFrame = null;
+                                _askUserForNumber("Animation start frame?", "JMA import configuration", ref startFrame);
+                                _askUserForNumber("Animation end frame?", "JMA import configuration", ref endFrame);
+                                await h1a_toolkit.JMAFromFBX(fbxFileName, outputFileName, startFrame ?? 0, endFrame);
+                                break;
                             }
-                            else if (key == "is_direct_only")
-                            {
-                                if (bool.TryParse(value, out bool_pass))
-                                {
-                                    bool_pass = bool.Parse(value);
-                                }
-                                ConfigSettings.is_direct_only = bool_pass;
-                            }
-                            else if (key == "is_draft")
-                            {
-                                if (bool.TryParse(value, out bool_pass))
-                                {
-                                    bool_pass = bool.Parse(value);
-                                }
-                                ConfigSettings.is_draft = bool_pass;
-                            }
-                            else if (key == "main_monte_carlo_setting")
-                            {
-                                if (int.TryParse(value, out int_pass))
-                                {
-                                    int_pass = int.Parse(value);
-                                }
-                                ConfigSettings.main_monte_carlo_setting = int_pass;
-                            }
-                            else if (key == "proton_count")
-                            {
-                                if (int.TryParse(value, out int_pass))
-                                {
-                                    int_pass = int.Parse(value);
-                                }
-                                ConfigSettings.proton_count = int_pass;
-                            }
-                            else if (key == "secondary_monte_carlo_setting")
-                            {
-                                if (int.TryParse(value, out int_pass))
-                                {
-                                    int_pass = int.Parse(value);
-                                }
-                                ConfigSettings.secondary_monte_carlo_setting = int_pass;
-                            }
-                            else if (key == "unk7")
-                            {
-                                if (float.TryParse(value, out float_pass))
-                                {
-                                    float_pass = float.Parse(value);
-                                }
-                                ConfigSettings.unk7 = float_pass;
-                            }
-                        }
+                        case ".jms":
+                            await h1a_toolkit.JMSFromFBX(fbxFileName, outputFileName);
+                            break;
+                        default:
+                            Debug.Fail($"Unexpected file extension: {ext}");
+                            break;
                     }
                 }
             }
+        }
+
+        private void open_explorer_Click(object sender, RoutedEventArgs e)
+        {
+            Process process = new();
+            process.StartInfo.FileName = toolkit.BaseDirectory;
+            process.StartInfo.UseShellExecute = true;
+            process.Start();
         }
     }
 }

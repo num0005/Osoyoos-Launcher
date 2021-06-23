@@ -58,5 +58,29 @@ namespace ToolkitLauncher.Properties {
                 this["settings_update"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int set_theme {
+            get {
+                return ((int)(this["set_theme"]));
+            }
+            set {
+                this["set_theme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string last_fbx_path {
+            get {
+                return ((string)(this["last_fbx_path"]));
+            }
+            set {
+                this["last_fbx_path"] = value;
+            }
+        }
     }
 }

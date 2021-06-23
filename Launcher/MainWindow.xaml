@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="Osoyoos"
         SizeToContent="WidthAndHeight"
-        FlowDirection="LeftToRight" Closing="MainWindow_Closing" Height="475" Width="550" MinHeight="475" MinWidth="550" MaxHeight="475">
+        FlowDirection="LeftToRight" Closing="MainWindow_Closing" Height="500" Width="600" MinHeight="500" MinWidth="600" MaxHeight="500">
     <Window.Resources>
         <Visibility x:Key="show_light_slider">Visible</Visibility>
         <local:GameGenToIsEnabled x:Key="GameGenToIsEnabled" />
@@ -19,13 +19,25 @@
         <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />
         <local:CommunityToolsToIsEnabled x:Key="CommunityToolsToIsEnabled" />
         <local:CommunityToolsToVisibilityConverter x:Key="CommunityToolsToVisibilityConverter" />
-        <local:H2VCommunityToolsToVisibilityConverter x:Key="H2VCommunityToolsToVisibilityConverter" />
-        <local:H2VDropdownSelectionToVisibilityConverter x:Key="H2VDropdownSelectionToVisibilityConverter" />
         <local:RadiosityContentModifier x:Key="RadiosityContentModifier" />
-        <local:ToolkitToLevelSpaceConverter x:Key="ToolkitToLevelSpaceConverter" />
-        <local:ToolkitToSoundSpaceConverter x:Key="ToolkitToSoundSpaceConverter" />
+        <local:ToolkitToSpaceConverter x:Key="ToolkitToSpaceConverter" />
+        <local:ToolToIsEnabled x:Key="ToolToIsEnabled" />
+        <local:LightmappingContentModifier x:Key="LightmappingContentModifier" />
+        <local:H1AVisibility x:Key="H1AVisibility" />
+        <local:FileTypetoVisibility x:Key="FileTypetoVisibility" />
+        <local:BitmapTypeToVisibility x:Key="BitmapTypeToVisibility" />
+        <ObjectDataProvider x:Key="cache_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:CacheType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="theme_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:ThemeType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </Window.Resources>
-    <Grid>
+    <Grid Background="{DynamicResource WindowPrimaryColor}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="*"/>
@@ -40,26 +52,25 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Column="1" Grid.Row="1" MaxHeight="90" VerticalAlignment="Top">
-            <GroupBox x:Name="programs_box" Header="Run Programs">
+        <Grid Grid.Column="1" Grid.Row="1" VerticalAlignment="Top">
+            <GroupBox x:Name="programs_box" Header="Run Programs" Padding="5">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="5"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="10"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="5"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Column="1" Grid.Row="1" Content="Run Sapien" Click="RunSapien" Padding="4" HorizontalAlignment="Left"/>
-                    <Button Grid.Column="2" Grid.Row="1" Content="Run Guerilla" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right"/>
-                    <Button Grid.Column="1" Grid.Row="3" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left"/>
-                    <Button Grid.Column="2" Grid.Row="3" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Right"/>
+                    <Button Grid.Column="0" Grid.Row="0" Content="Run Sapien" Click="RunSapien" Padding="4" HorizontalAlignment="Left" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ToolToIsEnabled}, ConverterParameter=0, ElementName=toolkit_selection}" ToolTip="Start a new instance of Sapien (the world editor)."/>
+                    <Button Grid.Column="1" Grid.Row="0" Content="Run Game" Click="RunGame" Padding="4" HorizontalAlignment="Center" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ToolToIsEnabled}, ConverterParameter=3, ElementName=toolkit_selection}" ToolTip="Start the game (only works if game path is set)."/>
+                    <Button Grid.Column="2" Grid.Row="0" Content="Run Guerilla" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ToolToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}" ToolTip="Start Guerilla (the tag/content editor)"/>
+                    <Button Grid.Column="0" Grid.Row="2" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left" ToolTip="Open the command line in the base folder of the current toolkit."/>
+                    <Button Grid.Column="1" Grid.Row="2" x:Name="open_explorer" Content="Open Toolkit Folder" Padding="4" HorizontalAlignment="Center" Click="open_explorer_Click" ToolTip="Open toolkit base folder in File Explorer."/>
+                    <Button Grid.Column="2" Grid.Row="2" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Right" ToolTip="Run a custom tool command."/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -77,9 +88,9 @@
                         <ColumnDefinition Width="5"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="1" Grid.Row="1">
-                        <TabControl TabStripPlacement="Left">
-                            <TabItem Header="Compile Level" Margin="-2,-2,1,-2">
-                                <Grid Background="#FFE5E5E5">
+                        <TabControl TabStripPlacement="Left" Background="{DynamicResource TabControlPrimaryColor}" BorderBrush="{DynamicResource TabControlSecondaryColor}">
+                            <TabItem Header="Import &amp; Light Level" Margin="-2,-2,0,-2">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
                                         <RowDefinition Height="*"/>
@@ -95,6 +106,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="8"/>
                                             <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="8"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition/>
@@ -102,119 +114,173 @@
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=1, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Button x:Name="browse_level_compile" Grid.Column="0" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_level_compile_Click" MinWidth="75" MinHeight="26"/>
-                                            <Grid Grid.Column="2">
+                                            <Button Grid.Column="0" x:Name="convert_from_fbx" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="40" MinHeight="26" FontFamily="Arial" FontWeight="ExtraBold" Content="FBX" FontStyle="Italic" Click="convert_from_fbx_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource H1AVisibility}, ConverterParameter=0, ElementName=toolkit_selection}" ToolTip="Create a JMA/JMS file from an FBX (Filmbox) file."/>
+                                            <Button x:Name="browse_level_compile" Grid.Column="2" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center"  Click="browse_level_compile_Click" MinWidth="75" MinHeight="25" ToolTip="Select a level file to import."/>
+                                            <Grid Grid.Column="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="Select level file to compile." Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" Padding="4"/>
+                                                <TextBlock Text="Select level file to import." Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" Padding="4"/>
                                             </Grid>
-                                            <TextBox Name="compile_level_path" Grid.Column="2" BorderBrush="{StaticResource brushWatermarkBorder}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            <TextBox Name="compile_level_path" Grid.Column="4" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                         </Grid>
-                                        <Grid Grid.Row="4">
+                                        <Grid Grid.Row="5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToLevelSpaceConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <GroupBox x:Name="light_quality_select_box" Header="Light Quality" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}">
+                                            <GroupBox x:Name="light_quality_select_box" Header ="{Binding SelectedIndex, Converter={StaticResource LightmappingContentModifier}, ConverterParameter=1, ElementName=toolkit_selection}" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}" IsManipulationEnabled="True">
                                                 <Grid>
                                                     <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="5"/>
                                                         <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="5"/>
                                                     </Grid.RowDefinitions>
-                                                    <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid Grid.Column="1" Grid.Row="1">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="8"/>
+                                                            <RowDefinition Height="*"/>
                                                             <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
-                                                        <Grid Grid.Row="0">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Label Grid.Column="0" x:Name="low_quality" HorizontalAlignment="Left">Low</Label>
-                                                            <Label Grid.Column="1" x:Name="max_quality" HorizontalAlignment="Right">Max</Label>
+                                                        <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="8"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                            </Grid.RowDefinitions>
+                                                            <Grid Grid.Row="0">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <Label Grid.Column="0" x:Name="low_quality" HorizontalAlignment="Left" Foreground="{DynamicResource TextColor}">Low</Label>
+                                                                <Label Grid.Column="1" x:Name="max_quality" HorizontalAlignment="Right" Foreground="{DynamicResource TextColor}">Max</Label>
+                                                            </Grid>
+                                                            <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+                                                                <local:LightmapSlider x:Name="light_quality_slider" IsDirectionReversed="True" IsSnapToTickEnabled="False" ConvertedTicks="0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="6" Minimum="0" Maximum="1" Value="0.5" ToolTip="Stop threshold for lighting, lower values may result in better lighting but will take longer."/>
+                                                            </StackPanel>
+                                                            <ToggleButton Grid.Row="3" x:Name="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom" ToolTip="Is this a draft or final lightmap? Draft is faster but less accurate."/>
                                                         </Grid>
-                                                        <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
-                                                            <Slider x:Name="light_quality_slider" Foreground="Black" IsDirectionReversed="True" IsSnapToTickEnabled="True" Ticks="0.000001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.999999" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="0.000001" Maximum="0.999999" Value="0.999999"/>
-                                                        </StackPanel>
-                                                        <ToggleButton Grid.Row="3" x:Name="radiosity_quality" Content ="{Binding IsChecked, Converter={StaticResource RadiosityContentModifier}, ConverterParameter=0, ElementName=radiosity_quality}" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxHeight="26" VerticalAlignment="Bottom"/>
-                                                    </Grid>
-                                                    <Grid Grid.Row="1">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="5"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="8"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="5"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <ComboBox Grid.Column="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                            <ComboBoxItem Content="Checkerboard"/>
-                                                            <ComboBoxItem Content="Draft Low"/>
-                                                            <ComboBoxItem Content="Draft Medium"/>
-                                                            <ComboBoxItem Content="Draft High"/>
-                                                            <ComboBoxItem Content="Draft Super"/>
-                                                            <ComboBoxItem Content="Direct Only"/>
-                                                            <ComboBoxItem Content="Low"/>
-                                                            <ComboBoxItem Content="Medium"/>
-                                                            <ComboBoxItem Content="High"/>
-                                                            <ComboBoxItem Content="Super"/>
-                                                            <ComboBoxItem Content="Custom"/>
-                                                        </ComboBox>
-                                                        <Button Grid.Column="3" x:Name ="lightmap_config_button" HorizontalAlignment="Left" Height="22" Width="22" VerticalAlignment="Center" Click="lightmap_config_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource H2VCommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                            <Button.IsEnabled>
-                                                                <MultiBinding Converter="{StaticResource LightmapConfigModifier}">
-                                                                    <Binding ElementName="light_quality_level" Path="SelectedIndex" />
-                                                                    <Binding ElementName="toolkit_selection" Path="SelectedIndex" />
-                                                                </MultiBinding>
-                                                            </Button.IsEnabled>
-                                                            <Image Source="Images\gear.png" Stretch="Fill">
-                                                                <Image.Style>
-                                                                    <Style TargetType="Image">
-                                                                        <Style.Triggers>
-                                                                            <Trigger Property="IsEnabled" Value="False">
-                                                                                <Setter Property="Opacity" Value="0.5" />
-                                                                            </Trigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Image.Style>
-                                                            </Image>
-                                                        </Button>
+                                                        <Grid Grid.Row="1">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="5"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=2, ElementName=toolkit_selection}"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="5"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <ComboBox Grid.Column="1" x:Name="light_quality_level" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}" ToolTip="Lighting quality (checkerboard is the worst, super is the best).">
+                                                                <ComboBoxItem Content="Checkerboard"/>
+                                                                <ComboBoxItem Content="Draft Low"/>
+                                                                <ComboBoxItem Content="Draft Medium"/>
+                                                                <ComboBoxItem Content="Draft High"/>
+                                                                <ComboBoxItem Content="Draft Super"/>
+                                                                <ComboBoxItem Content="Direct Only"/>
+                                                                <ComboBoxItem Content="Low"/>
+                                                                <ComboBoxItem Content="Medium"/>
+                                                                <ComboBoxItem Content="High"/>
+                                                                <ComboBoxItem Content="Super"/>
+                                                                <ComboBoxItem Content="Custom" ToolTip="Custom lighting quality (H2Codez feature)."/>
+                                                            </ComboBox>
+                                                            <Button Grid.Column="3" x:Name ="lightmap_config_button" HorizontalAlignment="Left" Height="22" Width="22" VerticalAlignment="Center" Click="lightmap_config_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                                                <Button.IsEnabled>
+                                                                    <MultiBinding Converter="{StaticResource LightmapConfigModifier}">
+                                                                        <Binding ElementName="light_quality_level" Path="SelectedIndex" />
+                                                                        <Binding ElementName="toolkit_selection" Path="SelectedIndex" />
+                                                                    </MultiBinding>
+                                                                </Button.IsEnabled>
+                                                                <Image Source="Images\gear.png" Stretch="Fill" ToolTip="Set custom lighting quality options.">
+                                                                    <Image.Style>
+                                                                        <Style TargetType="Image">
+                                                                            <Style.Triggers>
+                                                                                <Trigger Property="IsEnabled" Value="False">
+                                                                                    <Setter Property="Opacity" Value="0.5" />
+                                                                                </Trigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Image.Style>
+                                                                </Image>
+                                                            </Button>
+                                                        </Grid>
                                                     </Grid>
                                                 </Grid>
                                             </GroupBox>
-                                            <GroupBox x:Name="instance_number" Header="Instance Count" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" IsEnabled="{Binding SelectedIndex, Converter={StaticResource GameGenToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                            <GroupBox x:Name="instance_number" Header="Instance Count" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" IsEnabled="{Binding SelectedIndex, Converter={StaticResource GameGenToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=2, ElementName=toolkit_selection}" ToolTip="How many processes will be used for lightmapping?">
                                                 <GroupBox.BindingGroup>
                                                     <BindingGroup/>
                                                 </GroupBox.BindingGroup>
-                                                <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="Transparent" Text="1" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24"/>
+                                                <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="{DynamicResource brushTextboxBackground}" Foreground="{DynamicResource TextColor}" Text="1" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24" CaretBrush="{DynamicResource TextColor}" ToolTip=""/>
+                                            </GroupBox>
+                                            <GroupBox x:Name="structure_box" Header="Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource H1AVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="5"/>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="5"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid Grid.Row="1" Grid.Column="1">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*"/>
+                                                            <RowDefinition Height="8"/>
+                                                            <RowDefinition Height="*"/>
+                                                        </Grid.RowDefinitions>
+                                                        <CheckBox Grid.Row="0" x:Name="phantom_hack" Content="Apply Phantom Fix" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to fix phantom BSP errors on level compile."/>
+                                                        <CheckBox Grid.Row="2" x:Name="disable_asserts" Content="Disable Asserts" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Run the lightmapper once before using.&#x0a;Grants a speed boost for lightmapping by disabling error checking."/>
+                                                    </Grid>
+                                                </Grid>
                                             </GroupBox>
                                         </Grid>
-                                        <Grid Grid.Row="2">
+                                        <Grid Grid.Row="2" Visibility="{Binding Text, Converter={StaticResource FileTypetoVisibility}, ConverterParameter=0, ElementName=compile_level_path}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="browse_bsp" Grid.Column="0" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center"  Click="browse_bsp_Click" MinWidth="75" MinHeight="25" ToolTip="Select structure/BSP to light."/>
+                                            <Grid Grid.Column="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Select BSP to light" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=bsp_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" Padding="4"/>
+                                            </Grid>
+                                            <TextBox Name="bsp_path" Grid.Column="2" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" ToolTip="Structure to light, if non is selected all structures in the level/scenario will be lit."/>
+                                        </Grid>
+                                        <Grid Grid.Row="3" Visibility="{Binding Text, Converter={StaticResource FileTypetoVisibility}, ConverterParameter=1, ElementName=compile_level_path}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <RadioButton Grid.Column="0" Grid.Row="1" Name="CompileOnly" Content="Compile Only" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True" Checked="CompileOnly_Checked"/>
-                                            <RadioButton Grid.Column="1" Grid.Row="1" Name="LightOnly" Content="Light Only" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="LightOnly_Checked"/>
-                                            <RadioButton Grid.Column="2" Grid.Row="1" Name="CompileAndLight" Content="Compile and Light" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CompileAndLight_Checked"/>
+                                            <RadioButton Grid.Column="0" Grid.Row="1" Name="CompileOnly" Content="Import Only" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True" Checked="CompileOnly_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Only import the level, don't light it."/>
+                                            <RadioButton Grid.Column="1" Grid.Row="1" Name="LightOnly" Content="Light Only" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="LightOnly_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Only light, don't import"/>
+                                            <RadioButton Grid.Column="2" Grid.Row="1" Name="CompileAndLight" Content="Import and Light" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CompileAndLight_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Import level then light level."/>
                                         </Grid>
-                                        <Button Grid.Row="5" Content="Compile Level" Click="HandleClickCompile" VerticalAlignment="Bottom" IsEnabled="{Binding ElementName=compile_level_path, Path=Text.Length}"/>
+                                        <Button Grid.Row="6" Content="Import/Light Level" Click="HandleClickCompile" VerticalAlignment="Bottom" IsEnabled="{Binding ElementName=compile_level_path, Path=Text.Length}" ToolTip="Import or light the level (depends on settings)."/>
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Compile Text" Margin="-2,0,1,-2" Height="24" VerticalAlignment="Bottom">
-                                <Grid Background="#FFE5E5E5">
+                            <TabItem Header="Import Text" Margin="-2,2,0,-2" Height="24">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="5"/>
@@ -254,18 +320,25 @@
                                                         </TextBlock.Text>
                                                     </TextBlock>
                                                 </Grid>
-                                                <TextBox Grid.Column="3" Name="compile_text_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                                <TextBox Grid.Column="3" Name="compile_text_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                             </Grid>
-                                            <GroupBox Grid.Row="2" x:Name="string_box" Header="String Encoding" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
-                                                <ComboBox x:Name="string_encoding" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:StringType}}}" SelectionChanged="string_SelectionChanged"/>
+                                            <GroupBox Grid.Row="2" x:Name="string_box" Header="Text type" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}" ToolTip="What the text will be used for, HUD message or generic UI?">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <ComboBox Grid.Column="1" x:Name="string_encoding" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:StringType}}}" SelectionChanged="string_SelectionChanged"/>
+                                                </Grid>
                                             </GroupBox>
-                                            <Button Grid.Row="3" Content="Compile Text" Click="CompileText" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_text_path, Mode=OneWay, ValidatesOnNotifyDataErrors=False}"/>
+                                            <Button Grid.Row="3" Content="Import Text" Click="CompileText" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_text_path, Mode=OneWay, ValidatesOnNotifyDataErrors=False}" ToolTip="Import the text file!"/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Compile Bitmap" Margin="-2,2,1,-6">
-                                <Grid Background="#FFE5E5E5">
+                            <TabItem Header="Import Bitmap" Margin="-2,2,0,-6">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="5"/>
@@ -290,35 +363,46 @@
                                                     <ColumnDefinition Width="8"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <Button Grid.Column="0" x:Name="browse_bitmap" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_bitmap_Click" MinWidth="75" MinHeight="26"/>
+                                                <Button Grid.Column="0" x:Name="browse_bitmap" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_bitmap_Click" MinWidth="75" MinHeight="26" ToolTip="Select image to import."/>
                                                 <Grid Grid.Column="2">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="2"/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image to compile." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                                    <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image to import." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                                 </Grid>
-                                                <TextBox Grid.Column="2" Name="compile_image_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                                <TextBox Grid.Column="2" Name="compile_image_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                             </Grid>
-                                            <GroupBox Grid.Row="2" x:Name="bitmap_select_box" Header="Bitmap Type" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                                <GroupBox.BindingGroup>
-                                                    <BindingGroup/>
-                                                </GroupBox.BindingGroup>
-                                                <ComboBox x:Name="bitmap_compile_type" VerticalAlignment="Center" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}">
-                                                    <ComboBoxItem Content="2D Textures"/>
-                                                    <ComboBoxItem Content="3D Textures"/>
-                                                    <ComboBoxItem Content="Cubemaps"/>
-                                                    <ComboBoxItem Content="Sprites"/>
-                                                    <ComboBoxItem Content="Interface"/>
-                                                </ComboBox>
+                                            <GroupBox Grid.Row="2" x:Name="bitmap_select_box" Header="Bitmap Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource BitmapTypeToVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                <Grid VerticalAlignment="Center">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="8"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compile_type" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}" ToolTip="Type of image">
+                                                        <ComboBoxItem Content="2D Textures"/>
+                                                        <ComboBoxItem Content="3D Textures"/>
+                                                        <ComboBoxItem Content="Cubemaps"/>
+                                                        <ComboBoxItem Content="Sprites"/>
+                                                        <ComboBoxItem Content="Interface"/>
+                                                    </ComboBox>
+                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource H1AVisibility}, ConverterParameter=0, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
+                                                </Grid>
                                             </GroupBox>
-                                            <Button Grid.Row="3" Content="Compile Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}"/>
+                                            <Button Grid.Row="3" Content="Import Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}" ToolTip="Import the bitmap!"/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Compile Model" Margin="-2,6,1,-6" Height="24" VerticalAlignment="Top" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                <Grid Background="#FFE5E5E5">
+                            <TabItem Header="Import Model" Margin="-2,6,0,-6" Height="24" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="5"/>
@@ -341,18 +425,21 @@
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=1, ElementName=toolkit_selection}"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="8"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <Button Grid.Column="0" x:Name="browse_model" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_model_Click" MinWidth="75" MinHeight="26"/>
-                                                <Grid Grid.Column="2">
+                                                <Button Grid.Column="0" x:Name="convert_from_fbx2" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="40" MinHeight="26" FontFamily="Arial" FontWeight="ExtraBold" Content="FBX" FontStyle="Italic" Click="convert_from_fbx_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource H1AVisibility}, ConverterParameter=0, ElementName=toolkit_selection}" ToolTip="Import an FBX (Filmbox) file."/>
+                                                <Button Grid.Column="2" x:Name="browse_model" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_model_Click" MinWidth="75" MinHeight="26" ToolTip="Select a model folder to import."/>
+                                                <Grid Grid.Column="4">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="2"/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="1" Text="Select model to compile." VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_model_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
+                                                    <TextBlock Grid.Column="1" Text="Select model to import." VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_model_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                                 </Grid>
-                                                <TextBox Grid.Column="2" Name="compile_model_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                                <TextBox Grid.Column="4" Name="compile_model_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                             </Grid>
                                             <Grid Grid.Row="2">
                                                 <Grid.RowDefinitions>
@@ -366,21 +453,48 @@
                                                     <ColumnDefinition Width="1*"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <RadioButton Grid.Column="2" x:Name="model_compile_collision" Content="Collision" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="model_compile_collision_Checked"/>
-                                                <RadioButton Grid.Column="3" x:Name="model_compile_physics" Content="Physics" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="model_compile_physics_Checked"/>
-                                                <RadioButton Grid.Column="4" Grid.Row="2" x:Name="model_compile_animations" Content="Animations" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_animations_Checked"/>
-                                                <RadioButton Grid.Column="0" x:Name="model_compile_render" Content="{Binding SelectedIndex, Converter={StaticResource ModelContentModifier}, ConverterParameter=1, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Checked="model_compile_render_Checked"/>
-                                                <RadioButton Grid.Column="0" Grid.Row="2" x:Name="model_compile_all" Content="All" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_all_Checked"/>
+                                                <RadioButton Grid.Column="2" Foreground="{DynamicResource TextColor}" x:Name="model_compile_collision" Content="Collision" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="model_compile_collision_Checked" ToolTip="Import just a collision model."/>
+                                                <RadioButton Grid.Column="3" Foreground="{DynamicResource TextColor}" x:Name="model_compile_physics" Content="Physics" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="model_compile_physics_Checked" ToolTip="Import just a physics model."/>
+                                                <RadioButton Grid.Column="4" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="model_compile_animations" Content="Animations" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_animations_Checked" ToolTip="Import just model animations."/>
+                                                <RadioButton Grid.Column="0" Foreground="{DynamicResource TextColor}" x:Name="model_compile_render" Content="{Binding SelectedIndex, Converter={StaticResource ModelContentModifier}, ConverterParameter=1, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Checked="model_compile_render_Checked" ToolTip="Import just a GBX model."/>
+                                                <RadioButton Grid.Column="0" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="model_compile_all" Content="All" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_all_Checked" ToolTip="Import all model data."/>
+                                            </Grid>
+                                            <Grid Grid.Row="3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <GroupBox x:Name="model_box" Header="Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource H1AVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="5"/>
+                                                            <RowDefinition Height="*"/>
+                                                            <RowDefinition Height="5"/>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid Grid.Row="1" Grid.Column="1">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="*"/>
+                                                                <RowDefinition Height="*"/>
+                                                            </Grid.RowDefinitions>
+                                                            <CheckBox Grid.Row="0" x:Name="phantom_hack_collision" Content="Apply Phantom Fix" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to fix phantom model errors on collision compile."/>
+                                                            <CheckBox Grid.Row="1" x:Name="h2_lod_logic" Content=" Use Halo 2 Permutation LOD logic" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Use Halo 2 style permutation and LOD (level of detail) handling (applies only to GBXModel). &#x0a; Undefined LOD levels use highest available index from current permutation instead of the base permutation"/>
+                                                        </Grid>
+                                                    </Grid>
+                                                </GroupBox>
                                             </Grid>
                                             <Grid Grid.Row="4">
-                                                <Button x:Name="compile_model" Content="Compile Model" Grid.Row="3" Click="compile_model_Click" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_model_path, Mode=OneWay}"/>
+                                                <Button x:Name="compile_model" Content="Import Model" Grid.Row="3" Click="compile_model_Click" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_model_path, Mode=OneWay}" ToolTip="Import the model!"/>
                                             </Grid>
                                         </Grid>
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Compile Sound" Margin="-2,6,1,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
-                                <Grid Background="#FFE5E5E5" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sound" Margin="-2,6,0,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToIsEnabled}, ConverterParameter=1, ElementName=toolkit_selection}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
                                         <RowDefinition Height="*"/>
@@ -396,8 +510,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="8"/>
                                             <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSoundSpaceConverter}, ConverterParameter=0, ElementName=toolkit_selection}"/>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=2, ElementName=toolkit_selection}"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
@@ -407,31 +520,31 @@
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" x:Name="browse_sound" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_Click" MinWidth="75" MinHeight="26"/>
+                                            <Button Grid.Column="0" x:Name="browse_sound" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_Click" MinWidth="75" MinHeight="26" ToolTip="Select sound source file."/>
                                             <Grid Grid.Column="3">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="1" Text="Select sound file to compile" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                                <TextBlock Grid.Column="1" Text="Select sound file to import." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                             </Grid>
-                                            <TextBox Grid.Column="3" Name="import_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            <TextBox Grid.Column="3" Name="import_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                         </Grid>
-                                        <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource H2VCommunityToolsToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                        <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource CommunityToolsToVisibilityConverter}, ConverterParameter=1, ElementName=toolkit_selection}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" x:Name="browse_ltf" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Click="browse_ltf_Click" MinWidth="75" MinHeight="26"/>
+                                            <Button Grid.Column="0" x:Name="browse_ltf" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Click="browse_ltf_Click" MinWidth="75" MinHeight="26" ToolTip="Select an LTF file (H2Codez feature)"/>
                                             <Grid Grid.Column="3">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="1" Text="Select LTF file to compile" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_ltf_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                                <TextBlock Grid.Column="1" Text="Select LTF file to import." HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_ltf_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                             </Grid>
-                                            <TextBox Grid.Column="3" Name="import_ltf_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Top" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            <TextBox Grid.Column="3" Name="import_ltf_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Top" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                         </Grid>
                                         <Grid Grid.Row="4">
                                             <Grid.ColumnDefinitions>
@@ -441,7 +554,7 @@
                                             </Grid.ColumnDefinitions>
                                             <GroupBox Grid.Column="0" x:Name="platform_select_box" Header="Platform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
                                                 <Grid>
-                                                    <ComboBox x:Name="platform_type" SelectedIndex="0" VerticalAlignment="Center">
+                                                    <ComboBox x:Name="platform_type" SelectedIndex="0" VerticalAlignment="Center" ToolTip="What encoding should be used for the sound?">
                                                         <ComboBoxItem Content="Xbox"/>
                                                         <ComboBoxItem Content="WAV"/>
                                                         <ComboBoxItem Content="OGG"/>
@@ -450,18 +563,18 @@
                                             </GroupBox>
                                             <GroupBox Grid.Column="2" x:Name="bitrate_box" Header="Bitrate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource DropdownSelectionToVisibilityConverter}, ConverterParameter=0, ElementName=toolkit_selection}">
                                                 <StackPanel>
-                                                    <Slider x:Name="bitrate_slider" Foreground="Black" IsSnapToTickEnabled="True" Ticks="-0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="-0.1" Maximum="1" Value="1"/>
+                                                    <Slider x:Name="bitrate_slider" IsSnapToTickEnabled="True" Ticks="-0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1" Minimum="-0.1" Maximum="1" Value="1" ToolTip="Sound quality (higher is better)"/>
                                                 </StackPanel>
                                             </GroupBox>
                                         </Grid>
-                                        <Grid Grid.Row="6">
-                                            <Button x:Name="import_sound" Content="Compile Sound" VerticalAlignment="Bottom" Click="import_sound_Click" IsEnabled="{Binding Text.Length, ElementName=import_sound_path, Mode=OneWay}"/>
+                                        <Grid Grid.Row="5">
+                                            <Button x:Name="import_sound" Content="Import Sound" VerticalAlignment="Bottom" Click="import_sound_Click" IsEnabled="{Binding Text.Length, ElementName=import_sound_path, Mode=OneWay}" ToolTip="Import the sound!"/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Packaging" Margin="-2,10,1,-14">
-                                <Grid Background="#FFE5E5E5">
+                            <TabItem Header="Packaging" Margin="-2,10,0,-14">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
                                         <RowDefinition Height="*"/>
@@ -485,7 +598,7 @@
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Button x:Name="browse_package_level" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_Click" MinWidth="75" MinHeight="26"/>
+                                            <Button x:Name="browse_package_level" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_Click" MinWidth="75" MinHeight="26" ToolTip="Select the scenario file to package."/>
                                             <Grid Grid.Column="3">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>
@@ -493,9 +606,46 @@
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="3" Text="Select a scenario file to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                             </Grid>
-                                            <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" MinHeight="26" MaxHeight="26"/>
+                                            <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                         </Grid>
-                                        <Button Grid.Row="3" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}"/>
+                                        <GroupBox Grid.Row="2" x:Name="package_box" Header="Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource H1AVisibility}, ConverterParameter=0, ElementName=toolkit_selection}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="5"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="5"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="5"/>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="5"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="1" Grid.Column="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="3*"/>
+                                                        <ColumnDefinition Width="1*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="8"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="8"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <CheckBox Foreground="{DynamicResource TextColor}" x:Name="log_tag_loads" Content="Log loaded tags (advanced)" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Log the tags that were loaded during level package to a text file in toolkit root."/>
+                                                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cache_type" ItemsSource="{Binding Source={StaticResource cache_type_enum}}" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Does the map only support classic H1 graphics or does it support remastered H1A graphics?" />
+                                                    <Label Grid.Row="2" HorizontalAlignment="Left" Foreground="{DynamicResource TextColor}">Graphics usage:</Label>
+                                                    <ComboBox Grid.Row="4" Grid.Column="1" x:Name="resource_map_usage" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Should shared resources be used and/or updated?">
+                                                        <ComboBoxItem Content="None"></ComboBoxItem>
+                                                        <ComboBoxItem Content="Read only"></ComboBoxItem>
+                                                        <ComboBoxItem Content="Read and update"></ComboBoxItem>
+                                                    </ComboBox>
+                                                    <Label Grid.Row="4" HorizontalAlignment="Left" Foreground="{DynamicResource TextColor}">Resource map usage:</Label>
+                                                </Grid>
+                                            </Grid>
+                                        </GroupBox>
+                                        <Button Grid.Row="3" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Package the level!"/>
                                     </Grid>
                                 </Grid>
                             </TabItem>
@@ -511,8 +661,13 @@
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="45"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="5"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -520,35 +675,37 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="5"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="1" Grid.Row="1" Content="Profile" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26"/>
-                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="{Binding Path=SelectedProfileIndex, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148"/>
-                    <Button Grid.Column="3" Grid.Row="1" x:Name="toolkit_profiles" Content="Toolkit Profiles" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="toolkit_profiles_Click"/>
-                    <Button Grid.Column="4" Grid.Row="1" Content="About" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="about_Click"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Profile" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26" Foreground="{DynamicResource TextColor}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="{Binding Path=SelectedProfileIndex, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148" ToolTip="Which toolkit profile is being used?"/>
+                    <Label Grid.Column="3" Grid.Row="1" Content="Theme" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26" Foreground="{DynamicResource TextColor}"/>
+                    <ComboBox Grid.Column="5" Grid.Row="1" x:Name="theme" ItemsSource="{Binding Source={StaticResource theme_type_enum}}" VerticalAlignment="Center" SelectedIndex="0" SelectionChanged="theme_SelectionChanged" HorizontalAlignment="Right" MinHeight="26" ToolTip="Darkness or light?"/>
+                    <Button Grid.Column="7" Grid.Row="1" x:Name="toolkit_profiles" Content="Toolkit Profiles" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="toolkit_profiles_Click" ToolTip="Edit toolkit profiles selection."/>
+                    <Button Grid.Column="9" Grid.Row="1" Content="About" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="about_Click" ToolTip="by the prophets!"/>
                 </Grid>
             </GroupBox>
         </Grid>
         <Grid Grid.ColumnSpan="3" Grid.RowSpan="7" x:Name="Custom_Command" Visibility="Collapsed">
-            <Grid Background="Black" Opacity="0.5"/>
+            <Grid Background="{DynamicResource TransparentWindowColor}" Opacity="0.5"/>
             <Border
             MinWidth="250"
-            Background="#FFE5E5E5"
-            BorderBrush="Black"
+            Background="{DynamicResource WindowSecondaryColor}"
+            BorderBrush="{DynamicResource TransparentWindowColor}"
             BorderThickness="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center" RenderTransformOrigin="0.508,-0.635" Margin="138,42,153,291" Height="80">
                 <StackPanel>
-                    <TextBlock Margin="5" Text="Run Custom Command" FontWeight="Bold" FontFamily="Cambria" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.351,0.429" />
-                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="custom_command_text" Height="21" Width="215"/>
+                    <TextBlock Margin="5" Foreground="{DynamicResource TextColor}" Text="Run Custom Command" FontWeight="Bold" FontFamily="Cambria" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.351,0.429" />
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="custom_command_text" Height="21" Width="215" ToolTip="Custom command"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="custom_run" Margin="5" Content="Run" Background="{x:Null}" RenderTransformOrigin="0.24,0.45" Click="custom_run_Click"/>
-                        <Button x:Name="custom_cancel" Margin="5" Content="Cancel" Background="{x:Null}" Click="custom_cancel_Click"/>
+                        <Button x:Name="custom_run" Margin="5" Content="Run" Background="{x:Null}" RenderTransformOrigin="0.24,0.45" Click="custom_run_Click" ToolTip="Run the custom command"/>
+                        <Button x:Name="custom_cancel" Margin="5" Content="Cancel" Background="{x:Null}" Click="custom_cancel_Click" ToolTip="Cancel running the command."/>
                     </StackPanel>
                 </StackPanel>
             </Border>
         </Grid>
         <Grid Grid.ColumnSpan="3" Grid.RowSpan="7" x:Name="lightmap_config_ui" Visibility="Collapsed">
-            <Grid Background="Black" Opacity="0.5"/>
-            <Border Height="Auto" Width="Auto" Background="#FFE5E5E5" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid Background="{DynamicResource TransparentWindowColor}" Opacity="0.5"/>
+            <Border Height="Auto" Width="Auto" Background="{DynamicResource WindowSecondaryColor}" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -569,7 +726,7 @@
                                 <RowDefinition Height="8"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="0" x:Name="lightmap_flags" Header="Lightmap Flags">
+                            <GroupBox Grid.Row="0" x:Name="lightmap_flags" Header="Lightmap Flags" Foreground="{DynamicResource TextColor}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="5"/>
@@ -585,9 +742,9 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="5"/>
                                     </Grid.RowDefinitions>
-                                    <CheckBox Grid.Column="1" Grid.Row="1" x:Name="lightmap_is_checkboard" Content="Checkerboard"/>
-                                    <CheckBox Grid.Column="1" Grid.Row="3" x:Name="lightmap_is_direct_only" Content="Only Direct Lighting"/>
-                                    <CheckBox Grid.Column="1" Grid.Row="5" x:Name="lightmap_is_draft" Content="Draft Quality"/>
+                                    <CheckBox Grid.Column="1" Grid.Row="1" Foreground="{DynamicResource TextColor}" x:Name="lightmap_is_checkboard" Content="Checkerboard" ToolTip="Use checkboard lighting."/>
+                                    <CheckBox Grid.Column="1" Grid.Row="3" Foreground="{DynamicResource TextColor}" x:Name="lightmap_is_direct_only" Content="Only Direct Lighting" ToolTip="Only handle direct lighting (no bounced light)."/>
+                                    <CheckBox Grid.Column="1" Grid.Row="5" Foreground="{DynamicResource TextColor}" x:Name="lightmap_is_draft" Content="Draft Quality" ToolTip="Draft lighting (fast and inaccurate)"/>
                                 </Grid>
                             </GroupBox>
                             <GroupBox Grid.Row="2" x:Name="lightmap_counts" Header="Lightmap Count">
@@ -606,14 +763,14 @@
                                         <RowDefinition Height="8"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Column="0" Grid.Row="0" x:Name="lightmap_primary_monte_carlo_count_label" Content="Sample Count:"/>
-                                    <Label Grid.Column="0" Grid.Row="2" x:Name="lightmap_proton_count_label" Content="Photon Count:"/>
-                                    <Label Grid.Column="0" Grid.Row="4" x:Name="lightmap_secondary_monte_carlo_count_label" Content="Antialiasing Samples:"/>
-                                    <Label Grid.Column="0" Grid.Row="6" x:Name="lightmap_unk7_count_label" Content="Gather Distance:"/>
-                                    <TextBox Grid.Column="2" Grid.Row="0" x:Name="lightmap_primary_monte_carlo_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
-                                    <TextBox Grid.Column="2" Grid.Row="2" x:Name="lightmap_proton_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
-                                    <TextBox Grid.Column="2" Grid.Row="4" x:Name="lightmap_secondary_monte_carlo_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
-                                    <TextBox Grid.Column="2" Grid.Row="6" x:Name="lightmap_unk7_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="decimals_only" MinWidth="100"/>
+                                    <Label Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource TextColor}" x:Name="lightmap_sample_count_label" Content="Sample Count:"/>
+                                    <Label Grid.Column="0" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="lightmap_photon_count_label" Content="Photon Count:" ToolTip="How many photons will be cast?"/>
+                                    <Label Grid.Column="0" Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="lightmap_AA_sample_count_label" Content="Antialiasing Samples:"/>
+                                    <Label Grid.Column="0" Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="lightmap_gather_dist_label" Content="Gather Distance:"/>
+                                    <TextBox Grid.Column="2" Grid.Row="0" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_sample_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
+                                    <TextBox Grid.Column="2" Grid.Row="2" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_photon_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100" ToolTip="How many photons will be cast?"/>
+                                    <TextBox Grid.Column="2" Grid.Row="4" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_AA_sample_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
+                                    <TextBox Grid.Column="2" Grid.Row="6" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_gather_dist" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="decimals_only" MinWidth="100"/>
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Row="4">
@@ -624,8 +781,8 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="5"/>
                                 </Grid.ColumnDefinitions>
-                                <Button Grid.Column="1" Grid.Row="1" x:Name="lightmap_save" Content="Save Settings" Padding="4" MinWidth="75" MinHeight="26" Click="lightmap_save_Click"/>
-                                <Button Grid.Column="3" Grid.Row="1" x:Name="lightmap_reset" Content="Reset Settings" Padding="4" MinWidth="75" MinHeight="26" Click="lightmap_reset_Click"/>
+                                <Button Grid.Column="1" Grid.Row="1" x:Name="lightmap_save" Content="Save Settings" Padding="4" MinWidth="75" MinHeight="26" Click="lightmap_save_Click" ToolTip="Save lightmap settings."/>
+                                <Button Grid.Column="3" Grid.Row="1" x:Name="lightmap_reset" Content="Reset Settings" Padding="4" MinWidth="75" MinHeight="26" Click="lightmap_reset_Click" ToolTip="Reset lightmap settings to defaults for &quot;super&quot;."/>
                             </Grid>
                         </Grid>
                     </Grid>

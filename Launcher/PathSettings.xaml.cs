@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,6 +10,8 @@ namespace ToolkitLauncher
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum build_type
     {
+        [Description("MCC")]
+        release_mcc,
         [Description("Standalone")]
         release_standalone
     }
@@ -47,6 +47,7 @@ namespace ToolkitLauncher
             profile_wizard.IsEnabled = has_profiles;
             profile_name_box.IsEnabled = has_profiles;
             hek_box.IsEnabled = has_profiles;
+            asset_dir.IsEnabled = has_profiles;
             build_type_box.IsEnabled = has_profiles;
             gen_type_box.IsEnabled = has_profiles;
         }
@@ -135,12 +136,56 @@ namespace ToolkitLauncher
 
         private void browse_root_directory_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog root_folder = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.FolderBrowserDialog root_folder = new();
             System.Windows.Forms.DialogResult result = root_folder.ShowDialog();
+            root_folder.Description = "Select the root folder";
+            root_folder.UseDescriptionForTitle = true;
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 root_directory.Text = root_folder.SelectedPath;
             }
+        }
+
+        private void browse_data_dir_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog folderDlg = new();
+            folderDlg.Description = "Select the data folder";
+            folderDlg.UseDescriptionForTitle = true;
+            System.Windows.Forms.DialogResult result = folderDlg.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                data_path.Text = folderDlg.SelectedPath;
+            }
+        }
+
+        private void browse_tag_dir_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog folderDlg = new();
+            folderDlg.Description = "Select the tags folder";
+            folderDlg.UseDescriptionForTitle = true;
+            System.Windows.Forms.DialogResult result = folderDlg.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                tag_path.Text = folderDlg.SelectedPath;
+            }
+        }
+
+        private void browse_game_dir_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog root_folder = new();
+            System.Windows.Forms.DialogResult result = root_folder.ShowDialog();
+            root_folder.Description = "Select the root folder";
+            root_folder.UseDescriptionForTitle = true;
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                game_path.Text = root_folder.SelectedPath;
+            }
+        }
+
+        private void browse_game_exe_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new FilePicker(game_exe_path, null, toolExeOptions, null);
+            picker.Prompt();
         }
 
         private void profile_selection_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -153,6 +198,11 @@ namespace ToolkitLauncher
             gen_type.SelectedIndex = 0;
             build_type.SelectedIndex = 0;
             community_tools.IsChecked = false;
+            data_path.Text = "";
+            tag_path.Text = "";
+            verbose.IsChecked = false;
+            game_path.Text = "";
+            game_exe_path.Text = "";
             if (profile_select != null && profile_select.SelectedItem != null && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex && profile_select.SelectedIndex >= 0)
             {
                 build_type build_type_enum = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].build_type;
@@ -164,6 +214,11 @@ namespace ToolkitLauncher
                 gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].game_gen;
                 build_type.SelectedIndex = (int)build_type_enum;
                 community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].community_tools;
+                data_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].data_path;
+                tag_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].tag_path;
+                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].verbose;
+                game_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].game_path;
+                game_exe_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].game_exe_path;
             }
             setting_profile = false;
         }
@@ -194,7 +249,7 @@ namespace ToolkitLauncher
 
         void ProfileSave()
         {
-            ToolkitProfiles.ProfileSettingsLauncher settings = new ToolkitProfiles.ProfileSettingsLauncher
+            ToolkitProfiles.ProfileSettingsLauncher settings = new()
             {
                 profile_name = profile_name.Text,
                 tool_path = tool_path.Text,
@@ -203,6 +258,11 @@ namespace ToolkitLauncher
                 game_gen = gen_type.SelectedIndex,
                 build_type = (build_type)build_type.SelectedIndex,
                 community_tools = (bool)community_tools.IsChecked,
+                data_path = data_path.Text,
+                tag_path = tag_path.Text,
+                verbose = (bool)verbose.IsChecked,
+                game_path = game_path.Text,
+                game_exe_path = game_exe_path.Text,
             };
             Debug.Assert(profile_select.SelectedIndex >= 0 && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex);
             ToolkitProfiles.SettingsList[profile_select.SelectedIndex] = settings;
@@ -220,9 +280,12 @@ namespace ToolkitLauncher
                     profile_description.Text = "The original HEK release for Halo Custom Edition on PC with Open Sauce extensions.";
                     break;
                 case 2:
-                    profile_description.Text = "The original HEK release for Halo 2 Vista on PC.";
+                    profile_description.Text = "The MCC Halo Combat Evolved Anniversary Toolset.";
                     break;
                 case 3:
+                    profile_description.Text = "The original HEK release for Halo 2 Vista on PC.";
+                    break;
+                case 4:
                     profile_description.Text = "The original HEK release for Halo 2 Vista on PC with H2Codez extensions.";
                     break;
                 default:
@@ -242,6 +305,11 @@ namespace ToolkitLauncher
                 string[] h1guerilla_gearbox_os_md5_list = new string[1] { "350900E1163FAFDF70428850AA7478E5" };
                 string[] h1sapien_gearbox_os_md5_list = new string[1] { "969F8F4D143FEA89488044802F156EF1" };
 
+                string[] h1tool_343_md5_list = new string[1] { "6B1638B44039189C593FC8E6A813E0FC" };
+                string[] h1guerilla_343_md5_list = new string[1] { "CD73707BA9DADA257150E96E318568F3" };
+                string[] h1sapien_343_md5_list = new string[1] { "32618717C45928D1D64EE21F91F26336" };
+                string[] h1game_343_md5_list = new string[1] { "EAEE4DBF92F5C6947C12F039F7D894E6" };
+
                 string[] h2vtool_md5_list = new string[3] { "DC221CA8C917A1975D6B3DD035D2F862", "3F58C70BBD47C64C8903033A7E3CA1CB", "4EE1F890E3B85163642A4B18DE1EC00D" };
                 string[] h2vguerilla_md5_list = new string[3] { "CE3803CC90E260B3DC59854D89B3EA88", "B95E4D600CFF0D3F3E4F790D54FAE23B", "C54FAC6F99D8C37C71C0D8407B9029C9" };
                 string[] h2vsapien_md5_list = new string[3] { "D86C488B7C8F64B86F90C732AF01BF50", "FD6B5727EC66124E8F5E9CEDA3880AC8", "B81F92A73496139F6A5BF72FF8221477" };
@@ -253,11 +321,13 @@ namespace ToolkitLauncher
                 string[] hek_tool_md5_array = new string[0];
                 string[] hek_guerilla_md5_array = new string[0];
                 string[] hek_sapien_md5_array = new string[0];
+                string[] game_md5_array = new string[0];
 
                 string profile_name_template = "";
                 string hek_tool_path = "";
                 string hek_guerilla_path = "";
                 string hek_sapien_path = "";
+                string game_exe_path = "";
                 int gen_type_template = 0;
                 int build_type_template = 0;
                 bool community_tools_template = false;
@@ -265,7 +335,7 @@ namespace ToolkitLauncher
                 switch (profile_template_index)
                 {
                     case 0:
-                        profile_name_template = "Gearbox H1EK";
+                        profile_name_template = "Gearbox HEK";
                         hek_tool_md5_array = h1tool_gearbox_md5_list;
                         hek_guerilla_md5_array = h1guerilla_gearbox_md5_list;
                         hek_sapien_md5_array = h1sapien_gearbox_md5_list;
@@ -274,7 +344,7 @@ namespace ToolkitLauncher
                         community_tools_template = false;
                         break;
                     case 1:
-                        profile_name_template = "Gearbox H1EK OS";
+                        profile_name_template = "Gearbox HEK OS";
                         hek_tool_md5_array = h1tool_gearbox_os_md5_list;
                         hek_guerilla_md5_array = h1guerilla_gearbox_os_md5_list;
                         hek_sapien_md5_array = h1sapien_gearbox_os_md5_list;
@@ -283,6 +353,16 @@ namespace ToolkitLauncher
                         community_tools_template = true;
                         break;
                     case 2:
+                        profile_name_template = "343 H1A HEK";
+                        hek_tool_md5_array = h1tool_343_md5_list;
+                        hek_guerilla_md5_array = h1guerilla_343_md5_list;
+                        hek_sapien_md5_array = h1sapien_343_md5_list;
+                        game_md5_array = h1game_343_md5_list;
+                        gen_type_template = 0;
+                        build_type_template = (int)Enum.Parse(typeof(build_type), "release_mcc");
+                        community_tools_template = false;
+                        break;
+                    case 3:
                         profile_name_template = "H2VEK";
                         hek_tool_md5_array = h2vtool_md5_list;
                         hek_guerilla_md5_array = h2vguerilla_md5_list;
@@ -291,7 +371,7 @@ namespace ToolkitLauncher
                         build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
                         community_tools_template = false;
                         break;
-                    case 3:
+                    case 4:
                         profile_name_template = "H2VEK H2Codez";
                         hek_tool_md5_array = h2vtool_h2codez_md5_list;
                         hek_guerilla_md5_array = h2vguerilla_h2codez_md5_list;
@@ -306,6 +386,7 @@ namespace ToolkitLauncher
                 bool tool_hash_matched = false;
                 bool guerilla_hash_matched = false;
                 bool sapien_hash_matched = false;
+                bool game_hash_matched = false;
                 foreach (string fileName in fileEntries)
                     if (Path.GetExtension(fileName) == ".exe")
                     {
@@ -350,145 +431,30 @@ namespace ToolkitLauncher
                                 }
                             }
                         }
+                        if (!game_hash_matched)
+                        {
+                            foreach (string game_md5 in game_md5_array)
+                            {
+                                if (game_md5.Contains(hash))
+                                {
+                                    game_exe_path = fileName;
+                                    game_hash_matched = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                 profile_name.Text = profile_name_template;
                 tool_path.Text = hek_tool_path;
                 sapien_path.Text = hek_sapien_path;
                 guerilla_path.Text = hek_guerilla_path;
+                game_path.Text = game_exe_path;
                 gen_type.SelectedIndex = gen_type_template;
                 build_type.SelectedIndex = build_type_template;
                 community_tools.IsChecked = community_tools_template;
                 ProfileSave();
             }
-        }
-    }
-
-    public class ToolkitProfiles
-    {
-        private static string appdata_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private const string save_folder = "Osoyoos";
-        private const string settings_file = "Settings.JSON";
-
-        private static List<ProfileSettingsLauncher> _SettingsList = new List<ProfileSettingsLauncher>();
-        public static List<ProfileSettingsLauncher> SettingsList => _SettingsList;
-
-#nullable enable
-        public class ProfileSettingsJSON
-        {
-            public string profile_name { get; set; } = "unnamed";
-            public string tool_path { get; set; } = "";
-            public string sapien_path { get; set; } = "";
-            public string guerilla_path { get; set; } = "";
-            public int game_gen { get; set; }
-            public string build_type { get; set; }
-            public bool community_tools { get; set; }
-        }
-
-        public class ProfileSettingsLauncher
-        {
-            public string profile_name { get; set; } = "unnamed";
-            public string tool_path { get; set; } = "";
-            public string sapien_path { get; set; } = "";
-            public string guerilla_path { get; set; } = "";
-            public int game_gen { get; set; }
-            public build_type build_type { get; set; }
-            public bool community_tools { get; set; }
-        }
-#nullable restore
-        /// <summary>
-        /// Loads settings from disk if they exist.
-        /// </summary>
-        /// <returns>Whatever there was an issue parsing the settings</returns>
-        public static bool Load()
-        {
-            string file_path = Path.Combine(appdata_path + "\\" + save_folder, settings_file);
-
-            if (File.Exists(file_path))
-            {
-                try
-                {
-                    string jsonString = File.ReadAllText(file_path);
-                    List<ProfileSettingsJSON> JSONList = JsonSerializer.Deserialize<List<ProfileSettingsJSON>>(jsonString);
-                    foreach (ProfileSettingsJSON JSON in JSONList)
-                    {
-                        build_type platform = (build_type)0;
-                        if (Enum.TryParse<build_type>(JSON.build_type, out platform))
-                        {
-                            platform = (build_type)Enum.Parse(typeof(build_type), JSON.build_type);
-                        }
-                        ToolkitProfiles.ProfileSettingsLauncher settings = new ToolkitProfiles.ProfileSettingsLauncher
-                        {
-                            profile_name = JSON.profile_name,
-                            tool_path = JSON.tool_path,
-                            sapien_path = JSON.sapien_path,
-                            guerilla_path = JSON.guerilla_path,
-                            game_gen = JSON.game_gen,
-                            build_type = platform,
-                            community_tools = JSON.community_tools,
-                        };
-                        _SettingsList.Add(settings);
-                    }
-                }
-                catch (System.Text.Json.JsonException)
-                {
-                    // delete the borked settings
-                    File.Delete(file_path);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static bool Save()
-        {
-            WriteJSONFile();
-            return true;
-        }
-
-        public static ProfileSettingsLauncher GetProfile(int index)
-        {
-            return _SettingsList[index];
-        }
-
-        public static int AddProfile()
-        {
-            int count = _SettingsList.Count;
-            var profile = new ToolkitProfiles.ProfileSettingsLauncher();
-            profile.profile_name = String.Format("Profile {0}", count);
-            profile.build_type = build_type.release_standalone; // default to this for now
-            _SettingsList.Add(profile);
-            return count;
-        }
-
-        private static void WriteJSONFile()
-        {
-            List<ProfileSettingsJSON> JSONSettingsList = new List<ProfileSettingsJSON>();
-            JsonSerializerOptions options = new()
-            {
-                WriteIndented = true
-            };
-
-            foreach (ProfileSettingsLauncher launcher_settings in _SettingsList)
-            {
-                ToolkitProfiles.ProfileSettingsJSON settings = new ToolkitProfiles.ProfileSettingsJSON
-                {
-                    profile_name = launcher_settings.profile_name,
-                    tool_path = launcher_settings.tool_path,
-                    sapien_path = launcher_settings.sapien_path,
-                    guerilla_path = launcher_settings.guerilla_path,
-                    game_gen = launcher_settings.game_gen,
-                    build_type = launcher_settings.build_type.ToString(),
-                    community_tools = launcher_settings.community_tools,
-                };
-                JSONSettingsList.Add(settings);
-            }
-            string json_string = JsonSerializer.Serialize(JSONSettingsList, options);
-            string file_path = Path.Combine(appdata_path + "\\" + save_folder, settings_file);
-
-            Directory.CreateDirectory(Path.Combine(appdata_path, save_folder));
-
-            File.WriteAllText(file_path, json_string);
         }
     }
 }

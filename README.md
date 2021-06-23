@@ -7,28 +7,30 @@ The Osoyoos launcher is an application that can be used to easily interact with 
 
 Early alpha, expect issues. Bug reports are welcome.
 
+![A screenshot of the launcher](Osoyoos.png?raw=true "screenshot of the launcher")
+
 ## Supported Titles and Features
 The following profiles are or will be supported by this launcher:
 
  * Halo Custom Edition
  * Halo Custom Edition - Open Sauce (W.I.P.)
+ * Halo Combat Evolved Anniversary MCC (H1A-MCC)
  * Halo 2 Vista
- * Halo 2 Vista - H2Codez
- * Halo Combat Evolved Anniversary MCC - Custom Edition (Will be added in future update)
- * Halo 2 Anniversary MCC - Classic (todo)
- * Halo 3 MCC (todo)
- * Halo 3 ODST MCC (todo)
+ * Halo 2 Vista - H2Codez 
+ * Halo 2 Anniversary MCC - Classic (Untested)
+ * Halo 3 MCC (Planned)
+ * Halo 3 ODST MCC (Planned)
 
 Launcher can do the following:
 
- * Compile and light levels
- * Compile text tags
- * Compile bitmap tags
- * Compile model tags
- * Compile sound tags
+ * Import and light levels
+ * Import text tags
+ * Import bitmap tags
+ * Import model tags
+ * Import sound tags
  * Package scenario tags
  * Create profiles to manage many different toolsets from one UI
- * Start a Guerilla or Sapien instance from the UI
+ * Run a Guerilla or Sapien instance from the UI
  * Run tool commands from the UI or open command prompt in the root of the toolkit
 
 ## Credits

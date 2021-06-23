@@ -1,32 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
+using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
-    class H1Toolkit: ToolkitBase
+    public class H1Toolkit: ToolkitBase
     {
-        override public async Task ImportStructure(string data_file, bool release)
+        public H1Toolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
+
+        override public async Task ImportStructure(string data_file, bool phantom_fix, bool release)
         {
             var info = SplitStructureFilename(data_file);
-            await RunTool(ToolType.Tool, new List<string>() { "structure", info.ScenarioPath, info.BspName });
+            await RunTool(ToolType.Tool, new() { "structure" , info.ScenarioPath, info.BspName });
         }
 
-        public override async Task BuildCache(string scenario)
+        public override async Task BuildCache(string scenario, CacheType cache_type, ResourceMapUsage resourceUsage, bool log_tags)
         {
             string path = scenario.Replace(".scenario", "");
-
-			await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path });
+            await RunTool(ToolType.Tool, new() { "build-cache-file", path });
         }
 
-        public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args)
+        public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, bool noassert)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "lightmaps", scenario, bsp, Convert.ToInt32(args.radiosity_quality).ToString(), args.level_slider.ToString() });
+            await RunTool(ToolType.Tool, new() { "lightmaps", scenario, bsp, Convert.ToInt32(args.radiosity_quality).ToString(), args.level_slider.ToString() });
         }
 
         override public async Task ImportUnicodeStrings(string path)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "unicode-strings", path });
+            await RunTool(ToolType.Tool, new() { "unicode-strings", path });
         }
 
         /// <summary>
@@ -43,42 +47,18 @@ namespace ToolkitLauncher.ToolkitInterface
         /// Import a model
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="import_type"></param>
+        /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, string import_type)
+        public override async Task ImportModel(string path, ModelCompile importType)
         {
-            string command_string;
-            switch (import_type)
-            {
-                case "render":
-                    command_string = "model";
-                    break;
-                case "collision":
-                    command_string = "collision-geometry";
-                    break;
-                case "physics":
-                    command_string = "physics";
-                    break;
-                case "animations":
-                    command_string = "animations";
-                    break;
-                case "all":
-                    command_string = "all";
-                    break;
-                default:
-                    throw new Exception();
-            }
-            if (command_string == "all")
-            {
-                await RunTool(ToolType.Tool, new List<string>() { "model", path });
-                await RunTool(ToolType.Tool, new List<string>() { "collision-geometry", path });
-                await RunTool(ToolType.Tool, new List<string>() { "physics", path });
-                await RunTool(ToolType.Tool, new List<string>() { "animations", path });
-            }
-            else
-            {
-                await RunTool(ToolType.Tool, new List<string>() { command_string, path });
-            }
+            if (importType.HasFlag(ModelCompile.render))
+                await RunTool(ToolType.Tool, new() { "model", path });
+            if (importType.HasFlag(ModelCompile.collision))
+                await RunTool(ToolType.Tool, new() { "collision-geometry", path });
+            if (importType.HasFlag(ModelCompile.physics))
+                await RunTool(ToolType.Tool, new() { "physics", path });
+            if (importType.HasFlag(ModelCompile.animations))
+                await RunTool(ToolType.Tool, new() { "animations", path });
         }
 
         /// <summary>
@@ -101,9 +81,51 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "physics", path });
         }
 
-        override public async Task ImportBitmaps(string path, string type)
+        override public async Task ImportBitmaps(string path, string type, bool debug_plate)
         {
             await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
+        }
+
+        protected virtual string sapienWindowClass
+        {
+            get => "halo";
+        }
+
+        public override bool IsMutexLocked(ToolType tool)
+        {
+            if (!OperatingSystem.IsWindows()) {
+                Debug.Fail("Unsupported API!");
+                return false;
+            }
+            if (tool == ToolType.Sapien)
+            {
+                string mutex_name = sapienWindowClass + " in " + BaseDirectory.Replace('\\', '/');
+                bool createdNew;
+                try
+                {
+                    Mutex shellMutex = new(true, mutex_name, out createdNew);
+                    shellMutex.Close();
+                    return !createdNew;
+                } catch (UnauthorizedAccessException)
+                {
+                    // The mutex exists so treat it as locked
+                    return true;
+                } catch (WaitHandleCannotBeOpenedException)
+                {
+                    // very weird, shouldn't happen
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    // maybe it's bad to catch everything but WinAPI can be a crapshoot, better to not crash the whole launcher
+                    Debug.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

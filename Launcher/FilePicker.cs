@@ -13,7 +13,8 @@ public class FilePicker
         {
 			FileSystem,
 			Tag,
-			Data
+			Data,
+			Tag_Data
         }
 		static public Options FileSelect(string title, string filter, PathRoot pathRoot, bool parent = false, bool strip_extension = true)
         {
@@ -52,6 +53,8 @@ public class FilePicker
 
 	public FilePicker(System.Windows.Controls.TextBox box, ToolkitBase toolkit, Options options, string InitialDirectory)
 	{
+		if (toolkit is not null && !Path.IsPathRooted(InitialDirectory))
+			InitialDirectory = Path.Join(toolkit.BaseDirectory, InitialDirectory);
 		this.textBox = box;
 		this.toolkitInterface = toolkit;
 		this.options = options;
@@ -121,6 +124,11 @@ public class FilePicker
 				break;
 			case Options.PathRoot.Tag:
 				base_path = toolkitInterface.GetTagDirectory();
+				break;
+			case Options.PathRoot.Tag_Data:
+				base_path = toolkitInterface.GetDataDirectory();
+				if (path.StartsWith(toolkitInterface.GetTagDirectory()))
+					base_path = toolkitInterface.GetTagDirectory();
 				break;
 			default:
 				throw new InvalidOperationException();

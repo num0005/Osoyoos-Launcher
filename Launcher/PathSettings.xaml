@@ -7,15 +7,16 @@
         xmlns:toolkit_local="clr-namespace:ToolkitLauncher"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Paths" SizeToContent="WidthAndHeight" MinHeight="460" MinWidth="370">
+        Title="Osoyoos - Profiles" SizeToContent="WidthAndHeight" MinHeight="750" MinWidth="375">
     <Window.Resources>
+        <toolkit_local:AssetDirVisibility x:Key="AssetDirVisibility" />
         <ObjectDataProvider x:Key="built_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="toolkit_local:build_type"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
-    <Grid>
+    <Grid Background="{DynamicResource WindowPrimaryColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="5"/>
             <RowDefinition Height="Auto"/>
@@ -38,11 +39,11 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ComboBox Grid.Column="0" x:Name="profile_select" SelectionChanged="profile_selection_SelectionChanged" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Padding="4" MinWidth="128" MaxWidth="128" MinHeight="26"/>
-            <Button Grid.Column="2" x:Name="add_button" Content="Add" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="add_button_Click"/>
-            <Button Grid.Column="4" x:Name="delete_button" Content="Delete" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="delete_button_Click"/>
-            <Button Grid.Column="6" x:Name="profile_wizard" Content="Profile Wizard" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="profile_wizard_Click" Height="26" IsEnabled="False"/>
+            <Button Grid.Column="2" x:Name="add_button" Content="Add" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="add_button_Click" ToolTip="Add a new toolkit profile."/>
+            <Button Grid.Column="4" x:Name="delete_button" Content="Delete" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="delete_button_Click" ToolTip="Delete the current toolkit profile (no confirmation!)."/>
+            <Button Grid.Column="6" x:Name="profile_wizard" Content="Profile Wizard" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="profile_wizard_Click" Height="26" IsEnabled="False" ToolTip="Configure this profile automatically."/>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="2" Background="#FFF7F7F7">
+        <Grid Grid.Column="1" Grid.Row="2" Background="{DynamicResource WindowSecondaryColor}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
@@ -53,9 +54,11 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" x:Name="first_launch" HorizontalAlignment="Center">Select the toolkit applications to continue.</Label>
-            <GroupBox Grid.Row="2" x:Name="profile_name_box" Header="Profile Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
+            <Label Grid.Row="0" Foreground="{DynamicResource TextColor}" x:Name="first_launch" HorizontalAlignment="Center">Select the toolkit applications to continue.</Label>
+            <GroupBox Grid.Row="2" x:Name="profile_name_box" Header="Profile Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="The name of the profile (for the UI).">
                 <Grid>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -64,12 +67,14 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="1" Text="Set Profile Name" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=profile_name, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                     </Grid>
-                    <TextBox Grid.Column="1" Name="profile_name" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler"/>
+                    <TextBox Grid.Column="1" Name="profile_name" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="4" x:Name="hek_box" Header="HEK Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
+            <GroupBox Grid.Row="4" x:Name="hek_box" Header="HEK Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="Paths to the HEK tools.">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="*"/>
@@ -91,10 +96,10 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="1" Text="Select Tool Application" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=tool_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                             </Grid>
-                            <TextBox Grid.Column="2" Grid.Row="0" Name="tool_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26" MinWidth="200" TextChanged="profile_dataChangedEventHandler"/>
+                            <TextBox Grid.Column="2" Grid.Row="0" Name="tool_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" MinWidth="200" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Grid.Row="2" x:Name="sapien_path_box" Header="Sapien Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <GroupBox Grid.Column="2" Grid.Row="2" x:Name="sapien_path_box" Header="Sapien Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Sapien.exe (world editor).">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -109,10 +114,10 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="1" Text="Select Sapien Application" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=sapien_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                             </Grid>
-                            <TextBox Grid.Column="2" Grid.Row="2" Name="sapien_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler"/>
+                            <TextBox Grid.Column="2" Grid.Row="2" Name="sapien_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Grid.Row="4" x:Name="guerilla_path_box" Header="Guerilla Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <GroupBox Grid.Column="2" Grid.Row="4" x:Name="guerilla_path_box" Header="Guerilla Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Guerilla.exe (content/tag editor).">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -127,18 +132,103 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="1" Text="Select Guerilla Application" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=guerilla_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                             </Grid>
-                            <TextBox Grid.Column="2" Grid.Row="4" Name="guerilla_path" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler"/>
+                            <TextBox Grid.Column="2" Grid.Row="4" Name="guerilla_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Column="3" Grid.Row="6" x:Name="game_exe_path_box" Header="Game Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to halo_*.exe (standalone game build).">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="browse_game_exe_path" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="browse_game_exe_Click" Padding="4" MinWidth="75" MinHeight="26"/>
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Select Game Application" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=game_exe_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                            </Grid>
+                            <TextBox Grid.Column="2" Grid.Row="4" Name="game_exe_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
                 </Grid>
             </GroupBox>
-            <Grid Grid.Row="6">
+            <GroupBox Grid.Row="6" x:Name="asset_dir" Header="Asset Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" Visibility="{Binding SelectedIndex, Converter={StaticResource AssetDirVisibility}, ConverterParameter=1, ElementName=build_type}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" x:Name="data_dir_box" Header="Data Folder Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to the data folder (source assets)">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="browse_data_dir" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="browse_data_dir_Click" Padding="4" MinWidth="75" MinHeight="26"/>
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Select Data Directory" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=data_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                            </Grid>
+                            <TextBox Grid.Column="2" Grid.Row="0" Name="data_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" MinWidth="200" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Column="2" Grid.Row="2" x:Name="tag_dir_box" Header="Tag Folder Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to the tag folder (content folder).">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="browse_tag_dir" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="browse_tag_dir_Click" Padding="4" MinWidth="75" MinHeight="26"/>
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Select Tag Directory" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=tag_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                            </Grid>
+                            <TextBox Grid.Column="2" Grid.Row="2" Name="tag_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Column="2" Grid.Row="4" x:Name="game_dir_box" Header="Game Folder Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to the game folder (packaged caches and resources go here)">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="browse_game_dir" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="browse_game_dir_Click" Padding="4" MinWidth="75" MinHeight="26"/>
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Select Game Directory" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=game_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                            </Grid>
+                            <TextBox Grid.Column="2" Grid.Row="2" Name="game_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+            <Grid Grid.Row="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Gen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="120" IsEnabled="False">
+                <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Gen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="120" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
                     <Grid>
                         <ComboBox x:Name="gen_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_data_SelectionChanged">
                             <ComboBoxItem Content="Gen 1"/>
@@ -149,29 +239,42 @@
                 <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="120" IsEnabled="False">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="8"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="8"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5"/>
                         </Grid.RowDefinitions>
-                        <ComboBox Grid.Row="2" x:Name="build_type" ItemsSource="{Binding Source={StaticResource built_type_enum}}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="26" SelectionChanged="profile_data_SelectionChanged"/>
-                        <CheckBox Grid.Row="4" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="1" Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ComboBox Grid.Row="0" x:Name="build_type" ItemsSource="{Binding Source={StaticResource built_type_enum}}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="26" SelectionChanged="profile_data_SelectionChanged" ToolTip="Legacy standalone or MCC tooling?"/>
+                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)"/>
+                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource AssetDirVisibility}, ConverterParameter=1, ElementName=build_type}" ToolTip="Include more tool output (H1A)."/>
+                        </Grid>
                     </Grid>
                 </GroupBox>
             </Grid>
-            <Grid Grid.Row="8">
+            <Grid Grid.Row="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="save_button" Content="Save" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="save_button_Click"/>
-                <Button Grid.Column="2" x:Name="cancel_button" Content="Cancel" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="cancel_button_Click"/>
+                <Button Grid.Column="0" x:Name="save_button" Content="Save" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="save_button_Click" ToolTip="Save the modified settings."/>
+                <Button Grid.Column="2" x:Name="cancel_button" Content="Cancel" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="cancel_button_Click" ToolTip="Exit without saving."/>
             </Grid>
         </Grid>
         <Grid Grid.ColumnSpan="3" Grid.RowSpan="4" x:Name="profile_wizard_menu" Visibility="Collapsed">
-            <Grid Background="Black" Opacity="0.5"/>
+            <Grid Background="{DynamicResource TransparentWindowColor}" Opacity="0.5"/>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
@@ -183,7 +286,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="30"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="1" Grid.Row="1" Background="#FFFFFFFF" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Grid.Column="1" Grid.Row="1" Background="{DynamicResource WindowPrimaryColor}" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -212,7 +315,7 @@
                                         <ColumnDefinition Width="8"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.ColumnSpan="3" Grid.Row="0" Name="root_directory_description" Text="Select the root directory contaning the editing kit you wish to use." TextWrapping="Wrap" VerticalAlignment="Center" Background="Transparent"/>
+                                    <TextBlock Grid.ColumnSpan="3" Grid.Row="0" Name="root_directory_description" Text="Select the root directory contaning the editing kit you wish to use." TextWrapping="Wrap" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource TextColor}"/>
                                     <Button Grid.Column="0" Grid.Row="2" x:Name="browse_root_directory" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_root_directory_Click" Width="75" Height="26"/>
                                     <Grid Grid.Column="2" Grid.Row="2">
                                         <Grid.ColumnDefinitions>
@@ -221,7 +324,7 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="1" Text="Select HEK root" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=root_directory, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                     </Grid>
-                                    <TextBox Grid.Column="2" Grid.Row="2" Name="root_directory" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" Background="Transparent" Height="26"/>
+                                    <TextBox Grid.Column="2" Grid.Row="2" Name="root_directory" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26"/>
                                 </Grid>
                             </GroupBox>
                             <GroupBox Grid.Column="1" Grid.Row="3" x:Name="profile_box" Header="Profile" HorizontalAlignment="Stretch" VerticalAlignment="Top">
@@ -233,8 +336,9 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Row="0" Name="profile_description" Text="I see you." TextWrapping="Wrap" VerticalAlignment="Center" Background="Transparent"/>
                                     <ComboBox Grid.Row="2" x:Name="profile_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_type_SelectionChanged">
-                                        <ComboBoxItem Content="Gearbox H1EK"/>
-                                        <ComboBoxItem Content="GearBox H1EK OS"/>
+                                        <ComboBoxItem Content="Gearbox HEK"/>
+                                        <ComboBoxItem Content="Gearbox HEK OS"/>
+                                        <ComboBoxItem Content="343 H1A HEK"/>
                                         <ComboBoxItem Content="H2VEK"/>
                                         <ComboBoxItem Content="H2VEK H2Codez"/>
                                     </ComboBox>

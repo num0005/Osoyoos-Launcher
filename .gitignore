@@ -5,3 +5,5 @@
 *.exe
 *.dll
 !/packages/Resource.Embedder.2.1.1/tasks/net46/*.dll
+/icon_assets.7z
+/Launcher/Properties/launchSettings.json
