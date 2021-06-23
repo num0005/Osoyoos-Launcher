@@ -305,10 +305,10 @@ namespace ToolkitLauncher
                 string[] h1guerilla_gearbox_os_md5_list = new string[1] { "350900E1163FAFDF70428850AA7478E5" };
                 string[] h1sapien_gearbox_os_md5_list = new string[1] { "969F8F4D143FEA89488044802F156EF1" };
 
-                string[] h1tool_343_md5_list = new string[1] { "6B1638B44039189C593FC8E6A813E0FC" };
-                string[] h1guerilla_343_md5_list = new string[1] { "CD73707BA9DADA257150E96E318568F3" };
-                string[] h1sapien_343_md5_list = new string[1] { "32618717C45928D1D64EE21F91F26336" };
-                string[] h1game_343_md5_list = new string[1] { "EAEE4DBF92F5C6947C12F039F7D894E6" };
+                string[] h1tool_343_md5_list = new string[1] { "CAFBEC6B05CB0A659F97B0084C29FA64" };
+                string[] h1guerilla_343_md5_list = new string[1] { "7C2857864AF87FA6F32EEC7EC74CC7B8" };
+                string[] h1sapien_343_md5_list = new string[1] { "81767AB17058F3802C9CB97CF996F307" };
+                string[] h1game_343_md5_list = new string[1] { "4D66960A5D5AD18CD4424477B432BCEE" };
 
                 string[] h2vtool_md5_list = new string[3] { "DC221CA8C917A1975D6B3DD035D2F862", "3F58C70BBD47C64C8903033A7E3CA1CB", "4EE1F890E3B85163642A4B18DE1EC00D" };
                 string[] h2vguerilla_md5_list = new string[3] { "CE3803CC90E260B3DC59854D89B3EA88", "B95E4D600CFF0D3F3E4F790D54FAE23B", "C54FAC6F99D8C37C71C0D8407B9029C9" };
