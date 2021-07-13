@@ -34,7 +34,7 @@ namespace ToolkitLauncher.ToolkitInterface
         physics = 4,
         render = 8,
         animations = 16,
-        all = 32,
+        all = collision | physics | render | animations,
     }
     abstract public class ToolkitBase
     {
