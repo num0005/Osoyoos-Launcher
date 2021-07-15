@@ -1,0 +1,95 @@
+[
+  {
+    "ToolkitName": "Gearbox HEK",
+    "Description": "The original HEK release for Halo Custom Edition on PC.",
+    "GameGeneration": 1,
+    "Tool": {
+      "TLSH": null,
+      "MD5": [ "1F18ECB6F0ACDCD0B0455AA4F7E06B73" ]
+    },
+    "Guerilla": {
+      "TLSH": null,
+      "MD5": [ "FD86057ECDC707D9659BF683DB2FC8DF" ]
+    },
+    "Sapien": {
+      "TLSH": null,
+      "MD5": [ "2A8529486E223DF039AE7464D94C39AC" ]
+    },
+    "Standalone": null
+  },
+  {
+    "ToolkitName": "Gearbox HEK OS",
+    "Community": true,
+    "Description": "The original HEK release for Halo Custom Edition on PC with Open Sauce extensions.",
+    "GameGeneration": 1,
+    "Tool": {
+      "TLSH": null,
+      "MD5": [ "F7474F0FBAFFB217BDD9B4790D31C255" ]
+    },
+    "Guerilla": {
+      "TLSH": null,
+      "MD5": [ "350900E1163FAFDF70428850AA7478E5" ]
+    },
+    "Sapien": {
+      "TLSH": null,
+      "MD5": [ "969F8F4D143FEA89488044802F156EF1" ]
+    }
+  },
+  {
+    "ToolkitName": "343 H1A HEK",
+    "Description": "The MCC Halo Combat Evolved Anniversary Toolset.",
+    "GameGeneration": 1,
+    "IsMCCBuild": true,
+    "Tool": {
+      "TLSH": null,
+      "MD5": [ "CAFBEC6B05CB0A659F97B0084C29FA64" ]
+    },
+    "Guerilla": {
+      "TLSH": null,
+      "MD5": [ "7C2857864AF87FA6F32EEC7EC74CC7B8" ]
+    },
+    "Sapien": {
+      "TLSH": null,
+      "MD5": [ "81767AB17058F3802C9CB97CF996F307" ]
+    },
+    "Standalone": {
+      "TLSH": null,
+      "MD5": [ "4D66960A5D5AD18CD4424477B432BCEE" ]
+    }
+  },
+  {
+    "ToolkitName": "H2VEK",
+    "Description": "The original HEK release for Halo 2 Vista on PC.",
+    "GameGeneration": 2,
+    "Tool": {
+      "TLSH": null,
+      "MD5": [ "DC221CA8C917A1975D6B3DD035D2F862", "3F58C70BBD47C64C8903033A7E3CA1CB", "4EE1F890E3B85163642A4B18DE1EC00D" ]
+    },
+    "Guerilla": {
+      "TLSH": null,
+      "MD5": [ "CE3803CC90E260B3DC59854D89B3EA88", "B95E4D600CFF0D3F3E4F790D54FAE23B", "C54FAC6F99D8C37C71C0D8407B9029C9" ]
+    },
+    "Sapien": {
+      "TLSH": null,
+      "MD5": [ "D86C488B7C8F64B86F90C732AF01BF50", "FD6B5727EC66124E8F5E9CEDA3880AC8", "B81F92A73496139F6A5BF72FF8221477" ]
+    }
+  },
+  {
+    "ToolkitName": "H2VEK H2Codez",
+    "Description": "The original HEK release for Halo 2 Vista on PC with H2Codez extensions.",
+    "GameGeneration" : 2,
+    "Community": true,
+    "Tool": {
+      "TLSH": null,
+      "MD5": [ "F7474F0FBAFFB217BDD9B4790D31C255" ]
+    },
+    "Guerilla": {
+      "TLSH": null,
+      "MD5": [ "350900E1163FAFDF70428850AA7478E5" ]
+    },
+    "Sapien": {
+      "TLSH": null,
+      "MD5": [ "969F8F4D143FEA89488044802F156EF1" ]
+    }
+  }
+]

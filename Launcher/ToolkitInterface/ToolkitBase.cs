@@ -313,15 +313,15 @@ namespace ToolkitLauncher.ToolkitInterface
                 args.Add(GetDataDirectory());
             }
 
-            if (Profile.verbose && Profile.build_type == build_type.release_mcc)
+            if (Profile.Verbose && Profile.BuildType == build_type.release_mcc)
             {
                 args.Add("-verbose");
             }
 
-            if (!string.IsNullOrWhiteSpace(Profile.game_path) && Directory.Exists(Profile.game_path) && Profile.build_type == build_type.release_mcc)
+            if (!string.IsNullOrWhiteSpace(Profile.GamePath) && Directory.Exists(Profile.GamePath) && Profile.BuildType == build_type.release_mcc)
             {
                 args.Add("-game_root_dir");
-                args.Add(Profile.game_path);
+                args.Add(Profile.GamePath);
             }
 
             return args;

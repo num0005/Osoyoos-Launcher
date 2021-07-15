@@ -12,11 +12,11 @@ namespace ToolkitLauncher.ToolkitInterface
         public H1AToolkit(ProfileSettingsLauncher profle, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profle, baseDirectory, toolPaths) {}
 
         private string tagPath {
-            get => Profile.tag_path;
+            get => Profile.TagPath;
         }
         private string dataPath
         {
-            get => Profile.data_path;
+            get => Profile.DataPath;
         }
 
         protected override bool IsDefaultTagDirectory()

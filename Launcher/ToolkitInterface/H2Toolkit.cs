@@ -13,7 +13,7 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
         {
             string bitmaps_command = "bitmaps";
-            if (Profile.community_tools)
+            if (Profile.CommunityTools)
             {
                 bitmaps_command = "bitmaps-with-type";
                 await RunTool(ToolType.Tool, new List<string>() { bitmaps_command, path, type });

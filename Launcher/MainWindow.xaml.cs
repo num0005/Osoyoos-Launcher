@@ -132,7 +132,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.community_tools;
+                    return toolkit_profile.CommunityTools;
                 }
                 return false;
             }
@@ -144,7 +144,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.game_gen == 0 && toolkit_profile.build_type == build_type.release_mcc;
+                    return toolkit_profile.GameGen == 0 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -156,7 +156,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_mcc;
+                    return toolkit_profile.GameGen == 1 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -168,7 +168,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.game_gen == 1 && toolkit_profile.build_type == build_type.release_standalone;
+                    return toolkit_profile.GameGen == 1 && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -180,7 +180,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.game_gen == 1 && toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
+                    return toolkit_profile.GameGen == 1 && toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -192,7 +192,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.game_gen == 1 && !toolkit_profile.community_tools && toolkit_profile.build_type == build_type.release_standalone;
+                    return toolkit_profile.GameGen == 1 && !toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -204,7 +204,7 @@ namespace ToolkitLauncher
             {
                 if (ToolkitProfiles.SettingsList.Count > 0 && profile_index > 0)
                 {
-                    return toolkit_profile.game_gen == 1;
+                    return toolkit_profile.GameGen == 1;
                 }
                 return false;
             }
@@ -313,21 +313,21 @@ namespace ToolkitLauncher
 
         private ToolkitBase CreateToolkitFromProfile(ToolkitProfiles.ProfileSettingsLauncher profile)
         {
-            string base_path = Path.GetDirectoryName(profile.tool_path);
+            string base_path = Path.GetDirectoryName(profile.ToolPath);
             Debug.Assert(base_path is not null, "base_path should never be null");
 
             Dictionary<ToolType, string> tool_paths = new()
             {
-                { ToolType.Tool, profile.tool_path },
-                { ToolType.Guerilla, profile.guerilla_path },
-                { ToolType.Sapien, profile.sapien_path },
-                { ToolType.Game, profile.game_exe_path }
+                { ToolType.Tool, profile.ToolPath },
+                { ToolType.Guerilla, profile.GuerillaPath },
+                { ToolType.Sapien, profile.SapienPath },
+                { ToolType.Game, profile.GameExePath }
             };
 
-            switch (profile.game_gen)
+            switch (profile.GameGen)
             {
                 case 0:
-                    return profile.build_type == build_type.release_standalone ?
+                    return profile.BuildType == build_type.release_standalone ?
                         new H1Toolkit(profile, base_path, tool_paths) :
                         new H1AToolkit(profile, base_path, tool_paths);
                 case 1:
@@ -352,14 +352,14 @@ namespace ToolkitLauncher
                 if (current_toolkit.IsEnabled())
                 {
                     profile_mapping.Add(i);
-                    toolkit_selection.Items.Add(current_profile.profile_name);
+                    toolkit_selection.Items.Add(current_profile.ProfileName);
                     toolkits.Add(current_toolkit);
 
                     is_any_toolkit_enabled = true;
                 }
                 else
                 {
-                    Debug.Print($"Profile '{current_profile.profile_name}' has been disabled!");
+                    Debug.Print($"Profile '{current_profile.ProfileName}' has been disabled!");
                 }
             }
             programs_box.IsEnabled = is_any_toolkit_enabled;
