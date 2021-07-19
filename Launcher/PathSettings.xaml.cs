@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Palit.TLSHSharp;
+using System.Runtime.CompilerServices;
 
 namespace ToolkitLauncher
 {
@@ -285,12 +287,30 @@ namespace ToolkitLauncher
                 string sapienPath = null;
                 string gamePath = null;
 
+                bool AllHashesFound()
+                {
+                    if (toolPath is null && profile.Tool is not null)
+                        return false;
+                    if (sapienPath is null && profile.Sapien is not null)
+                        return false;
+                    if (guerillaPath is null && profile.Guerilla is not null)
+                        return false;
+                    if (gamePath is null && profile.Standalone is not null)
+                        return false;
+
+                    return true;
+                }
+
+                // check exact MD5 hashes
                 foreach (string fileName in fileEntries)
                     if (Path.GetExtension(fileName) == ".exe")
                     {
                         using var md5 = System.Security.Cryptography.MD5.Create();
                         using var stream = File.OpenRead(fileName);
                         string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "");
+
+                        Debug.WriteLine($"MD5 \"{hash}\" for \"{fileName}\"");
+
                         void CheckHash(BuiltinProfiles.Profile.Executable executable, ref string foundPath)
                         {
                             if (foundPath is null && executable is not null && executable.MD5 is not null)
@@ -305,12 +325,54 @@ namespace ToolkitLauncher
                         CheckHash(profile.Guerilla, ref guerillaPath);
                         CheckHash(profile.Standalone, ref gamePath);
 
-                        if (toolPath is not null
-                            && guerillaPath is not null
-                            && sapienPath is not null
-                            && gamePath is not null)
-                            break;
+                        if (AllHashesFound())
+                            break; // exit early to not waste time
                     }
+
+                // check fuzzy hashes if needed
+                if (!AllHashesFound()) {
+                    
+                    // should be initialized to 100 as this has a good FP rate of only 6.43%, but using 50 for now as it will detect the same file for multiple tools.
+                    int last_standalone_diff = 50;
+                    int last_tool_diff = 50;
+                    int last_sapien_diff = 50;
+                    int last_guerilla_diff = 50;
+                    foreach (string fileName in fileEntries)
+                        if (Path.GetExtension(fileName) == ".exe")
+                        {
+
+                            TlshBuilder tlshBuilder = new();
+                            var buffer = new byte[1024 * 4];
+                            using (FileStream stream = File.OpenRead(fileName)) {
+                                long length = stream.Length;
+                                while (stream.Position != length)
+                                    tlshBuilder.Update(buffer, 0, stream.Read(buffer, 0, buffer.Length));
+                            }
+
+                            TlshHash hash = tlshBuilder.GetHash(true);
+                            Debug.WriteLine($"TLSH \"{hash}\" for \"{fileName}\"");
+
+                            void CheckHash(BuiltinProfiles.Profile.Executable executable, ref string foundPath, ref int lastDiff, [CallerFilePath] string callerFIle = "", [CallerLineNumber] int callerLine = 0)
+                            {
+                                if (executable is not null && executable.TLSH is not null)
+                                {
+                                    int newDiff = hash.TotalDiff(executable.TLSH, true);
+                                    if (newDiff < lastDiff) {
+                                        foundPath = fileName;
+                                        lastDiff = newDiff;
+                                        foundPath = fileName;
+                                        Debug.WriteLine($"{callerFIle}:{callerLine} TLSH: {newDiff}");
+                                    }
+                                }
+                            }
+
+
+                            CheckHash(profile.Tool, ref toolPath, ref last_tool_diff);
+                            CheckHash(profile.Sapien, ref sapienPath, ref last_sapien_diff);
+                            CheckHash(profile.Guerilla, ref guerillaPath, ref last_guerilla_diff);
+                            CheckHash(profile.Standalone, ref gamePath, ref last_standalone_diff);
+                        }
+                }
 
                 profile_name.Text = profile.ToolkitName;
                 tool_path.Text = toolPath;

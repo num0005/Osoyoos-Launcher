@@ -1,17 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.IO;
 using System.Reflection;
+using Palit.TLSHSharp;
+using System;
 
 namespace ToolkitLauncher
 {
     public static class BuiltinProfiles
     {
+        private class TLSHJsonConverter : JsonConverter<TlshHash>
+        {
+            public override TlshHash Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string value = reader.GetString();
+                if (value is null)
+                    return null;
+                return TlshHash.FromTlshStr(value);
+            }
+
+            public override void Write(Utf8JsonWriter writer, TlshHash value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
+        }
+
         public class Profile
         {
             public class Executable
             {
-                public string TLSH { get; set; }
+                [JsonConverter(typeof(TLSHJsonConverter))]
+                public TlshHash TLSH { get; set; }
                 public string[] MD5 { get; set; }
             }
 
