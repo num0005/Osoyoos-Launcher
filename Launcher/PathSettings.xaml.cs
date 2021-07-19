@@ -325,7 +325,8 @@ namespace ToolkitLauncher
                 // check fuzzy hashes if needed
                 if (!AllHashesFound()) {
                     
-                    // should be initialized to 100 as this has a good FP rate of only 6.43%, but using 50 for now as it will detect the same file for multiple tools.
+                    // todo should be initialized to 100 as this has a good FP rate of only 6.43%, but using 50 for now as it will detect the same file for multiple tools.
+                    
                     int last_standalone_diff = 50;
                     int last_tool_diff = 50;
                     int last_sapien_diff = 50;
