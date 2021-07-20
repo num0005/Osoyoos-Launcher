@@ -141,9 +141,9 @@ namespace ToolkitLauncher
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].community_tools;
+                game_gen_index = ToolkitProfiles.SettingsList[(int)value].GameGen;
+                build_type = ToolkitProfiles.SettingsList[(int)value].BuildType;
+                community_tools = ToolkitProfiles.SettingsList[(int)value].CommunityTools;
 
                 if (parameter is string && Int32.Parse(parameter as string) == 0)
                 {
@@ -208,7 +208,7 @@ namespace ToolkitLauncher
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
+                game_gen_index = ToolkitProfiles.SettingsList[(int)value].GameGen;
             }
             if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
                 return true;
@@ -226,25 +226,25 @@ namespace ToolkitLauncher
                 if (parameter is string && Int32.Parse(parameter as string) == 0)
                 {
                     //Tool
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.tool_path))
+                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
                         item_state = false;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 1)
                 {
                     //Guerilla
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.guerilla_path))
+                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
                         item_state = false;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 2)
                 {
                     //Sapien
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.sapien_path))
+                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
                         item_state = false;
                 }
                 else
                 {
                     //Game
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.game_exe_path))
+                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
                         item_state = false;
                 }
             }
@@ -267,7 +267,7 @@ namespace ToolkitLauncher
             if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.game_gen >= 1 && lightmap_quality == custom_index)
+                if (MainWindow.toolkit_profile.GameGen >= 1 && lightmap_quality == custom_index)
                     return true;
                 return false;
             }
@@ -320,7 +320,7 @@ namespace ToolkitLauncher
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                index = ToolkitProfiles.SettingsList[(int)value].game_gen;
+                index = ToolkitProfiles.SettingsList[(int)value].GameGen;
             }
             return ((ModelContent)index);
         }
@@ -336,7 +336,7 @@ namespace ToolkitLauncher
             if (ToolkitProfiles.SettingsList != null && string_encoding >= 0 && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (ToolkitProfiles.SettingsList[toolkit_selection].game_gen >= 1 || string_encoding == 1)
+                if (ToolkitProfiles.SettingsList[toolkit_selection].GameGen >= 1 || string_encoding == 1)
                     text_string = "Select a folder with .txt files to import.";
             }
             return text_string;
@@ -369,8 +369,8 @@ namespace ToolkitLauncher
             if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].game_gen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].build_type;
+                game_gen_index = ToolkitProfiles.SettingsList[(int)value].GameGen;
+                build_type = ToolkitProfiles.SettingsList[(int)value].BuildType;
             }
             else
             {

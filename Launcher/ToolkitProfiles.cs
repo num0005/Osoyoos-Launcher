@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ToolkitLauncher
 {
@@ -11,40 +12,64 @@ namespace ToolkitLauncher
         private const string save_folder = "Osoyoos";
         private const string settings_file = "Settings.JSON";
 
-        private readonly static List<ProfileSettingsLauncher> _SettingsList = new();
+        private static List<ProfileSettingsLauncher> _SettingsList = new();
         public static List<ProfileSettingsLauncher> SettingsList => _SettingsList;
 
-#nullable enable
-        public class ProfileSettingsJSON
+        private class BuildTypeJsonConverter : JsonConverter<build_type>
         {
-            public string profile_name { get; set; } = "unnamed";
-            public string tool_path { get; set; } = "";
-            public string sapien_path { get; set; } = "";
-            public string guerilla_path { get; set; } = "";
-            public int game_gen { get; set; }
-            public string build_type { get; set; }
-            public bool community_tools { get; set; }
-            public string data_path { get; set; } = "";
-            public string tag_path { get; set; } = "";
-            public bool verbose { get; set; }
-            public string game_path { get; set; } = "";
-            public string game_exe_path { get; set; } = "";
+            public override build_type Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                build_type parsed;
+                if (Enum.TryParse(reader.GetString(), out parsed))
+                    return parsed;
+                return build_type.release_standalone;
+            }
+
+            public override void Write(Utf8JsonWriter writer, build_type value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
         }
 
+#nullable enable
         public class ProfileSettingsLauncher
         {
-            public string profile_name { get; set; } = "unnamed";
-            public string tool_path { get; set; } = "";
-            public string sapien_path { get; set; } = "";
-            public string guerilla_path { get; set; } = "";
-            public int game_gen { get; set; }
-            public build_type build_type { get; set; }
-            public bool community_tools { get; set; }
-            public string data_path { get; set; } = "";
-            public string tag_path { get; set; } = "";
-            public bool verbose { get; set; }
-            public string game_path { get; set; } = "";
-            public string game_exe_path { get; set; } = "";
+            [JsonPropertyName("profile_name")]
+            public string ProfileName { get; set; } = "unnamed";
+
+            [JsonPropertyName("tool_path")]
+            public string ToolPath { get; set; } = "";
+
+            [JsonPropertyName("sapien_path")]
+            public string SapienPath { get; set; } = "";
+
+            [JsonPropertyName("guerilla_path")]
+            public string GuerillaPath { get; set; } = "";
+
+            [JsonPropertyName("game_gen")]
+            public int GameGen { get; set; }
+
+            [JsonPropertyName("build_type")]
+            [JsonConverter(typeof(BuildTypeJsonConverter))]
+            public build_type BuildType { get; set; }
+
+            [JsonPropertyName("community_tools")]
+            public bool CommunityTools { get; set; }
+
+            [JsonPropertyName("data_path")]
+            public string DataPath { get; set; } = "";
+
+            [JsonPropertyName("tag_path")]
+            public string TagPath { get; set; } = "";
+
+            [JsonPropertyName("verbose")]
+            public bool Verbose { get; set; }
+
+            [JsonPropertyName("game_path")]
+            public string GamePath { get; set; } = "";
+
+            [JsonPropertyName("game_exe_path")]
+            public string GameExePath { get; set; } = "";
         }
 #nullable restore
         /// <summary>
@@ -60,31 +85,7 @@ namespace ToolkitLauncher
                 try
                 {
                     string jsonString = File.ReadAllText(file_path);
-                    List<ProfileSettingsJSON> JSONList = JsonSerializer.Deserialize<List<ProfileSettingsJSON>>(jsonString);
-                    foreach (ProfileSettingsJSON JSON in JSONList)
-                    {
-                        build_type platform;
-                        if (!Enum.TryParse(JSON.build_type, out platform))
-                        {
-                            platform = build_type.release_standalone; // default to standalone
-                        }
-                        ProfileSettingsLauncher settings = new()
-                        {
-                            profile_name = JSON.profile_name,
-                            tool_path = JSON.tool_path,
-                            sapien_path = JSON.sapien_path,
-                            guerilla_path = JSON.guerilla_path,
-                            game_gen = JSON.game_gen,
-                            build_type = platform,
-                            community_tools = JSON.community_tools,
-                            data_path = JSON.data_path,
-                            tag_path = JSON.tag_path,
-                            verbose = JSON.verbose,
-                            game_path = JSON.game_path,
-                            game_exe_path = JSON.game_exe_path,
-                        };
-                        _SettingsList.Add(settings);
-                    }
+                    _SettingsList = JsonSerializer.Deserialize<List<ProfileSettingsLauncher>>(jsonString);
                 }
                 catch (JsonException)
                 {
@@ -114,8 +115,8 @@ namespace ToolkitLauncher
             int count = _SettingsList.Count;
             var profile = new ProfileSettingsLauncher
             {
-                profile_name = String.Format("Profile {0}", count),
-                build_type = build_type.release_standalone // default to this for now
+                ProfileName = String.Format("Profile {0}", count),
+                BuildType = build_type.release_standalone
             };
             _SettingsList.Add(profile);
             return count;
@@ -123,32 +124,11 @@ namespace ToolkitLauncher
 
         private static void WriteJSONFile()
         {
-            List<ProfileSettingsJSON> JSONSettingsList = new();
             JsonSerializerOptions options = new()
             {
                 WriteIndented = true
             };
-
-            foreach (ProfileSettingsLauncher launcher_settings in _SettingsList)
-            {
-                ProfileSettingsJSON settings = new()
-                {
-                    profile_name = launcher_settings.profile_name,
-                    tool_path = launcher_settings.tool_path,
-                    sapien_path = launcher_settings.sapien_path,
-                    guerilla_path = launcher_settings.guerilla_path,
-                    game_gen = launcher_settings.game_gen,
-                    build_type = launcher_settings.build_type.ToString(),
-                    community_tools = launcher_settings.community_tools,
-                    data_path = launcher_settings.data_path,
-                    tag_path = launcher_settings.tag_path,
-                    verbose = launcher_settings.verbose,
-                    game_path = launcher_settings.game_path,
-                    game_exe_path = launcher_settings.game_exe_path,
-                };
-                JSONSettingsList.Add(settings);
-            }
-            string json_string = JsonSerializer.Serialize(JSONSettingsList, options);
+            string json_string = JsonSerializer.Serialize(_SettingsList, options);
             string file_path = Path.Combine(appdata_path + "\\" + save_folder, settings_file);
 
             Directory.CreateDirectory(Path.Combine(appdata_path, save_folder));

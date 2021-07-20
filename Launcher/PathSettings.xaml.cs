@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Palit.TLSHSharp;
+using System.Runtime.CompilerServices;
 
 namespace ToolkitLauncher
 {
@@ -34,7 +36,7 @@ namespace ToolkitLauncher
                 ToolkitProfiles.AddProfile();
             foreach (var settings in ToolkitProfiles.SettingsList)
             {
-                profile_select.Items.Add(settings.profile_name);
+                profile_select.Items.Add(settings.ProfileName);
             }
             UpdateUI();
             startup_finished = true;
@@ -92,7 +94,7 @@ namespace ToolkitLauncher
         private void add_button_Click(object sender, RoutedEventArgs e)
         {
             int new_profile = ToolkitProfiles.AddProfile();
-            profile_select.Items.Add(ToolkitProfiles.GetProfile(new_profile).profile_name);
+            profile_select.Items.Add(ToolkitProfiles.GetProfile(new_profile).ProfileName);
             profile_select.SelectedIndex = new_profile;
             setting_profile = false;
             UpdateUI();
@@ -205,20 +207,20 @@ namespace ToolkitLauncher
             game_exe_path.Text = "";
             if (profile_select != null && profile_select.SelectedItem != null && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex && profile_select.SelectedIndex >= 0)
             {
-                build_type build_type_enum = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].build_type;
+                build_type build_type_enum = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].BuildType;
 
-                profile_name.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].profile_name;
-                tool_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].tool_path;
-                sapien_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].sapien_path;
-                guerilla_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].guerilla_path;
-                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].game_gen;
+                profile_name.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].ProfileName;
+                tool_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].ToolPath;
+                sapien_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].SapienPath;
+                guerilla_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GuerillaPath;
+                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GameGen;
                 build_type.SelectedIndex = (int)build_type_enum;
-                community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].community_tools;
-                data_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].data_path;
-                tag_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].tag_path;
-                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].verbose;
-                game_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].game_path;
-                game_exe_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].game_exe_path;
+                community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].CommunityTools;
+                data_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].DataPath;
+                tag_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].TagPath;
+                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].Verbose;
+                game_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GamePath;
+                game_exe_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GameExePath;
             }
             setting_profile = false;
         }
@@ -251,18 +253,18 @@ namespace ToolkitLauncher
         {
             ToolkitProfiles.ProfileSettingsLauncher settings = new()
             {
-                profile_name = profile_name.Text,
-                tool_path = tool_path.Text,
-                sapien_path = sapien_path.Text,
-                guerilla_path = guerilla_path.Text,
-                game_gen = gen_type.SelectedIndex,
-                build_type = (build_type)build_type.SelectedIndex,
-                community_tools = (bool)community_tools.IsChecked,
-                data_path = data_path.Text,
-                tag_path = tag_path.Text,
-                verbose = (bool)verbose.IsChecked,
-                game_path = game_path.Text,
-                game_exe_path = game_exe_path.Text,
+                ProfileName = profile_name.Text,
+                ToolPath = tool_path.Text,
+                SapienPath = sapien_path.Text,
+                GuerillaPath = guerilla_path.Text,
+                GameGen = gen_type.SelectedIndex,
+                BuildType = (build_type)build_type.SelectedIndex,
+                CommunityTools = (bool)community_tools.IsChecked,
+                DataPath = data_path.Text,
+                TagPath = tag_path.Text,
+                Verbose = (bool)verbose.IsChecked,
+                GamePath = game_path.Text,
+                GameExePath = game_exe_path.Text,
             };
             Debug.Assert(profile_select.SelectedIndex >= 0 && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex);
             ToolkitProfiles.SettingsList[profile_select.SelectedIndex] = settings;
@@ -270,189 +272,101 @@ namespace ToolkitLauncher
 
         private void profile_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int selected_profile_index = profile_type.SelectedIndex;
-            switch (selected_profile_index)
-            {
-                case 0:
-                    profile_description.Text = "The original HEK release for Halo Custom Edition on PC.";
-                    break;
-                case 1:
-                    profile_description.Text = "The original HEK release for Halo Custom Edition on PC with Open Sauce extensions.";
-                    break;
-                case 2:
-                    profile_description.Text = "The MCC Halo Combat Evolved Anniversary Toolset.";
-                    break;
-                case 3:
-                    profile_description.Text = "The original HEK release for Halo 2 Vista on PC.";
-                    break;
-                case 4:
-                    profile_description.Text = "The original HEK release for Halo 2 Vista on PC with H2Codez extensions.";
-                    break;
-                default:
-                    throw new Exception();
-            }
+            profile_description.Text = BuiltinProfiles.Profiles[profile_type.SelectedIndex].Description;
         }
 
         public void CreateProfileTemplate(string root_directory_path, int profile_template_index)
         {
             if (Directory.Exists(root_directory_path))
             {
-                string[] h1tool_gearbox_md5_list = new string[1] { "1F18ECB6F0ACDCD0B0455AA4F7E06B73" };
-                string[] h1guerilla_gearbox_md5_list = new string[1] { "FD86057ECDC707D9659BF683DB2FC8DF" };
-                string[] h1sapien_gearbox_md5_list = new string[1] { "2A8529486E223DF039AE7464D94C39AC" };
-
-                string[] h1tool_gearbox_os_md5_list = new string[1] { "F7474F0FBAFFB217BDD9B4790D31C255" };
-                string[] h1guerilla_gearbox_os_md5_list = new string[1] { "350900E1163FAFDF70428850AA7478E5" };
-                string[] h1sapien_gearbox_os_md5_list = new string[1] { "969F8F4D143FEA89488044802F156EF1" };
-
-                string[] h1tool_343_md5_list = new string[1] { "CAFBEC6B05CB0A659F97B0084C29FA64" };
-                string[] h1guerilla_343_md5_list = new string[1] { "7C2857864AF87FA6F32EEC7EC74CC7B8" };
-                string[] h1sapien_343_md5_list = new string[1] { "81767AB17058F3802C9CB97CF996F307" };
-                string[] h1game_343_md5_list = new string[1] { "4D66960A5D5AD18CD4424477B432BCEE" };
-
-                string[] h2vtool_md5_list = new string[3] { "DC221CA8C917A1975D6B3DD035D2F862", "3F58C70BBD47C64C8903033A7E3CA1CB", "4EE1F890E3B85163642A4B18DE1EC00D" };
-                string[] h2vguerilla_md5_list = new string[3] { "CE3803CC90E260B3DC59854D89B3EA88", "B95E4D600CFF0D3F3E4F790D54FAE23B", "C54FAC6F99D8C37C71C0D8407B9029C9" };
-                string[] h2vsapien_md5_list = new string[3] { "D86C488B7C8F64B86F90C732AF01BF50", "FD6B5727EC66124E8F5E9CEDA3880AC8", "B81F92A73496139F6A5BF72FF8221477" };
-
-                string[] h2vtool_h2codez_md5_list = new string[1] { "F81C24DA93CE8D114CAA8BA0A21C7A63" };
-                string[] h2vguerilla_h2codez_md5_list = new string[1] { "55B09D5A6C8ECD86988A5C0F4D59D7EA" };
-                string[] h2vsapien_h2codez_md5_list = new string[1] { "975C0D0AD45C1687D11D7D3FDFB778B8" };
-
-                string[] hek_tool_md5_array = new string[0];
-                string[] hek_guerilla_md5_array = new string[0];
-                string[] hek_sapien_md5_array = new string[0];
-                string[] game_md5_array = new string[0];
-
-                string profile_name_template = "";
-                string hek_tool_path = "";
-                string hek_guerilla_path = "";
-                string hek_sapien_path = "";
-                string game_exe_path = "";
-                int gen_type_template = 0;
-                int build_type_template = 0;
-                bool community_tools_template = false;
-
-                switch (profile_template_index)
-                {
-                    case 0:
-                        profile_name_template = "Gearbox HEK";
-                        hek_tool_md5_array = h1tool_gearbox_md5_list;
-                        hek_guerilla_md5_array = h1guerilla_gearbox_md5_list;
-                        hek_sapien_md5_array = h1sapien_gearbox_md5_list;
-                        gen_type_template = 0;
-                        build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
-                        community_tools_template = false;
-                        break;
-                    case 1:
-                        profile_name_template = "Gearbox HEK OS";
-                        hek_tool_md5_array = h1tool_gearbox_os_md5_list;
-                        hek_guerilla_md5_array = h1guerilla_gearbox_os_md5_list;
-                        hek_sapien_md5_array = h1sapien_gearbox_os_md5_list;
-                        gen_type_template = 0;
-                        build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
-                        community_tools_template = true;
-                        break;
-                    case 2:
-                        profile_name_template = "343 H1A HEK";
-                        hek_tool_md5_array = h1tool_343_md5_list;
-                        hek_guerilla_md5_array = h1guerilla_343_md5_list;
-                        hek_sapien_md5_array = h1sapien_343_md5_list;
-                        game_md5_array = h1game_343_md5_list;
-                        gen_type_template = 0;
-                        build_type_template = (int)Enum.Parse(typeof(build_type), "release_mcc");
-                        community_tools_template = false;
-                        break;
-                    case 3:
-                        profile_name_template = "H2VEK";
-                        hek_tool_md5_array = h2vtool_md5_list;
-                        hek_guerilla_md5_array = h2vguerilla_md5_list;
-                        hek_sapien_md5_array = h2vsapien_md5_list;
-                        gen_type_template = 1;
-                        build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
-                        community_tools_template = false;
-                        break;
-                    case 4:
-                        profile_name_template = "H2VEK H2Codez";
-                        hek_tool_md5_array = h2vtool_h2codez_md5_list;
-                        hek_guerilla_md5_array = h2vguerilla_h2codez_md5_list;
-                        hek_sapien_md5_array = h2vsapien_h2codez_md5_list;
-                        gen_type_template = 1;
-                        build_type_template = (int)Enum.Parse(typeof(build_type), "release_standalone");
-                        community_tools_template = true;
-                        break;
-                }
+                BuiltinProfiles.Profile profile = BuiltinProfiles.Profiles[profile_type.SelectedIndex];
 
                 string[] fileEntries = Directory.GetFiles(root_directory_path);
-                bool tool_hash_matched = false;
-                bool guerilla_hash_matched = false;
-                bool sapien_hash_matched = false;
-                bool game_hash_matched = false;
-                foreach (string fileName in fileEntries)
-                    if (Path.GetExtension(fileName) == ".exe")
+                string toolPath = null;
+                string guerillaPath = null;
+                string sapienPath = null;
+                string gamePath = null;
+
+                bool AllHashesFound()
+                {
+                    if (toolPath is null && profile.Tool is not null)
+                        return false;
+                    if (sapienPath is null && profile.Sapien is not null)
+                        return false;
+                    if (guerillaPath is null && profile.Guerilla is not null)
+                        return false;
+                    if (gamePath is null && profile.Standalone is not null)
+                        return false;
+
+                    return true;
+                }
+
+                // check exact MD5 hashes
+                foreach((string name, string hash) file in HashHelpers.GetExecutableMD5Hashes(root_directory_path))
+                {
+                    Debug.WriteLine($"MD5 \"{file.hash}\" for \"{file.name}\"");
+
+                    void CheckHash(BuiltinProfiles.Profile.Executable executable, ref string foundPath)
                     {
-                        var md5 = System.Security.Cryptography.MD5.Create();
-                        var stream = File.OpenRead(fileName);
-                        string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "");
-
-                        if (!tool_hash_matched)
+                        if (foundPath is null && executable is not null && executable.MD5 is not null)
                         {
-                            foreach (string hek_tool_md5 in hek_tool_md5_array)
-                            {
-                                if (hek_tool_md5.Contains(hash))
-                                {
-                                    hek_tool_path = fileName;
-                                    tool_hash_matched = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!guerilla_hash_matched)
-                        {
-                            foreach (string hek_guerilla_md5 in hek_guerilla_md5_array)
-                            {
-
-                                if (hek_guerilla_md5.Contains(hash))
-                                {
-                                    hek_guerilla_path = fileName;
-                                    guerilla_hash_matched = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!sapien_hash_matched)
-                        {
-                            foreach (string hek_sapien_md5 in hek_sapien_md5_array)
-                            {
-                                if (hek_sapien_md5.Contains(hash))
-                                {
-                                    hek_sapien_path = fileName;
-                                    sapien_hash_matched = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!game_hash_matched)
-                        {
-                            foreach (string game_md5 in game_md5_array)
-                            {
-                                if (game_md5.Contains(hash))
-                                {
-                                    game_exe_path = fileName;
-                                    game_hash_matched = true;
-                                    break;
-                                }
-                            }
+                            if (Array.IndexOf(executable.MD5, file.hash) != -1)
+                                foundPath = file.name;
                         }
                     }
 
-                profile_name.Text = profile_name_template;
-                tool_path.Text = hek_tool_path;
-                sapien_path.Text = hek_sapien_path;
-                guerilla_path.Text = hek_guerilla_path;
-                game_path.Text = game_exe_path;
-                gen_type.SelectedIndex = gen_type_template;
-                build_type.SelectedIndex = build_type_template;
-                community_tools.IsChecked = community_tools_template;
+
+                    CheckHash(profile.Tool, ref toolPath);
+                    CheckHash(profile.Sapien, ref sapienPath);
+                    CheckHash(profile.Guerilla, ref guerillaPath);
+                    CheckHash(profile.Standalone, ref gamePath);
+                }
+
+                // check fuzzy hashes if needed
+                if (!AllHashesFound()) {
+                    
+                    // should be initialized to 100 as this has a good FP rate of only 6.43%
+                    // todo: sometimes the same file will be matched for multiple tools, figure out how to handle this
+                    
+                    int last_standalone_diff = 100;
+                    int last_tool_diff = 100;
+                    int last_sapien_diff = 100;
+                    int last_guerilla_diff = 100;
+
+                    foreach((string name, TlshHash hash) file in HashHelpers.GetExecutableTLSHashes(root_directory_path))
+                    {
+                        Debug.WriteLine($"TLSH \"{file.hash}\" for \"{file.name}\"");
+
+                        void CheckHash(BuiltinProfiles.Profile.Executable executable, ref string foundPath, ref int lastDiff, [CallerFilePath] string callerFIle = "", [CallerLineNumber] int callerLine = 0)
+                        {
+                            if (executable is not null && executable.TLSH is not null)
+                            {
+                                int newDiff = file.hash.TotalDiff(executable.TLSH, true);
+                                if (newDiff < lastDiff)
+                                {
+                                    foundPath = file.name;
+                                    lastDiff = newDiff;
+                                    Debug.WriteLine($"{callerFIle}:{callerLine} TLSH: {newDiff}");
+                                }
+                            }
+                        }
+
+
+                        CheckHash(profile.Tool, ref toolPath, ref last_tool_diff);
+                        CheckHash(profile.Sapien, ref sapienPath, ref last_sapien_diff);
+                        CheckHash(profile.Guerilla, ref guerillaPath, ref last_guerilla_diff);
+                        CheckHash(profile.Standalone, ref gamePath, ref last_standalone_diff);
+                    }
+                }
+
+                profile_name.Text = profile.ToolkitName;
+                tool_path.Text = toolPath;
+                sapien_path.Text = sapienPath;
+                guerilla_path.Text = guerillaPath;
+                game_exe_path.Text = gamePath;
+                gen_type.SelectedIndex = profile.GameGeneration - 1;
+                build_type.SelectedIndex = profile.IsMCCBuild ? 0 : 1;
+                community_tools.IsChecked = profile.Community;
                 ProfileSave();
             }
         }
