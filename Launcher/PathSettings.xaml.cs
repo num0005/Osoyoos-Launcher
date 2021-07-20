@@ -325,12 +325,13 @@ namespace ToolkitLauncher
                 // check fuzzy hashes if needed
                 if (!AllHashesFound()) {
                     
-                    // todo should be initialized to 100 as this has a good FP rate of only 6.43%, but using 50 for now as it will detect the same file for multiple tools.
+                    // should be initialized to 100 as this has a good FP rate of only 6.43%
+                    // todo: sometimes the same file will be matched for multiple tools, figure out how to handle this
                     
-                    int last_standalone_diff = 50;
-                    int last_tool_diff = 50;
-                    int last_sapien_diff = 50;
-                    int last_guerilla_diff = 50;
+                    int last_standalone_diff = 100;
+                    int last_tool_diff = 100;
+                    int last_sapien_diff = 100;
+                    int last_guerilla_diff = 100;
 
                     foreach((string name, TlshHash hash) file in HashHelpers.GetExecutableTLSHashes(root_directory_path))
                     {
