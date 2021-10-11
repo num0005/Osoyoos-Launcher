@@ -130,50 +130,12 @@ namespace ToolkitLauncher
         }
     }
 
-    public class DropdownSelectionToVisibilityConverter : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            build_type build_type = (build_type)0;
-            bool community_tools = false;
-            int game_gen_index = 0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].GameGen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].BuildType;
-                community_tools = ToolkitProfiles.SettingsList[(int)value].CommunityTools;
-
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
-                {
-                    //Gen 1 dropdown
-                    if (game_gen_index == 0)
-                        vis = Visibility.Visible;
-                }
-                else
-                {
-                    //Gen 2 dropdown
-                    if (game_gen_index == 1)
-                        vis = Visibility.Visible;
-                }
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                vis = Visibility.Visible;
-            }
-
-            return vis;
-        }
-    }
-
     public class ToolkitToSpaceConverter : OneWayValueConverter
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             var grid = new GridLength(0);
-            if (ToolkitProfiles.SettingsList.Count > 0)
+            if (MainWindow.profile_mapping.Count > 0)
             {
                 if (parameter is string && Int32.Parse(parameter as string) == 0)
                 {
@@ -185,97 +147,105 @@ namespace ToolkitLauncher
                     if (MainWindow.halo_ce_mcc)
                         grid = new GridLength(8);
                 }
-                else
+                else if (parameter is string && Int32.Parse(parameter as string) == 2)
                 {
                     if (MainWindow.halo_2_standalone_community)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 3)
+                {
+                    if (MainWindow.halo_mcc)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 4)
+                {
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_mcc)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 5)
+                {
+                    if (!MainWindow.halo_3_mcc)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                {
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                {
+                    if (MainWindow.halo_2_mcc)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 8)
+                {
+                    if ((bool)value)
+                        grid = new GridLength(8);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 9)
+                {
+                    if (MainWindow.halo_2_mcc)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength((double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 10)
+                {
+                    if (MainWindow.halo_ce_mcc)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 11)
+                {
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 12)
+                {
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
                         grid = new GridLength(8);
                 }
             }
             else
             {
                 //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                grid = new GridLength(8);
+                if (parameter is string && Int32.Parse(parameter as string) == 9
+                    || parameter is string && Int32.Parse(parameter as string) == 10
+                    || parameter is string && Int32.Parse(parameter as string) == 11)
+                {
+                    grid = new GridLength(1, GridUnitType.Star);
+                }
+                else
+                {
+                    grid = new GridLength(8);
+                }
+
             }
             return grid;
         }
     }
 
-    public class GameGenToIsEnabled : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int game_gen_index = 0;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].GameGen;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
-                return true;
-            return false;
-        }
-    }
-
-    public class ToolToIsEnabled : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            var item_state = true;
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
-                {
-                    //Tool
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
-                        item_state = false;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    //Guerilla
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
-                        item_state = false;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    //Sapien
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
-                        item_state = false;
-                }
-                else
-                {
-                    //Game
-                    if (string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
-                        item_state = false;
-                }
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                item_state = true;
-            }
-            return item_state;
-        }
-    }
-
-    public class LightmapConfigModifier : OneWayMultiValueConverter
+    public class TextContentModifier : OneWayMultiValueConverter
     {
         public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int custom_index = 10;
-            int lightmap_quality = (int)values[0];
+            int string_encoding = (int)values[0];
             int toolkit_selection = (int)values[1];
-            if (ToolkitProfiles.SettingsList != null && lightmap_quality >= 0 && toolkit_selection >= 0)
+            string text_string = "Select a folder with an .hmt file to import.";
+            if (MainWindow.toolkit_profile != null && string_encoding >= 0 && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.GameGen >= 1 && lightmap_quality == custom_index)
-                    return true;
-                return false;
+                if (MainWindow.toolkit_profile.GameGen >= 1 || string_encoding == 1)
+                    text_string = "Select a folder with .txt files to import.";
             }
-            return false;
+            return text_string;
         }
     }
 
-    public class CommunityToolsToVisibilityConverter : OneWayValueConverter
+    public class ProfiletoVisibility : OneWayValueConverter
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -287,11 +257,97 @@ namespace ToolkitLauncher
                     if (MainWindow.halo_community)
                         vis = Visibility.Visible;
                 }
-                else
+                else if (parameter is string && Int32.Parse(parameter as string) == 1)
+                {
+                    if (MainWindow.halo_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 2)
+                {
+                    if (MainWindow.halo_ce)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 3)
+                {
+                    if (MainWindow.halo_ce_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 4)
+                {
+                    if (MainWindow.halo_2)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 5)
                 {
                     if (MainWindow.halo_2_standalone_community)
                         vis = Visibility.Visible;
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                {
+                    if (MainWindow.halo_2_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                {
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 8)
+                {
+                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 9)
+                {
+                    string textbox_path = (string)value;
+                    if (!textbox_path.EndsWith(".scenario"))
+                    {
+                        vis = Visibility.Visible;
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 10)
+                {
+                    string textbox_path = (string)value;
+                    if (textbox_path.EndsWith(".scenario"))
+                    {
+                        vis = Visibility.Visible;
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 11)
+                {
+                    if (MainWindow.halo_3_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 12)
+                {
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 13)
+                {
+                    if (!MainWindow.halo_ce)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 14)
+                {
+                    if ((bool)value)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 15)
+                {
+                    if (MainWindow.halo_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 16)
+                {
+                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_mcc)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 17)
+                {
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_3_mcc)
+                        vis = Visibility.Visible;
+                }
             }
             else
             {
@@ -302,153 +358,259 @@ namespace ToolkitLauncher
         }
     }
 
-    public class CommunityToolsToIsEnabled : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2_standalone_stock)
-                return false;
-            return true;
-        }
-    }
-
-    public class ModelContentModifier : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int index = 0;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                index = ToolkitProfiles.SettingsList[(int)value].GameGen;
-            }
-            return ((ModelContent)index);
-        }
-    }
-
-    public class TextContentModifier : OneWayMultiValueConverter
+    public class ProfiletoVisibilityMulti : OneWayMultiValueConverter
     {
         public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int string_encoding = (int)values[0];
+            bool is_fp = (bool)values[0];
             int toolkit_selection = (int)values[1];
-            string text_string = "Select a folder with an .hmt file to import.";
-            if (ToolkitProfiles.SettingsList != null && string_encoding >= 0 && toolkit_selection >= 0)
-            {
-                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (ToolkitProfiles.SettingsList[toolkit_selection].GameGen >= 1 || string_encoding == 1)
-                    text_string = "Select a folder with .txt files to import.";
-            }
-            return text_string;
-        }
-    }
-
-    public class RadiosityContentModifier : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if ((bool)value == false)
-            {
-                return RadiosityContent.draft;
-            }
-            else
-            {
-                return RadiosityContent.final;
-            }
-
-        }
-    }
-
-    public class H1AVisibility : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            int game_gen_index = 0;
-            build_type build_type = (build_type)0;
             var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
+            if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                game_gen_index = ToolkitProfiles.SettingsList[(int)value].GameGen;
-                build_type = ToolkitProfiles.SettingsList[(int)value].BuildType;
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (parameter is string && Int32.Parse(parameter as string) == game_gen_index)
-                if (build_type == build_type.release_mcc)
+                if (MainWindow.halo_2_mcc && is_fp || MainWindow.halo_3_mcc && is_fp)
                     vis = Visibility.Visible;
+            }
+            else
+            {
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
+                vis = Visibility.Visible;
+            }
             return vis;
         }
     }
 
-    public class AssetDirVisibility : OneWayValueConverter
+    public class ProfiletoIsEnabled : OneWayValueConverter
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-
-            build_type build_type = (build_type)0;
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList != null && (int)value >= 0)
-            {
-                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                build_type = (build_type)(int)value;
-            }
-            else
-            {
-                vis = Visibility.Visible;
-            }
-            if (build_type == build_type.release_mcc)
-                vis = Visibility.Visible;
-            return vis;
-        }
-    }
-
-    public class LightmappingContentModifier : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (MainWindow.halo_2)
-            {
-                return LightmapContent.light_quality;
-            }
-            else
-            {
-                return LightmapContent.light_threshold;
-            }
-        }
-    }
-
-    public class FileTypetoVisibility : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string textbox_path = (string)value;
-            var vis = Visibility.Visible;
+            var is_enabled = false;
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
                 if (parameter is string && Int32.Parse(parameter as string) == 0)
                 {
-                    if (textbox_path.EndsWith(".scenario"))
+                    if (MainWindow.halo_ce)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 1)
+                {
+                    if (MainWindow.halo_2)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 2)
+                {
+                    if (MainWindow.halo_2_standalone_stock)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 3)
+                {
+                    if (MainWindow.halo_3_mcc)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 4)
+                {
+                    //Tool
+                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 5)
+                {
+                    //Guerilla
+                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                {
+                    //Sapien
+                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                {
+                    //Game
+                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 8)
+                {
+                    if (!MainWindow.halo_ce)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 9)
+                {
+                    if (!MainWindow.halo_2_standalone_stock)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 10)
+                {
+                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_3_mcc)
+                        is_enabled = true;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 11)
+                {
+                    bool is_level_import = (bool)value;
+                    if (!is_level_import)
+                        is_enabled = true;
+                }
+            }
+            else
+            {
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
+                is_enabled = true;
+            }
+            return is_enabled;
+        }
+    }
+
+    public class ProfiletoContent : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            object enum_item = null;
+            if (ToolkitProfiles.SettingsList.Count > 0)
+            {
+                if (parameter is string && Int32.Parse(parameter as string) == 0)
+                {
+                    enum_item = ModelContent.gbxmodel;
+                    if (!MainWindow.halo_ce)
+                        enum_item = ModelContent.render;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 1)
+                {
+                    enum_item = LightmapContent.light_threshold;
+                    if (!MainWindow.halo_ce)
+                        enum_item = LightmapContent.light_quality;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 2)
+                {
+                    enum_item = Enum.GetValues(typeof(h2_quality_settings_stock));
+                    if (MainWindow.halo_2_standalone_community)
                     {
-                        vis = Visibility.Visible;
+                        enum_item = Enum.GetValues(typeof(h2_quality_settings_community));
                     }
-                    else
+                    else if (MainWindow.halo_2_mcc)
                     {
-                        vis = Visibility.Collapsed;
+                        enum_item = Enum.GetValues(typeof(h2_quality_settings_mcc));
+                    }
+                    else if (MainWindow.halo_3_mcc)
+                    {
+                        enum_item = Enum.GetValues(typeof(h3_quality_settings_stock));
                     }
                 }
-                else
+                else if (parameter is string && Int32.Parse(parameter as string) == 3)
                 {
-                    if (textbox_path.EndsWith(".scenario"))
+                    enum_item = "Run the lightmapper once before using" + "\n" + "Grants a speed boost for lightmapping by disabling error checking.";
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
                     {
-                        vis = Visibility.Collapsed;
+                        enum_item = "Run a PLAY build of tool." + "\n" + "This means it is optimized for speed and has fewer debug checks.";
                     }
-                    else
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 4)
+                {
+                    enum_item = "Import just a GBX model.";
+                    if (!MainWindow.halo_ce_mcc)
                     {
+                        enum_item = "Import just a render model.";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 5)
+                {
+                    enum_item = "Disable Asserts";
+                    if (!MainWindow.halo_ce_mcc)
+                    {
+                        enum_item = "Use Tool Fast";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                {
+                    enum_item = "Select a folder with sound files to import.";
+                    if (MainWindow.halo_2_standalone_community)
+                    {
+                        enum_item = "Select a sound tag to modify.";
+                    }
+                }
+            }
+            else
+            {
+                if (parameter is string && Int32.Parse(parameter as string) == 0)
+                {
+                    enum_item = ModelContent.gbxmodel;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 1)
+                {
+                    enum_item = LightmapContent.light_threshold;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 2)
+                {
+                    enum_item = Enum.GetValues(typeof(h2_quality_settings_stock));
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 3)
+                {
+                    enum_item = "Run the lightmapper once before using" + "\n" + "Grants a speed boost for lightmapping by disabling error checking.";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 4)
+                {
+                    enum_item = "Import just a GBX model.";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 5)
+                {
+                    enum_item = "Disable Asserts";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                {
+                    enum_item = "Select a folder with sound files to import.";
+                }
+            }
+
+            return enum_item;
+        }
+    }
+
+    public class ProfileSettingsVisibility : OneWayMultiValueConverter
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int build_type_selection = (int)values[0];
+            int gen_type_selection = (int)values[1];
+            bool community_selection = (bool)values[2];
+            string parameter_workaround = (string)values[3];
+            var vis = Visibility.Collapsed;
+            if (ToolkitProfiles.SettingsList.Count > 0)
+            {
+                if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 0)
+                {
+                    //Check if the build type and gentype are set to an MCC Halo 1 or Halo 2 for tags and data directory args along with the verbose flag
+                    if (build_type_selection == 0 && gen_type_selection != 2)
                         vis = Visibility.Visible;
-                    }
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 1)
+                {
+                    //Check if the build type and gentype are set to a standalone Halo 1 or Halo 2 profile community flags
+                    if (build_type_selection == 1 && gen_type_selection != 2)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 2)
+                {
+                    //Check if the build type and gentype are set to a MCC Halo 1 for game root directory arg
+                    if (build_type_selection == 0 && gen_type_selection == 0)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 3)
+                {
+                    //Check if the build type and gentype are set to a MCC Halo 2 for batch and expert mode flag
+                    if (build_type_selection == 0 && gen_type_selection == 1)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 4)
+                {
+                    //Check if the build type is standalone Halo 2 community profile for H2Codez updates
+                    if (build_type_selection == 1 && gen_type_selection == 1 && community_selection == true)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
+                {
+                    //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
+                    if (build_type_selection == 0 && gen_type_selection == 1 || build_type_selection == 0 && gen_type_selection == 2)
+                        vis = Visibility.Visible;
                 }
             }
             else
@@ -460,24 +622,96 @@ namespace ToolkitLauncher
         }
     }
 
-    public class BitmapTypeToVisibility : OneWayValueConverter
+    public class ProfileSettingsToSpace : OneWayMultiValueConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var vis = Visibility.Collapsed;
+            var grid = new GridLength(0);
+            int build_type_selection = (int)values[0];
+            int gen_type_selection = (int)values[1];
+            bool community_selection = (bool)values[2];
+            string parameter_workaround = (string)values[3];
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community)
+                if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 0)
                 {
-                    vis = Visibility.Visible;
+                    //Check if the build type and gentype are set to a standalone Halo 1 or Halo 2 profile for community extensions
+                    if (build_type_selection == 1)
+                        if (gen_type_selection == 0 || gen_type_selection == 1)
+                            grid = new GridLength(8);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 1)
+                {
+                    //Check if the build type and gentype are set to an MCC Halo 1 or Halo 2 profile for the verbose flag
+                    if (build_type_selection == 0)
+                        if (gen_type_selection == 0 || gen_type_selection == 1)
+                            grid = new GridLength(8);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 2)
+                {
+                    //Check if the build type and gentype are set to an MCC Halo 2 profile for the expert and batch flag
+                    if (build_type_selection == 0 && gen_type_selection == 1)
+                        grid = new GridLength(8);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 3)
+                {
+                    //Check if the build type is MCC Halo 2 profile for the asset directory
+                    if (build_type_selection == 0)
+                        grid = new GridLength(8);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 4)
+                {
+                    //Check if the build type is standalone Halo 2 community profile for H2Codez updates
+                    if (build_type_selection == 1 && gen_type_selection == 1 && community_selection == true)
+                        grid = new GridLength(8);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
+                {
+                    //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
+                    if (build_type_selection == 0 && gen_type_selection == 1 || build_type_selection == 0 && gen_type_selection == 2)
+                        grid = new GridLength(8);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                {
+                    //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
+
+                    if (build_type_selection == 0 && gen_type_selection == 1 || build_type_selection == 0 && gen_type_selection == 2)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
             }
             else
             {
                 //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                vis = Visibility.Visible;
+                if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                {
+                    grid = new GridLength(1, GridUnitType.Star);
+                }
+                else
+                {
+                    grid = new GridLength(8);
+                }
             }
-            return vis;
+            return grid;
+        }
+    }
+
+    public class LightmapConfigModifier : OneWayMultiValueConverter
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int custom_index = 10;
+            int lightmap_quality = (int)values[0];
+            int toolkit_selection = (int)values[1];
+            if (MainWindow.toolkit_profile != null && lightmap_quality >= 0 && toolkit_selection >= 0)
+            {
+                //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
+                if (MainWindow.toolkit_profile.GameGen >= 1 && lightmap_quality == custom_index)
+                    return true;
+                return false;
+            }
+            return false;
         }
     }
 

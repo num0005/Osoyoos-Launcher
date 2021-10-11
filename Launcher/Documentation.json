@@ -1,0 +1,42 @@
+{
+  "UrlBase": "https://c20.reclaimers.net/",
+  "Tookits": {
+    "_base": {
+      "RunPrograms": "general/tools/osoyoos/#run-programs-group",
+      "Settings": "general/tools/osoyoos/#settings-group",
+      "General": "general/tools/osoyoos/"
+    },
+    "H1": {
+
+    },
+    "H1CE": {
+      "Base": "H1",
+      "Lighting": "h1/tools/hek/tool/#lightmaps"
+    },
+    "H1MCC": {
+      "Base": "H1",
+      "Lighting": "h1/tools/h1a-ek/h1a-tool/#lightmaps",
+      "Packaging": "h1/tools/h1a-ek/h1a-tool/#build-cache-file",
+      "Phantom": "h1/tools/h1a-ek/h1a-tool/#phantom-bsp-fix",
+      "H2LOD": "h1/tools/h1a-ek/h1a-tool/#halo-2-lod-selection-logic"
+    },
+    "H2": {
+
+    },
+    "H2V": {
+      "Base": "H2"
+    },
+    "H2Codez": {
+      "Base": "H2V"
+    },
+    "H2MCC": {
+      "Base": "H2",
+      "Lighting": "h2/tools/h2-ek/h2-tool/#lightmaps",
+      "Packaging": "h2/tools/h2-ek/h2-tool/#build-cache-file"
+    },
+    "H3": {
+      "Packaging": "h3/tools/h3-ek/h3-tool/#build-cache-file",
+      "Lighting": "h3/tools/h3-ek/h3-tool/#baking-lightmaps-faux"
+    }
+  }
+}

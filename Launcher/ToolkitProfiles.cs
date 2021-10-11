@@ -70,6 +70,54 @@ namespace ToolkitLauncher
 
             [JsonPropertyName("game_exe_path")]
             public string GameExePath { get; set; } = "";
+
+            [JsonPropertyName("expert_mode")]
+            private bool experMode { get; set; }
+
+            /// <summary>
+            /// Whatever we should temporarily be experts
+            /// </summary>
+            [JsonIgnore]
+            public bool ElevatedToExpert;
+
+            [JsonIgnore]
+            public bool ExpertMode
+            {
+                get => experMode || ElevatedToExpert;
+                set
+                {
+                    ElevatedToExpert = false;
+                    experMode = value;
+                }
+            }
+
+
+            [JsonPropertyName("batch")]
+            public bool Batch { get; set; }
+
+            [JsonPropertyName("tool_fast_path")]
+            public string ToolFastPath { get; set; } = "";
+
+            [JsonIgnore]
+            public bool IsMCC
+            {
+                get => BuildType == build_type.release_mcc;
+                set => BuildType = value ? build_type.release_mcc : build_type.release_standalone;
+            }
+
+            private string GetH2CodezPath()
+            {
+                return Path.Combine(Path.GetDirectoryName(ToolPath) ?? "", "h2codez.dll");
+            }
+
+            /// <summary>
+            /// Is H2Codez installed?
+            /// </summary>
+            /// <returns></returns>
+            public bool IsH2Codez()
+            {
+                return CommunityTools && !IsMCC && File.Exists(GetH2CodezPath());
+            }
         }
 #nullable restore
         /// <summary>
@@ -103,6 +151,20 @@ namespace ToolkitLauncher
         {
             WriteJSONFile();
             return true;
+        }
+
+        public static void SwitchProfileIndex(int new_index, int current_index)
+        {
+            var new_profile = SettingsList[new_index];
+            var current_profile = SettingsList[current_index];
+
+            SettingsList[new_index] = current_profile;
+            SettingsList[current_index] = new_profile;
+        }
+
+        public static void SetProfile(int index, int duplicate_index)
+        {
+            SettingsList[duplicate_index] = SettingsList[index];
         }
 
         public static ProfileSettingsLauncher GetProfile(int index)

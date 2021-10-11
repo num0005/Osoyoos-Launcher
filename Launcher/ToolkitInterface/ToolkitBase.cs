@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using static ToolkitLauncher.ToolkitProfiles;
 
@@ -12,6 +13,7 @@ namespace ToolkitLauncher.ToolkitInterface
     public enum ToolType
     {
         Tool,
+        ToolFast,
         Sapien,
         Guerilla,
         Game
@@ -71,45 +73,24 @@ namespace ToolkitLauncher.ToolkitInterface
             }
         }
 
-        public class LightmapArgs
-        {
-            public enum Level_Quality
-            {
-                Checkerboard,
-                Draft_Low,
-                Draft_Medium,
-                Draft_High,
-                Draft_Super,
-                Direct_Only,
-                Low,
-                Medium,
-                High,
-                Super,
-                Custom
-            }
+        public record LightmapArgs(
+            string level_combobox,
+            float Threshold,
+            bool radiosity_quality,
+            bool NoAssert,
+            string lightmapGroup,
+            int instanceCount,
+            bool instanceOutput);
 
-            public LightmapArgs(Level_Quality level_combobox, float level_slider, bool radiosity_quality, float customRgb)
-            {
-                this.level_combobox = level_combobox;
-                this.level_slider = level_slider;
-                this.radiosity_quality = radiosity_quality;
-                this.customRgb = customRgb;
-            }
-
-            public Level_Quality level_combobox;
-            public float level_slider;
-            public bool radiosity_quality;
-            public float customRgb;
-        }
         /// <summary>
         /// Build a lightmap for a given scenario and BSP
         /// </summary>
         /// <param name="scenario">Path to the scenario</param>
         /// <param name="bsp">Name of the BSP</param>
         /// <param name="args">Lightmap settings</param>
-        /// <param name="noassert">Set tool args for -verbose and -noassert</param>
+        /// <exception cref="OperationCanceledException">Thrown if the lightmap is canceled</exception>
         /// <returns></returns>
-        public abstract Task BuildLightmap(string scenario, string bsp, LightmapArgs args, bool noassert = false);
+        public abstract Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress = null);
 
         /// <summary>
         /// Imports bitmaps from a directory
@@ -143,26 +124,42 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="scenario">The scenario to be compiled into a cache file</param>
         /// <param name="resourceUsage">CE: Whatever the resource maps (loc, bitmap, sound) should be updated or used</param>
-        /// <param name="log_tags">CE: Log tags that tool has to load for the scenario</param>
-        /// <param name="cache_type">CE: What platform is the cahce file intended for</param>
-        public abstract Task BuildCache(string scenario, CacheType cache_type, ResourceMapUsage resourceUsage, bool log_tags = false);
+        /// <param name="logTags">CE: Log tags that tool has to load for the scenario</param>
+        /// <param name="cacheType">CE: What graphics engine does the cache support</param>
+        /// <param name="cachePlatform">H2-H3: What platform is the cahce file intended for</param>
+        /// <param name="cacheCompress">H2: Is the cache compressed</param>
+        /// <param name="cacheResourceSharing">H2: Does the cache support raw data sharing</param>
+        /// <param name="cacheMultilingualSounds">H2: Does the cache support multiple languages for sounds</param>
+        /// <param name="cacheRemasteredSupport">H2: Does the cache support Saber3D</param>
+        /// <param name="cacheMPTagSharing">H2: Does the cache support tag sharing</param>
+        public abstract Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing);
 
         /// <summary>
         /// Import a structure into a BSP tag
         /// </summary>
         /// <param name="data_file">The file to import</param>
         /// <param name="release">H2</param>
+        /// <param name="useFast">H2-H3</param>
         /// <param name="phantom_fix">CE: Whatever to apply the phantom fix</param>
         /// <returns></returns>
-        public abstract Task ImportStructure(string data_file, bool phantom_fix = false, bool release = true);
+        public abstract Task ImportStructure(string data_file, bool phantom_fix, bool release, bool useFast);
 
         /// <summary>
         /// Import geometry to generate various types of model related tags
         /// </summary>
         /// <param name="path"></param>
         /// <param name="importType"></param>
+        /// <param name="renderPRT"></param>
+        /// <param name="FPAnim"></param>
+        /// <param name="characterFPPath"></param>
+        /// <param name="weaponFPPath"></param>
+        /// <param name="accurateRender"></param>
+        /// <param name="verboseAnim"></param>
+        /// <param name="uncompressedAnim"></param>
+        /// <param name="skyRender"></param>
+        /// <param name="resetCompression"></param>
         /// <returns></returns>
-        public abstract Task ImportModel(string path, ModelCompile importType);
+        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression);
 
         /// <summary>
         /// Import a WAV file to generate a sound tag
@@ -171,8 +168,11 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="platform"></param>
         /// <param name="bitrate"></param>
         /// <param name="ltf_path"></param>
+        /// <param name="sound_command"></param>
+        /// <param name="class_type"></param>
+        /// <param name="compression_type"></param>
         /// <returns></returns>
-        public abstract Task ImportSound(string path, string platform, string bitrate, string ltf_path);
+        public abstract Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type);
 
         /// <summary>
         /// Check whatever there is mutex preventing another instance of a tool from starting
@@ -188,6 +188,11 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>A string containing the executable file name including the extension</returns>
         public virtual string GetToolExecutable(ToolType tool)
         {
+            // bit of a hack but what can you do
+            // return a hardcoded tool_fast path if not set.
+            // todo(numoo5): replace this with a proper defaults system
+            if (tool == ToolType.ToolFast && !ToolPaths.ContainsKey(ToolType.ToolFast))
+                return "tool_fast"; // hack hack hack
             return ToLocalPath(ToolPaths[tool]);
         }
 
@@ -260,7 +265,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <returns></returns>
         public bool IsEnabled()
-        {            
+        {
             foreach (var exe in ToolPaths)
                 if (File.Exists(exe.Value))
                     return true;
@@ -301,39 +306,84 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             List<string> args = new();
 
-            if (!IsDefaultTagDirectory())
+            if (Profile.GameGen != 2 && Profile.BuildType == build_type.release_mcc)
             {
-                args.Add("-tags_dir");
-                args.Add(GetTagDirectory());
-            }
+                if (!IsDefaultTagDirectory())
+                {
+                    args.Add("-tags_dir");
+                    args.Add(GetTagDirectory());
+                }
 
-            if (!IsDefaultDataDirectory())
-            {
-                args.Add("-data_dir");
-                args.Add(GetDataDirectory());
-            }
+                if (!IsDefaultDataDirectory())
+                {
+                    args.Add("-data_dir");
+                    args.Add(GetDataDirectory());
+                }
 
-            if (Profile.Verbose && Profile.BuildType == build_type.release_mcc)
-            {
-                args.Add("-verbose");
-            }
+                if (Profile.Verbose)
+                {
+                    args.Add("-verbose");
+                }
 
-            if (!string.IsNullOrWhiteSpace(Profile.GamePath) && Directory.Exists(Profile.GamePath) && Profile.BuildType == build_type.release_mcc)
-            {
-                args.Add("-game_root_dir");
-                args.Add(Profile.GamePath);
+                if (!string.IsNullOrWhiteSpace(Profile.GamePath) && Directory.Exists(Profile.GamePath) && Profile.GameGen == 0)
+                {
+                    args.Add("-game_root_dir");
+                    args.Add(Profile.GamePath);
+                }
+
+                if (Profile.GameGen == 1)
+                {
+                    if (Profile.ExpertMode)
+                    {
+                        args.Add("-expert_mode");
+                    }
+
+                    if (Profile.Batch)
+                    {
+                        args.Add("-batch");
+                    }
+                }
             }
 
             return args;
         }
+
+        public abstract string GetDocumentationName();
+
+        /// <summary>
+        /// Should the shell be used to handle this tool execution request?
+        /// </summary>
+        /// <param name="tool">The tool that will be run</param>
+        /// <param name="args">Arguments pased to the tool</param>
+        /// <returns>Whatever shell should be used</returns>
+        protected virtual bool ShouldUseShell(ToolType tool, List<string>? args)
+        {
+            return tool == ToolType.Tool;
+        }
+
+        public Action<Utility.Process.Result>? ToolFailure { get; set; }
 
         /// <summary>
         /// Run a tool from the toolkit with arguments
         /// </summary>
         /// <param name="tool">Tool to run</param>
         /// <param name="args">Arguments to pass to the tool</param>
-        /// <returns></returns>
-        public async Task RunTool(ToolType tool, List<string>? args = null)
+        /// <param name="useShell">Force either use shell or not use it</param>
+        /// <param name="cancellationToken">Kill the tool before it exits</param>
+        /// <param name="lowPriority">Lower priority if possible</param>
+        /// <returns>Results of running the tool if possible</returns>
+        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, bool? useShell = null, CancellationToken cancellationToken = default, bool lowPriority = false)
+        {
+            Utility.Process.Result? result = await RunToolInternal(tool, args, useShell, cancellationToken, lowPriority);
+            if (result is not null && result.ReturnCode != 0 && ToolFailure is not null)
+                ToolFailure(result);
+            return result;
+        }
+
+        /// <summary>
+        /// Implementation of <c>RunTool</c>
+        /// </summary>
+        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, bool? useShell, CancellationToken cancellationToken, bool lowPriority)
         {
             // always include the prepend args
             List<string> full_args = GetArgsToPrepend();
@@ -341,15 +391,13 @@ namespace ToolkitLauncher.ToolkitInterface
                 full_args.AddRange(args);
 
             string tool_path = GetToolExecutable(tool);
+            if (useShell is null)
+                useShell = ShouldUseShell(tool, args);
 
-            if (tool == ToolType.Tool)
-            {
-                await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args);
-            }
+            if (useShell.Value)
+                return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, cancellationToken, lowPriority);
             else
-            {
-                await Utility.Process.StartProcess(BaseDirectory, tool_path, full_args);
-            }
+                return await Utility.Process.StartProcess(BaseDirectory, tool_path, full_args, cancellationToken, lowPriority);
         }
 
         /// <summary>

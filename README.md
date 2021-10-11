@@ -5,8 +5,6 @@
 ## Launcher Description
 The Osoyoos launcher is an application that can be used to easily interact with various HEK toolsets from a simple GUI. Profiles can be created to run released or community modified toolsets.
 
-Early alpha, expect issues. Bug reports are welcome.
-
 ![A screenshot of the launcher](Osoyoos.png?raw=true "screenshot of the launcher")
 
 ## Supported Titles and Features
@@ -17,9 +15,11 @@ The following profiles are or will be supported by this launcher:
  * Halo Combat Evolved Anniversary MCC (H1A-MCC)
  * Halo 2 Vista
  * Halo 2 Vista - H2Codez 
- * Halo 2 Anniversary MCC - Classic (Untested)
- * Halo 3 MCC (Planned)
+ * Halo 2 Classic MCC
+ * Halo 3 MCC
  * Halo 3 ODST MCC (Planned)
+ * Halo 4 MCC (Planned)
+ * Halo 2 Anniversary MCC (Planned)
 
 Launcher can do the following:
 

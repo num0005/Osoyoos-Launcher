@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using Palit.TLSHSharp;
 using System;
+using System.Linq;
 
 namespace ToolkitLauncher
 {
@@ -26,6 +27,27 @@ namespace ToolkitLauncher
             }
         }
 
+        private class UpperCaseStringConverter : JsonConverter<string>
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(string);
+            }
+
+            public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string value = reader.GetString();
+                if (value is null)
+                    return null;
+                return value.ToLowerInvariant();
+            }
+
+            public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToUpperInvariant());
+            }
+        }
+
         public class Profile
         {
             public class Executable
@@ -44,9 +66,25 @@ namespace ToolkitLauncher
             public bool Community { get; set; }
 
             public Executable Tool { get; set; }
+            public Executable ToolFast { get; set; }
             public Executable Guerilla { get; set; }
             public Executable Sapien { get; set; }
             public Executable Standalone { get; set; }
+
+            private void fixHashCase(Executable executable)
+            {
+                if (executable is null || executable.MD5 is null)
+                    return;
+                executable.MD5 = executable.MD5.Select(hash => hash.ToUpperInvariant()).ToArray();
+            }
+            internal void fixHashCase()
+            {
+                fixHashCase(Tool);
+                fixHashCase(ToolFast);
+                fixHashCase(Guerilla);
+                fixHashCase(Sapien);
+                fixHashCase(Standalone);
+            }
         }
 
         static BuiltinProfiles()
@@ -54,7 +92,12 @@ namespace ToolkitLauncher
             Assembly assembly = Assembly.GetExecutingAssembly();
             using Stream stream = assembly.GetManifestResourceStream("ToolkitLauncher.BultinProfiles.json");
             using StreamReader reader = new(stream);
-            _profiles = JsonSerializer.Deserialize<List<Profile>>(reader.ReadToEnd());
+            List<Profile> profiles = JsonSerializer.Deserialize<List<Profile>>(reader.ReadToEnd());
+
+            foreach (Profile profile in profiles)
+                profile.fixHashCase();
+
+            _profiles = profiles;
         }
 
         public static IReadOnlyList<Profile> Profiles

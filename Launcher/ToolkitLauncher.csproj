@@ -30,12 +30,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="BultinProfiles.json" />
+    <None Remove="Documentation.json" />
     <None Remove="Images\gear.png" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BultinProfiles.json" />
+    <EmbeddedResource Include="Documentation.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -66,6 +70,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Octokit" Version="0.50.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="5.0.0" />
     <PackageReference Include="TlshSharp" Version="1.0.0" />
@@ -75,6 +80,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Credits.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AnimLengthPrompt.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="GeoClassPrompt.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
@@ -91,6 +102,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Credits.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="AnimLengthPrompt.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="GeoClassPrompt.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

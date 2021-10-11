@@ -1,0 +1,23 @@
+﻿<Window x:Class="ToolkitLauncher.CancelableProgressBarWindowBase"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolkitLauncher"
+        mc:Ignorable="d"
+        Title="Osoyoos - Task Progress" Height="Auto" Width="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource Self}}" Background="{DynamicResource WindowPrimaryColor}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ProgressBar x:Name="progress" HorizontalAlignment="Center" Height="20" Margin="20, 5, 10, 20" Grid.Row="1" VerticalAlignment="Center" Width="215" IsIndeterminate="True"/>
+        <Button x:Name="closeButton" Content="Cancel" Grid.Column="1" HorizontalAlignment="Center" Margin="10, 5, 20, 20" Grid.Row="2" Grid.RowSpan="1" VerticalAlignment="Center" Click="closeButton_Click" Padding="3"/>
+        <TextBlock x:Name="currentStatus" HorizontalAlignment="Center" Margin="20, 5, 20, 5" Text="Status" TextWrapping="Wrap" VerticalAlignment="Center" MinWidth="200" TextAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+
+    </Grid>
+</Window>

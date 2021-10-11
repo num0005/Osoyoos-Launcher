@@ -1,0 +1,51 @@
+﻿<Window x:Class="ToolkitLauncher.GeoClassPrompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolkitLauncher.ToolkitInterface"
+        xmlns:toolkit_local="clr-namespace:ToolkitLauncher"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="FBX Args" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+
+    <Grid Background="{DynamicResource WindowPrimaryColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <GroupBox x:Name="geo_box" Header="Geo Class" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Name="geo_class_description" Text="Select the class this geometry is for." TextWrapping="Wrap" VerticalAlignment="Center" Background="Transparent"/>
+                        <ComboBox Grid.Row="2" x:Name="geo_class" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26">
+                            <ComboBoxItem Content="All"/>
+                            <ComboBoxItem Content="Render"/>
+                            <ComboBoxItem Content="Collision"/>
+                            <ComboBoxItem Content="Physics"/>
+                        </ComboBox>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1" Background="{DynamicResource WindowSecondaryColor}" MinHeight="40">
+            <Button Name="Button_OK" Content="Ok" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="Button_OK_Click"/>
+        </Grid>
+    </Grid>
+</Window>

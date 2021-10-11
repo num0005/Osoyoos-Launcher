@@ -7,25 +7,32 @@ using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
-    public class H1Toolkit: ToolkitBase
+    public class H1Toolkit : ToolkitBase
     {
         public H1Toolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
 
-        override public async Task ImportStructure(string data_file, bool phantom_fix, bool release)
+        override public async Task ImportStructure(string data_file, bool phantom_fix, bool release, bool useFast)
         {
             var info = SplitStructureFilename(data_file);
-            await RunTool(ToolType.Tool, new() { "structure" , info.ScenarioPath, info.BspName });
+            await RunTool(ToolType.Tool, new() { "structure", info.ScenarioPath, info.BspName });
         }
 
-        public override async Task BuildCache(string scenario, CacheType cache_type, ResourceMapUsage resourceUsage, bool log_tags)
+        public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing)
         {
             string path = scenario.Replace(".scenario", "");
             await RunTool(ToolType.Tool, new() { "build-cache-file", path });
         }
 
-        public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, bool noassert)
+        public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
         {
-            await RunTool(ToolType.Tool, new() { "lightmaps", scenario, bsp, Convert.ToInt32(args.radiosity_quality).ToString(), args.level_slider.ToString() });
+            if (progress is not null)
+            {
+                progress.DisableCancellation();
+                progress.MaxValue += 1;
+            }
+            await RunTool(ToolType.Tool, new() { "lightmaps", scenario, bsp, Convert.ToInt32(args.radiosity_quality).ToString(), args.Threshold.ToString() });
+            if (progress is not null)
+                progress.Report(1);
         }
 
         override public async Task ImportUnicodeStrings(string path)
@@ -49,7 +56,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
         {
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "model", path });
@@ -66,19 +73,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path)
+        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "sounds", path, platform, bitrate});
-        }
-
-        public async Task ImportAnimations(string path)
-        {
-            await RunTool(ToolType.Tool, new List<string>() { "animations", path });
-        }
-
-        public async Task ImportPhysics(string path)
-        {
-            await RunTool(ToolType.Tool, new List<string>() { "physics", path });
+            await RunTool(ToolType.Tool, new List<string>() { "sounds", path, platform, bitrate });
         }
 
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
@@ -93,7 +90,8 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override bool IsMutexLocked(ToolType tool)
         {
-            if (!OperatingSystem.IsWindows()) {
+            if (!OperatingSystem.IsWindows())
+            {
                 Debug.Fail("Unsupported API!");
                 return false;
             }
@@ -106,11 +104,13 @@ namespace ToolkitLauncher.ToolkitInterface
                     Mutex shellMutex = new(true, mutex_name, out createdNew);
                     shellMutex.Close();
                     return !createdNew;
-                } catch (UnauthorizedAccessException)
+                }
+                catch (UnauthorizedAccessException)
                 {
                     // The mutex exists so treat it as locked
                     return true;
-                } catch (WaitHandleCannotBeOpenedException)
+                }
+                catch (WaitHandleCannotBeOpenedException)
                 {
                     // very weird, shouldn't happen
                     return false;
@@ -126,6 +126,11 @@ namespace ToolkitLauncher.ToolkitInterface
             {
                 return false;
             }
+        }
+
+        public override string GetDocumentationName()
+        {
+            return "H1CE";
         }
     }
 }

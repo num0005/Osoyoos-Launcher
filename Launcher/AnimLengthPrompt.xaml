@@ -1,0 +1,67 @@
+﻿<Window x:Class="ToolkitLauncher.AnimLengthPrompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolkitLauncher.ToolkitInterface"
+        xmlns:toolkit_local="clr-namespace:ToolkitLauncher"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="FBX Args" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+
+    <Grid Background="{DynamicResource WindowPrimaryColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <GroupBox x:Name="anim_box" Header="Animation Frames" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Name="length_description" Text="Set the starting and ending frame for your animation.&#x0a;Cancel if you don't want to set these." TextWrapping="Wrap" VerticalAlignment="Center" Background="Transparent"/>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" x:Name="start_index_label" HorizontalAlignment="Center" Foreground="{DynamicResource TextColor}">Starting Index</Label>
+                            <Label Grid.Column="1" x:Name="last_index_label" HorizontalAlignment="Center" Foreground="{DynamicResource TextColor}">Ending Index</Label>
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Name="start_index" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="{DynamicResource brushTextboxBackground}" Foreground="{DynamicResource TextColor}" Text="0" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24" CaretBrush="{DynamicResource TextColor}" ToolTip=""/>
+                            <TextBox Grid.Column="1" Name="last_index" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="{DynamicResource brushTextboxBackground}" Foreground="{DynamicResource TextColor}" Text="0" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24" CaretBrush="{DynamicResource TextColor}" ToolTip=""/>
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1" Background="{DynamicResource WindowSecondaryColor}" MinHeight="40">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Name="Button_OK" Content="Ok" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="Button_OK_Click"/>
+            <Button Grid.Column="1" Name="Button_Cancel" Content="Cancel" HorizontalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="Button_Cancel_Click" IsCancel="True"/>
+        </Grid>
+    </Grid>
+</Window>

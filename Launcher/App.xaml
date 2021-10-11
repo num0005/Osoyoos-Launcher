@@ -106,8 +106,6 @@
         <SolidColorBrush x:Key="TabItem.Static.Border" Color="#ACACAC"/>
         <SolidColorBrush x:Key="TabItem.MouseOver.Border" Color="#7EB4EA"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
-        <local:DropdownSelectionToVisibilityConverter x:Key="DropdownSelectionToVisibilityConverter" />
         <Style x:Key="EntryFieldStyle" TargetType="Grid" >
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Center" />

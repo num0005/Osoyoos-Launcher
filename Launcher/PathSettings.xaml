@@ -7,9 +7,11 @@
         xmlns:toolkit_local="clr-namespace:ToolkitLauncher"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Osoyoos - Profiles" SizeToContent="WidthAndHeight" MinHeight="750" MinWidth="375">
+        Title="Osoyoos - Profiles" SizeToContent="WidthAndHeight" MinHeight="750" MinWidth="375"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
-        <toolkit_local:AssetDirVisibility x:Key="AssetDirVisibility" />
+        <toolkit_local:ProfileSettingsVisibility x:Key="ProfileSettingsVisibility" />
+        <toolkit_local:ProfileSettingsToSpace x:Key="ProfileSettingsToSpace" />
         <ObjectDataProvider x:Key="built_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="toolkit_local:build_type"/>
@@ -37,11 +39,20 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ComboBox Grid.Column="0" x:Name="profile_select" SelectionChanged="profile_selection_SelectionChanged" SelectedIndex="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Padding="4" MinWidth="128" MaxWidth="128" MinHeight="26"/>
             <Button Grid.Column="2" x:Name="add_button" Content="Add" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="add_button_Click" ToolTip="Add a new toolkit profile."/>
-            <Button Grid.Column="4" x:Name="delete_button" Content="Delete" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="delete_button_Click" ToolTip="Delete the current toolkit profile (no confirmation!)."/>
-            <Button Grid.Column="6" x:Name="profile_wizard" Content="Profile Wizard" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="profile_wizard_Click" Height="26" IsEnabled="False" ToolTip="Configure this profile automatically."/>
+            <Button Grid.Column="4" x:Name="delete_button" Content="Delete" HorizontalAlignment="Left" MinHeight="26" Width="63" Click="delete_button_Click" IsEnabled="False" ToolTip="Delete the current toolkit profile (no confirmation!)."/>
+            <Button Grid.Column="6" x:Name="duplicate" Content="Duplicate" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="duplicate_Click" Height="26" IsEnabled="False" ToolTip="Create a new profile with the same settings as the currently selected profile."/>
+            <Button Grid.Column="8" x:Name="shift_up" Content="Up" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="shift_up_Click" Height="26" IsEnabled="False" ToolTip="Move selected profile up by one."/>
+            <Button Grid.Column="10" x:Name="shift_down" Content="Down" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="shift_down_Click" Height="26" IsEnabled="False" ToolTip="Move selected profile down by one."/>
+            <Button Grid.Column="12" x:Name="profile_wizard" Content="Profile Wizard" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" Click="profile_wizard_Click" Height="26" IsEnabled="False" ToolTip="Configure this profile automatically."/>
         </Grid>
         <Grid Grid.Column="1" Grid.Row="2" Background="{DynamicResource WindowSecondaryColor}">
             <Grid.RowDefinitions>
@@ -50,7 +61,27 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="8"/>
+                <RowDefinition>
+                    <RowDefinition.Height>
+                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                            <Binding ElementName="build_type" Path="SelectedIndex" />
+                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                            <Binding ElementName="community_tools" Path="IsChecked" />
+                            <Binding Source="3" />
+                        </MultiBinding>
+                    </RowDefinition.Height>
+                </RowDefinition>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition>
+                    <RowDefinition.Height>
+                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                            <Binding ElementName="build_type" Path="SelectedIndex" />
+                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                            <Binding ElementName="community_tools" Path="IsChecked" />
+                            <Binding Source="0" />
+                        </MultiBinding>
+                    </RowDefinition.Height>
+                </RowDefinition>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
@@ -74,6 +105,26 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
+                        <RowDefinition>
+                            <RowDefinition.Height>
+                                <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                    <Binding ElementName="build_type" Path="SelectedIndex" />
+                                    <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                    <Binding ElementName="community_tools" Path="IsChecked" />
+                                    <Binding Source="5" />
+                                </MultiBinding>
+                            </RowDefinition.Height>
+                        </RowDefinition>
+                        <RowDefinition>
+                            <RowDefinition.Height>
+                                <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                    <Binding ElementName="build_type" Path="SelectedIndex" />
+                                    <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                    <Binding ElementName="community_tools" Path="IsChecked" />
+                                    <Binding Source="6" />
+                                </MultiBinding>
+                            </RowDefinition.Height>
+                        </RowDefinition>
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="8"/>
@@ -81,7 +132,7 @@
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <GroupBox Grid.Row="0" x:Name="tool_path_box" Header="Tool Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <GroupBox Grid.Row="0" x:Name="tool_path_box" Header="Tool Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to tool.exe.">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -99,7 +150,33 @@
                             <TextBox Grid.Column="2" Grid.Row="0" Name="tool_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" MinWidth="200" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Grid.Row="2" x:Name="sapien_path_box" Header="Sapien Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Sapien.exe (world editor).">
+                    <GroupBox Grid.Column="2" Grid.Row="2" x:Name="tool_fast_path_box" Header="Tool Fast Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to tool_fast.exe.">
+                        <GroupBox.Visibility>
+                            <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                <Binding ElementName="build_type" Path="SelectedIndex" />
+                                <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                <Binding ElementName="community_tools" Path="IsChecked" />
+                                <Binding Source="5" />
+                            </MultiBinding>
+                        </GroupBox.Visibility>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="browse_tool_fast_path" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Click="browse_tool_fast_Click" Padding="4" MinWidth="75" MinHeight="26"/>
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Select Tool Fast Application" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=tool_fast_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                            </Grid>
+                            <TextBox Grid.Column="2" Grid.Row="2" Name="tool_fast_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Column="2" Grid.Row="4" x:Name="sapien_path_box" Header="Sapien Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Sapien.exe (world editor).">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -117,7 +194,7 @@
                             <TextBox Grid.Column="2" Grid.Row="2" Name="sapien_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Grid.Row="4" x:Name="guerilla_path_box" Header="Guerilla Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Guerilla.exe (content/tag editor).">
+                    <GroupBox Grid.Column="2" Grid.Row="6" x:Name="guerilla_path_box" Header="Guerilla Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Guerilla.exe (content/tag editor).">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -135,7 +212,7 @@
                             <TextBox Grid.Column="2" Grid.Row="4" Name="guerilla_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="3" Grid.Row="6" x:Name="game_exe_path_box" Header="Game Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to halo_*.exe (standalone game build).">
+                    <GroupBox Grid.Column="3" Grid.Row="8" x:Name="game_exe_path_box" Header="Game Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to halo_*.exe (standalone game build).">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -155,7 +232,15 @@
                     </GroupBox>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="6" x:Name="asset_dir" Header="Asset Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" Visibility="{Binding SelectedIndex, Converter={StaticResource AssetDirVisibility}, ConverterParameter=1, ElementName=build_type}">
+            <GroupBox Grid.Row="6" x:Name="asset_dir" Header="Asset Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
+                <GroupBox.Visibility>
+                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                        <Binding ElementName="build_type" Path="SelectedIndex" />
+                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                        <Binding ElementName="community_tools" Path="IsChecked" />
+                        <Binding Source="0" />
+                    </MultiBinding>
+                </GroupBox.Visibility>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -203,6 +288,14 @@
                         </Grid>
                     </GroupBox>
                     <GroupBox Grid.Column="2" Grid.Row="4" x:Name="game_dir_box" Header="Game Folder Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to the game folder (packaged caches and resources go here)">
+                        <GroupBox.Visibility>
+                            <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                <Binding ElementName="build_type" Path="SelectedIndex" />
+                                <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                <Binding ElementName="community_tools" Path="IsChecked" />
+                                <Binding Source="2" />
+                            </MultiBinding>
+                        </GroupBox.Visibility>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -222,21 +315,41 @@
                     </GroupBox>
                 </Grid>
             </GroupBox>
-            <Grid Grid.Row="8">
+            <GroupBox Grid.Row="8" x:Name="h2codez_update_groupbox" Header="H2Codez Update" IsEnabled="False">
+                <GroupBox.Visibility>
+                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                        <Binding ElementName="build_type" Path="SelectedIndex" />
+                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                        <Binding ElementName="community_tools" Path="IsChecked" />
+                        <Binding Source="4" />
+                    </MultiBinding>
+                </GroupBox.Visibility>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center">Do you want to download the latest version of H2Codez from Github?</TextBlock>
+                    <Button x:Name="update_h2codez" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="update_h2codez_Click" ToolTip="No regrets.">Update!</Button>
+                </Grid>
+            </GroupBox>
+            <Grid Grid.Row="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Gen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="120" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
+                <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Gen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
                     <Grid>
                         <ComboBox x:Name="gen_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_data_SelectionChanged">
                             <ComboBoxItem Content="Gen 1"/>
                             <ComboBoxItem Content="Gen 2"/>
+                            <ComboBoxItem Content="Gen 3"/>
                         </ComboBox>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="120" IsEnabled="False">
+                <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5"/>
@@ -251,19 +364,97 @@
                         <Grid Grid.Column="1" Grid.Row="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="8"/>
+                                <RowDefinition>
+                                    <RowDefinition.Height>
+                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                            <Binding ElementName="build_type" Path="SelectedIndex" />
+                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                            <Binding ElementName="community_tools" Path="IsChecked" />
+                                            <Binding Source="0" />
+                                        </MultiBinding>
+                                    </RowDefinition.Height>
+                                </RowDefinition>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="8"/>
+                                <RowDefinition>
+                                    <RowDefinition.Height>
+                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                            <Binding ElementName="build_type" Path="SelectedIndex" />
+                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                            <Binding ElementName="community_tools" Path="IsChecked" />
+                                            <Binding Source="1" />
+                                        </MultiBinding>
+                                    </RowDefinition.Height>
+                                </RowDefinition>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition>
+                                    <RowDefinition.Height>
+                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                            <Binding ElementName="build_type" Path="SelectedIndex" />
+                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                            <Binding ElementName="community_tools" Path="IsChecked" />
+                                            <Binding Source="2" />
+                                        </MultiBinding>
+                                    </RowDefinition.Height>
+                                </RowDefinition>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition>
+                                    <RowDefinition.Height>
+                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                            <Binding ElementName="build_type" Path="SelectedIndex" />
+                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                            <Binding ElementName="community_tools" Path="IsChecked" />
+                                            <Binding Source="2" />
+                                        </MultiBinding>
+                                    </RowDefinition.Height>
+                                </RowDefinition>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <ComboBox Grid.Row="0" x:Name="build_type" ItemsSource="{Binding Source={StaticResource built_type_enum}}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="26" SelectionChanged="profile_data_SelectionChanged" ToolTip="Legacy standalone or MCC tooling?"/>
-                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)"/>
-                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource AssetDirVisibility}, ConverterParameter=1, ElementName=build_type}" ToolTip="Include more tool output (H1A)."/>
+                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="build_type" Path="SelectedIndex" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="1" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
+                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Include more tool output.">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="build_type" Path="SelectedIndex" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="0" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
+                            <CheckBox Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="expert_mode" Content="Expert Mode" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables saftey checks for some commands.&#x0a;An example is allowing animation commands to import CE verion range files. You're on your own beyond this point.">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="build_type" Path="SelectedIndex" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="3" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
+                            <CheckBox Grid.Row="8" Foreground="{DynamicResource TextColor}" x:Name="batch" Content="Batch" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables lightmap progress updates and reduces build-cache-file output.">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="build_type" Path="SelectedIndex" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="3" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
                         </Grid>
                     </Grid>
                 </GroupBox>
             </Grid>
-            <Grid Grid.Row="10">
+            <Grid Grid.Row="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>
@@ -335,13 +526,7 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Row="0" Name="profile_description" Text="I see you." TextWrapping="Wrap" VerticalAlignment="Center" Background="Transparent"/>
-                                    <ComboBox Grid.Row="2" x:Name="profile_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_type_SelectionChanged">
-                                        <ComboBoxItem Content="Gearbox HEK"/>
-                                        <ComboBoxItem Content="Gearbox HEK OS"/>
-                                        <ComboBoxItem Content="343 H1A HEK"/>
-                                        <ComboBoxItem Content="H2VEK"/>
-                                        <ComboBoxItem Content="H2VEK H2Codez"/>
-                                    </ComboBox>
+                                    <ComboBox Grid.Row="2" x:Name="profile_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_type_SelectionChanged" ItemsSource="{Binding BuiltinProfiesCombo}"/>
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="5">

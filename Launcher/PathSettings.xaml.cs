@@ -6,6 +6,11 @@ using System.Windows;
 using System.Windows.Controls;
 using Palit.TLSHSharp;
 using System.Runtime.CompilerServices;
+using ToolkitLauncher.Utility;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace ToolkitLauncher
 {
@@ -27,25 +32,53 @@ namespace ToolkitLauncher
         private bool startup_finished = false;
         private bool setting_profile = false;
 
+        public int profile_index
+        {
+            get
+            {
+                Debug.Assert(profile_select.SelectedIndex >= 0);
+                int profile_index = profile_select.SelectedIndex;
+
+                return profile_index;
+            }
+        }
+
+        public ObservableCollection<ComboBoxItem> BuiltinProfiesCombo { get; init; } = new();
+
         public PathSettings(bool isFirstInit = false)
         {
+            foreach (BuiltinProfiles.Profile profile in  BuiltinProfiles.Profiles)
+            {
+                BuiltinProfiesCombo.Add(new ComboBoxItem { Content = profile.ToolkitName });
+            }
             InitializeComponent();
             IsFirstInit = isFirstInit;
             first_launch.Visibility = IsFirstInit ? Visibility.Visible : Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList.Count == 0)
                 ToolkitProfiles.AddProfile();
-            foreach (var settings in ToolkitProfiles.SettingsList)
-            {
-                profile_select.Items.Add(settings.ProfileName);
-            }
+            CreateItems();
             UpdateUI();
             startup_finished = true;
         }
 
+        private void CreateItems()
+        {
+            profile_select.Items.Clear();
+            foreach (var settings in ToolkitProfiles.SettingsList)
+            {
+                profile_select.Items.Add(new ComboBoxItem { Content = settings.ProfileName });
+            }
+            profile_select.SelectedIndex = profile_index;
+        }
+
         private void UpdateUI()
         {
-            bool has_profiles = profile_select.Items.Count != 0;
+            bool has_profiles = profile_select.Items.Count > 0;
 
+            delete_button.IsEnabled = has_profiles;
+            duplicate.IsEnabled = has_profiles;
+            shift_up.IsEnabled = has_profiles;
+            shift_down.IsEnabled = has_profiles;
             profile_wizard.IsEnabled = has_profiles;
             profile_name_box.IsEnabled = has_profiles;
             hek_box.IsEnabled = has_profiles;
@@ -65,6 +98,12 @@ namespace ToolkitLauncher
         private void browse_tool_Click(object sender, RoutedEventArgs e)
         {
             var picker = new FilePicker(tool_path, null, toolExeOptions, null);
+            picker.Prompt();
+        }
+
+        private void browse_tool_fast_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new FilePicker(tool_fast_path, null, toolExeOptions, null);
             picker.Prompt();
         }
 
@@ -94,7 +133,8 @@ namespace ToolkitLauncher
         private void add_button_Click(object sender, RoutedEventArgs e)
         {
             int new_profile = ToolkitProfiles.AddProfile();
-            profile_select.Items.Add(ToolkitProfiles.GetProfile(new_profile).ProfileName);
+            string ProfileName = ToolkitProfiles.GetProfile(new_profile).ProfileName;
+            profile_select.Items.Add(new ComboBoxItem { Content = ProfileName });
             profile_select.SelectedIndex = new_profile;
             setting_profile = false;
             UpdateUI();
@@ -104,11 +144,9 @@ namespace ToolkitLauncher
         {
             if (profile_select.Items.Count > 0)
             {
-                object profile_item = profile_select.SelectedItem;
-
-                int new_index = profile_select.SelectedIndex - 1;
-                ToolkitProfiles.SettingsList.RemoveAt(profile_select.SelectedIndex);
-                profile_select.Items.Remove(profile_item);
+                int new_index = profile_index - 1;
+                ToolkitProfiles.SettingsList.RemoveAt(profile_index);
+                profile_select.Items.Remove(profile_select.SelectedItem);
                 profile_select.SelectedIndex = 0;
                 if (new_index > 0)
                 {
@@ -121,6 +159,43 @@ namespace ToolkitLauncher
         private void profile_wizard_Click(object sender, RoutedEventArgs e)
         {
             profile_wizard_menu.Visibility = Visibility.Visible;
+        }
+
+        private void shift_item(int direction)
+        {
+            int new_index = profile_index + direction;
+            if (new_index >= 0 && new_index < profile_select.Items.Count)
+            {
+                int current_index = profile_index;
+
+                ToolkitProfiles.SwitchProfileIndex(new_index, current_index);
+
+                ComboBoxItem current_profile_name = (ComboBoxItem)profile_select.SelectedItem;
+                profile_select.Items.Remove(profile_select.SelectedItem);
+                profile_select.Items.Insert(new_index, current_profile_name);
+                profile_select.SelectedIndex = new_index;
+            }
+        }
+
+        private void shift_up_Click(object sender, RoutedEventArgs e)
+        {
+            shift_item(-1);
+        }
+
+        private void shift_down_Click(object sender, RoutedEventArgs e)
+        {
+            shift_item(1);
+        }
+
+        private void duplicate_Click(object sender, RoutedEventArgs e)
+        {
+            int new_profile = ToolkitProfiles.AddProfile();
+            string ProfileName = ToolkitProfiles.GetProfile(new_profile).ProfileName;
+            profile_select.Items.Add(new ComboBoxItem { Content = ProfileName });
+            ToolkitProfiles.SetProfile(profile_index, new_profile);
+            profile_select.SelectedIndex = new_profile;
+            var profile_item = profile_select.Items[profile_index] as ComboBoxItem;
+            profile_item.Content = profile_name.Text;
         }
 
         private void profile_wizard_cancel_Click(object sender, RoutedEventArgs e)
@@ -205,22 +280,31 @@ namespace ToolkitLauncher
             verbose.IsChecked = false;
             game_path.Text = "";
             game_exe_path.Text = "";
-            if (profile_select != null && profile_select.SelectedItem != null && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex && profile_select.SelectedIndex >= 0)
+            expert_mode.IsChecked = false;
+            batch.IsChecked = false;
+            tool_fast_path.Text = "";
+            h2codez_update_groupbox.Visibility = Visibility.Collapsed;
+            if (profile_select != null && profile_select.SelectedItem != null && ToolkitProfiles.SettingsList.Count > profile_index && profile_index >= 0)
             {
-                build_type build_type_enum = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].BuildType;
+                build_type build_type_enum = ToolkitProfiles.SettingsList[profile_index].BuildType;
 
-                profile_name.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].ProfileName;
-                tool_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].ToolPath;
-                sapien_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].SapienPath;
-                guerilla_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GuerillaPath;
-                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GameGen;
+                profile_name.Text = ToolkitProfiles.SettingsList[profile_index].ProfileName;
+                tool_path.Text = ToolkitProfiles.SettingsList[profile_index].ToolPath;
+                sapien_path.Text = ToolkitProfiles.SettingsList[profile_index].SapienPath;
+                guerilla_path.Text = ToolkitProfiles.SettingsList[profile_index].GuerillaPath;
+                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_index].GameGen;
                 build_type.SelectedIndex = (int)build_type_enum;
-                community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].CommunityTools;
-                data_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].DataPath;
-                tag_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].TagPath;
-                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].Verbose;
-                game_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GamePath;
-                game_exe_path.Text = ToolkitProfiles.SettingsList[profile_select.SelectedIndex].GameExePath;
+                community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_index].CommunityTools;
+                data_path.Text = ToolkitProfiles.SettingsList[profile_index].DataPath;
+                tag_path.Text = ToolkitProfiles.SettingsList[profile_index].TagPath;
+                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_index].Verbose;
+                game_path.Text = ToolkitProfiles.SettingsList[profile_index].GamePath;
+                game_exe_path.Text = ToolkitProfiles.SettingsList[profile_index].GameExePath;
+                expert_mode.IsChecked = ToolkitProfiles.SettingsList[profile_index].ExpertMode;
+                batch.IsChecked = ToolkitProfiles.SettingsList[profile_index].Batch;
+                tool_fast_path.Text = ToolkitProfiles.SettingsList[profile_index].ToolFastPath;
+                h2codez_update_groupbox.Visibility = ToolkitProfiles.SettingsList[profile_index].IsH2Codez() ?
+                    Visibility.Visible : Visibility.Collapsed;
             }
             setting_profile = false;
         }
@@ -229,6 +313,8 @@ namespace ToolkitLauncher
         {
             if (startup_finished && !setting_profile)
             {
+                var profile_item = profile_select.Items[profile_index] as ComboBoxItem;
+                profile_item.Content = profile_name.Text;
                 ProfileSave();
             }
         }
@@ -265,9 +351,13 @@ namespace ToolkitLauncher
                 Verbose = (bool)verbose.IsChecked,
                 GamePath = game_path.Text,
                 GameExePath = game_exe_path.Text,
+                ExpertMode = (bool)expert_mode.IsChecked,
+                Batch = (bool)batch.IsChecked,
+                ToolFastPath = tool_fast_path.Text,
             };
-            Debug.Assert(profile_select.SelectedIndex >= 0 && ToolkitProfiles.SettingsList.Count > profile_select.SelectedIndex);
-            ToolkitProfiles.SettingsList[profile_select.SelectedIndex] = settings;
+            Debug.Assert(profile_index >= 0 && ToolkitProfiles.SettingsList.Count > profile_index);
+            ToolkitProfiles.SettingsList[profile_index] = settings;
+            h2codez_update_groupbox.Visibility = settings.IsH2Codez() ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void profile_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -286,10 +376,13 @@ namespace ToolkitLauncher
                 string guerillaPath = null;
                 string sapienPath = null;
                 string gamePath = null;
+                string toolFastPath = null;
 
                 bool AllHashesFound()
                 {
                     if (toolPath is null && profile.Tool is not null)
+                        return false;
+                    if (toolFastPath is null && profile.ToolFast is not null)
                         return false;
                     if (sapienPath is null && profile.Sapien is not null)
                         return false;
@@ -302,7 +395,7 @@ namespace ToolkitLauncher
                 }
 
                 // check exact MD5 hashes
-                foreach((string name, string hash) file in HashHelpers.GetExecutableMD5Hashes(root_directory_path))
+                foreach ((string name, string hash) file in HashHelpers.GetExecutableMD5Hashes(root_directory_path))
                 {
                     Debug.WriteLine($"MD5 \"{file.hash}\" for \"{file.name}\"");
 
@@ -317,23 +410,26 @@ namespace ToolkitLauncher
 
 
                     CheckHash(profile.Tool, ref toolPath);
+                    CheckHash(profile.ToolFast, ref toolFastPath);
                     CheckHash(profile.Sapien, ref sapienPath);
                     CheckHash(profile.Guerilla, ref guerillaPath);
                     CheckHash(profile.Standalone, ref gamePath);
                 }
 
                 // check fuzzy hashes if needed
-                if (!AllHashesFound()) {
-                    
+                if (!AllHashesFound())
+                {
+
                     // should be initialized to 100 as this has a good FP rate of only 6.43%
                     // todo: sometimes the same file will be matched for multiple tools, figure out how to handle this
-                    
+
                     int last_standalone_diff = 100;
                     int last_tool_diff = 100;
+                    int last_tool_fast_diff = 100;
                     int last_sapien_diff = 100;
                     int last_guerilla_diff = 100;
 
-                    foreach((string name, TlshHash hash) file in HashHelpers.GetExecutableTLSHashes(root_directory_path))
+                    foreach ((string name, TlshHash hash) file in HashHelpers.GetExecutableTLSHashes(root_directory_path))
                     {
                         Debug.WriteLine($"TLSH \"{file.hash}\" for \"{file.name}\"");
 
@@ -353,6 +449,7 @@ namespace ToolkitLauncher
 
 
                         CheckHash(profile.Tool, ref toolPath, ref last_tool_diff);
+                        CheckHash(profile.ToolFast, ref toolFastPath, ref last_tool_fast_diff);
                         CheckHash(profile.Sapien, ref sapienPath, ref last_sapien_diff);
                         CheckHash(profile.Guerilla, ref guerillaPath, ref last_guerilla_diff);
                         CheckHash(profile.Standalone, ref gamePath, ref last_standalone_diff);
@@ -361,6 +458,7 @@ namespace ToolkitLauncher
 
                 profile_name.Text = profile.ToolkitName;
                 tool_path.Text = toolPath;
+                tool_fast_path.Text = toolFastPath;
                 sapien_path.Text = sapienPath;
                 guerilla_path.Text = guerillaPath;
                 game_exe_path.Text = gamePath;
@@ -369,6 +467,41 @@ namespace ToolkitLauncher
                 community_tools.IsChecked = profile.Community;
                 ProfileSave();
             }
+        }
+
+        private void update_h2codez_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("H2Codez is obsolete, please update to MCC", "H2Codez Updater", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.No)
+                MessageBox.Show("What do you mean no? I told you it's obsolete", "Listen to me", MessageBoxButton.OK);
+            return;
+            /*
+            CancelableProgressBarWindow<long> progress = new();
+            progress.Status = "Fetching latest update";
+            progress.Title = "Getting H2Codez update";
+
+            GitHubReleases gitHubReleases = new();
+            IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("Project-Cartographer", "H2Codez");
+            Debug.Print(list.ToString());
+            Debug.Print(list[0].ToString());
+
+            GitHubReleases.Release latestRelease = list[0];
+            async Task<byte[]> GetAsset(string name)
+            {
+                progress.Status = $"Downloading {name}";
+                progress.MaxValue = 0;
+                progress.CurrentProgress = 0;
+                return await gitHubReleases.DownloadReleaseAsset(
+latestRelease.Assets.First(assert => assert.Name == name),
+progress, progress.GetCancellationToken());
+            }
+
+
+            byte[] latestHash = await GetAsset("hash");
+            byte[] latestDLL = await GetAsset("H2Codez.dll");
+
+            progress.Complete = true;
+                        */
         }
     }
 }
