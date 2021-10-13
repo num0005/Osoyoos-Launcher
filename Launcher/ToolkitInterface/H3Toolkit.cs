@@ -225,9 +225,9 @@ namespace ToolkitLauncher.ToolkitInterface
         public async Task JMAFromFBX(string fbxPath, string jmaPath, int startIndex = 0, int? endIndex = null)
         {
             if (endIndex is not null)
-                await RunTool(ToolType.Tool, new() { "fbx_to_jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
+                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
             else
-                await RunTool(ToolType.Tool, new() { "fbx_to_jma", fbxPath, jmaPath, startIndex.ToString() });
+                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString() });
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task JMSFromFBX(string fbxPath, string jmsPath, string geoClass)
         {
-            await RunTool(ToolType.Tool, new() { "fbx_to_jms", geoClass, fbxPath, jmsPath });
+            await RunTool(ToolType.Tool, new() { "fbx-to-jms", geoClass, fbxPath, jmsPath });
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task ASSFromFBX(string fbxPath, string assPath)
         {
-            await RunTool(ToolType.Tool, new() { "fbx_to_ass", fbxPath, assPath });
+            await RunTool(ToolType.Tool, new() { "fbx-to-ass", fbxPath, assPath });
         }
 
         public override bool IsMutexLocked(ToolType tool)
