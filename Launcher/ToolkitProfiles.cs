@@ -101,7 +101,7 @@ namespace ToolkitLauncher
             [JsonIgnore]
             public bool IsMCC
             {
-                get => BuildType == build_type.release_mcc;
+                get => BuildType == build_type.release_mcc || GameGen == 2;
                 set => BuildType = value ? build_type.release_mcc : build_type.release_standalone;
             }
 
