@@ -569,7 +569,7 @@ namespace ToolkitLauncher
     {
         public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int build_type_selection = (int)values[0];
+            bool isMCC = (bool)values[0];
             int gen_type_selection = (int)values[1];
             bool community_selection = (bool)values[2];
             string parameter_workaround = (string)values[3];
@@ -579,37 +579,37 @@ namespace ToolkitLauncher
                 if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 0)
                 {
                     //Check if the build type and gentype are set to an MCC Halo 1 or Halo 2 for tags and data directory args along with the verbose flag
-                    if (build_type_selection == 0 && gen_type_selection != 2)
+                    if (isMCC && gen_type_selection != 2)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 1)
                 {
                     //Check if the build type and gentype are set to a standalone Halo 1 or Halo 2 profile community flags
-                    if (build_type_selection == 1 && gen_type_selection != 2)
+                    if (!isMCC && gen_type_selection != 2)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 2)
                 {
                     //Check if the build type and gentype are set to a MCC Halo 1 for game root directory arg
-                    if (build_type_selection == 0 && gen_type_selection == 0)
+                    if (isMCC && gen_type_selection == 0)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 3)
                 {
                     //Check if the build type and gentype are set to a MCC Halo 2 for batch and expert mode flag
-                    if (build_type_selection == 0 && gen_type_selection == 1)
+                    if (isMCC && gen_type_selection == 1)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 4)
                 {
                     //Check if the build type is standalone Halo 2 community profile for H2Codez updates
-                    if (build_type_selection == 1 && gen_type_selection == 1 && community_selection == true)
+                    if (!isMCC && gen_type_selection == 1 && community_selection == true)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
                     //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
-                    if (build_type_selection == 0 && gen_type_selection == 1 || build_type_selection == 0 && gen_type_selection == 2)
+                    if (isMCC && (gen_type_selection == 1 || gen_type_selection == 2))
                         vis = Visibility.Visible;
                 }
             }
@@ -627,7 +627,7 @@ namespace ToolkitLauncher
         public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             var grid = new GridLength(0);
-            int build_type_selection = (int)values[0];
+            bool isMCC = (bool)values[0];
             int gen_type_selection = (int)values[1];
             bool community_selection = (bool)values[2];
             string parameter_workaround = (string)values[3];
@@ -636,46 +636,46 @@ namespace ToolkitLauncher
                 if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 0)
                 {
                     //Check if the build type and gentype are set to a standalone Halo 1 or Halo 2 profile for community extensions
-                    if (build_type_selection == 1)
+                    if (!isMCC)
                         if (gen_type_selection == 0 || gen_type_selection == 1)
                             grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 1)
                 {
                     //Check if the build type and gentype are set to an MCC Halo 1 or Halo 2 profile for the verbose flag
-                    if (build_type_selection == 0)
+                    if (isMCC)
                         if (gen_type_selection == 0 || gen_type_selection == 1)
                             grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 2)
                 {
                     //Check if the build type and gentype are set to an MCC Halo 2 profile for the expert and batch flag
-                    if (build_type_selection == 0 && gen_type_selection == 1)
+                    if (isMCC && gen_type_selection == 1)
                         grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 3)
                 {
                     //Check if the build type is MCC Halo 2 profile for the asset directory
-                    if (build_type_selection == 0)
+                    if (isMCC)
                         grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 4)
                 {
                     //Check if the build type is standalone Halo 2 community profile for H2Codez updates
-                    if (build_type_selection == 1 && gen_type_selection == 1 && community_selection == true)
+                    if (!isMCC && gen_type_selection == 1 && community_selection)
                         grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
                     //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
-                    if (build_type_selection == 0 && gen_type_selection == 1 || build_type_selection == 0 && gen_type_selection == 2)
+                    if (isMCC && gen_type_selection == 1 || isMCC && gen_type_selection == 2)
                         grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
                 {
                     //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
 
-                    if (build_type_selection == 0 && gen_type_selection == 1 || build_type_selection == 0 && gen_type_selection == 2)
+                    if (isMCC && (gen_type_selection == 1 || gen_type_selection == 2))
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);

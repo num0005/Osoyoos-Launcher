@@ -14,12 +14,9 @@ using System.Collections.ObjectModel;
 
 namespace ToolkitLauncher
 {
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum build_type
     {
-        [Description("MCC")]
         release_mcc,
-        [Description("Standalone")]
         release_standalone
     }
 
@@ -273,7 +270,6 @@ namespace ToolkitLauncher
             sapien_path.Text = "";
             guerilla_path.Text = "";
             gen_type.SelectedIndex = 0;
-            build_type.SelectedIndex = 0;
             community_tools.IsChecked = false;
             data_path.Text = "";
             tag_path.Text = "";
@@ -286,14 +282,12 @@ namespace ToolkitLauncher
             h2codez_update_groupbox.Visibility = Visibility.Collapsed;
             if (profile_select != null && profile_select.SelectedItem != null && ToolkitProfiles.SettingsList.Count > profile_index && profile_index >= 0)
             {
-                build_type build_type_enum = ToolkitProfiles.SettingsList[profile_index].BuildType;
-
+                isMCC.IsChecked = ToolkitProfiles.SettingsList[profile_index].IsMCC;
                 profile_name.Text = ToolkitProfiles.SettingsList[profile_index].ProfileName;
                 tool_path.Text = ToolkitProfiles.SettingsList[profile_index].ToolPath;
                 sapien_path.Text = ToolkitProfiles.SettingsList[profile_index].SapienPath;
                 guerilla_path.Text = ToolkitProfiles.SettingsList[profile_index].GuerillaPath;
                 gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_index].GameGen;
-                build_type.SelectedIndex = (int)build_type_enum;
                 community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_index].CommunityTools;
                 data_path.Text = ToolkitProfiles.SettingsList[profile_index].DataPath;
                 tag_path.Text = ToolkitProfiles.SettingsList[profile_index].TagPath;
@@ -344,7 +338,6 @@ namespace ToolkitLauncher
                 SapienPath = sapien_path.Text,
                 GuerillaPath = guerilla_path.Text,
                 GameGen = gen_type.SelectedIndex,
-                BuildType = (build_type)build_type.SelectedIndex,
                 CommunityTools = (bool)community_tools.IsChecked,
                 DataPath = data_path.Text,
                 TagPath = tag_path.Text,
@@ -355,6 +348,7 @@ namespace ToolkitLauncher
                 Batch = (bool)batch.IsChecked,
                 ToolFastPath = tool_fast_path.Text,
             };
+            settings.IsMCC = isMCC.IsChecked ?? false;
             Debug.Assert(profile_index >= 0 && ToolkitProfiles.SettingsList.Count > profile_index);
             ToolkitProfiles.SettingsList[profile_index] = settings;
             h2codez_update_groupbox.Visibility = settings.IsH2Codez() ? Visibility.Visible : Visibility.Collapsed;
@@ -463,7 +457,7 @@ namespace ToolkitLauncher
                 guerilla_path.Text = guerillaPath;
                 game_exe_path.Text = gamePath;
                 gen_type.SelectedIndex = profile.GameGeneration - 1;
-                build_type.SelectedIndex = profile.IsMCCBuild ? 0 : 1;
+                isMCC.IsChecked = profile.IsMCCBuild;
                 community_tools.IsChecked = profile.Community;
                 ProfileSave();
             }
@@ -502,6 +496,12 @@ progress, progress.GetCancellationToken());
 
             progress.Complete = true;
                         */
+        }
+
+
+        private void isMCC_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
