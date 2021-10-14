@@ -109,7 +109,7 @@ progress, token);
             IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("num0005", "Osoyoos-Launcher");
             Debug.Print(list.ToString());
             MessageBoxResult result = MessageBox.Show(
-                "Do you want to use prerelease builds or only final builds?\nPrerelease buidlds can be less stable", 
+                "Do you want to use prerelease builds?\nPrerelease buidlds can be less stable than final builds", 
                 "Use prerelease?", 
                 MessageBoxButton.YesNoCancel);
             if (result == MessageBoxResult.Cancel)
