@@ -340,12 +340,12 @@
                     <ColumnDefinition Width="8"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Gen" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
+                <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Generation" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
                     <Grid>
                         <ComboBox x:Name="gen_type" SelectedIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="75" MinHeight="26" SelectionChanged="profile_data_SelectionChanged">
-                            <ComboBoxItem Content="Gen 1"/>
-                            <ComboBoxItem Content="Gen 2"/>
-                            <ComboBoxItem Content="Gen 3"/>
+                            <ComboBoxItem Content="Gen 1 (Halo 1)"/>
+                            <ComboBoxItem Content="Gen 2 (Halo 2 Vista/Halo 2 Classic)"/>
+                            <ComboBoxItem Content="Gen 3 (Halo 3)"/>
                         </ComboBox>
                     </Grid>
                 </GroupBox>
