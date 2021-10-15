@@ -164,12 +164,12 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 5)
                 {
-                    if (!MainWindow.halo_3_mcc)
+                    if (!MainWindow.halo_3)
                         grid = new GridLength(8);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 6)
                 {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
                         grid = new GridLength(8);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 7)
@@ -198,14 +198,14 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 11)
                 {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
                         grid = new GridLength(8);
                 }
             }
@@ -289,12 +289,12 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 7)
                 {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 8)
                 {
-                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 9)
@@ -315,12 +315,12 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 11)
                 {
-                    if (MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_3)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 13)
@@ -345,7 +345,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 17)
                 {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_3)
                         vis = Visibility.Visible;
                 }
             }
@@ -367,7 +367,7 @@ namespace ToolkitLauncher
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                if (MainWindow.halo_2_mcc && is_fp || MainWindow.halo_3_mcc && is_fp)
+                if (MainWindow.halo_2_mcc && is_fp || MainWindow.halo_3 && is_fp)
                     vis = Visibility.Visible;
             }
             else
@@ -403,7 +403,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 3)
                 {
-                    if (MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_3)
                         is_enabled = true;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 4)
@@ -442,7 +442,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 10)
                 {
-                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_3_mcc)
+                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_3)
                         is_enabled = true;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 11)
@@ -491,7 +491,7 @@ namespace ToolkitLauncher
                     {
                         enum_item = Enum.GetValues(typeof(h2_quality_settings_mcc));
                     }
-                    else if (MainWindow.halo_3_mcc)
+                    else if (MainWindow.halo_3)
                     {
                         enum_item = Enum.GetValues(typeof(h3_quality_settings_stock));
                     }
@@ -499,7 +499,7 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 3)
                 {
                     enum_item = "Run the lightmapper once before using" + "\n" + "Grants a speed boost for lightmapping by disabling error checking.";
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3_mcc)
+                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
                     {
                         enum_item = "Run a PLAY build of tool." + "\n" + "This means it is optimized for speed and has fewer debug checks.";
                     }

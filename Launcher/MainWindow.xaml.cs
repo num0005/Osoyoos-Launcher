@@ -392,13 +392,13 @@ namespace ToolkitLauncher
             }
         }
 
-        public static bool halo_3_mcc
+        public static bool halo_3
         {
             get
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 2 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.GameGen == 2;
                 }
                 return false;
             }
@@ -717,7 +717,7 @@ namespace ToolkitLauncher
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path);
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
-                if (halo_3_mcc || (halo_2_mcc && lightmaps_args.instanceCount > 1))
+                if (halo_3 || (halo_2_mcc && lightmaps_args.instanceCount > 1))
                     progress = new CancelableProgressBarWindow<int>();
                 try
                 {
@@ -767,7 +767,7 @@ namespace ToolkitLauncher
         private async void PackageLevel(object sender, RoutedEventArgs e)
         {
             string cache_platform = "dx11_64";
-            if (halo_3_mcc)
+            if (halo_3)
                 cache_platform = "pc";
 
             CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
