@@ -409,7 +409,7 @@
                                 </RowDefinition>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <CheckBox x:Name="isMCC" Foreground="{DynamicResource TextColor}" Grid.Row="0" ToolTip="Is MCC build or legacy?" Content="MCC build"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="22"/>
+                            <CheckBox x:Name="isMCC" Foreground="{DynamicResource TextColor}" Grid.Row="0" ToolTip="Is MCC build or legacy?" Content="MCC build"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="22" Click="profile_data_Click" />
                             <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
