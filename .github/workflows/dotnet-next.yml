@@ -12,8 +12,8 @@ jobs:
   build:
     runs-on: windows-latest
     strategy:
-      matrix:
-        dotnet: ['5.0.x', '6.0.x']
+      matrix: # https://stackoverflow.com/a/68940067/16608030 hopefully this still works
+        dotnet: [ {version: '5.0.x', path: net5.0-windows}, {version: '6.0.x', path: net6.0-windows} ]
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT : true
     steps:
@@ -23,7 +23,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.dotnet }}
+        dotnet-version: ${{ matrix.dotnet.version }}
+        include-prerelease: true
     - name: Install dependencies
       run: dotnet restore
     - name: Install nbgv
@@ -38,6 +39,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: launcher
-        path: Launcher\bin\Release\net5.0-windows\win-x64\publish\
+        path: Launcher\bin\Release\${{ matrix.dotnet.path}}\win-x64\publish\
         
         
