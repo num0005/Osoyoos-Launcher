@@ -4,6 +4,7 @@ using System;
 using static ToolkitLauncher.ToolkitProfiles;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -59,7 +60,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             string quality = GetLightmapQuality(args);
 
-            if ((args.instanceCount > 1 && Profile.IsMCC) || (args.instanceCount > 1 && Profile.CommunityTools))
+            if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
             {
                 if (progress is not null)
                     progress.MaxValue += 1 + args.instanceCount;
@@ -68,7 +69,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 {
                     if (index == 0 && !Profile.IsH2Codez()) // not needed for H2Codez
                     {
-                        if (progress is not null && args.instanceCount > 1)
+                        if (progress is not null)
                             progress.Status = "Delaying launch of zeroth instance";
                         await Task.Delay(1000 * 70, progress.GetCancellationToken());
                     }
@@ -105,6 +106,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else
             {
+                Debug.Assert(args.instanceCount == 1); // should be one, otherwise we got bad args
                 if (progress is not null)
                 {
                     progress.DisableCancellation();
