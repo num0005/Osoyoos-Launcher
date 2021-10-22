@@ -717,7 +717,7 @@ namespace ToolkitLauncher
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path);
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
-                if (halo_3 || (halo_2_mcc && lightmaps_args.instanceCount > 1))
+                if (halo_3 || ((halo_2_mcc || halo_2_standalone_community) && lightmaps_args.instanceCount > 1))
                     progress = new CancelableProgressBarWindow<int>();
                 try
                 {

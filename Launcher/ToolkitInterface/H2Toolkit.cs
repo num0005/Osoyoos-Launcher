@@ -4,6 +4,7 @@ using System;
 using static ToolkitLauncher.ToolkitProfiles;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -59,7 +60,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             string quality = GetLightmapQuality(args);
 
-            if (args.instanceCount > 1 && Profile.IsMCC || Profile.CommunityTools)
+            if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
             {
                 if (progress is not null)
                     progress.MaxValue += 1 + args.instanceCount;
@@ -105,12 +106,13 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else
             {
+                Debug.Assert(args.instanceCount == 1); // should be one, otherwise we got bad args
                 if (progress is not null)
                 {
                     progress.DisableCancellation();
                     progress.MaxValue += 1;
                 }
-                await RunTool(ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+                await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
                 if (progress is not null)
                     progress.Report(1);
             }

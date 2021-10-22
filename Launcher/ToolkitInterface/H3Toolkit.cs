@@ -55,9 +55,9 @@ namespace ToolkitLauncher.ToolkitInterface
             return lightmapArgs.level_combobox.ToLower();
         }
 
-        public async Task FauxSync(string scenario, string bsp, bool instanceOutput)
+        public async Task FauxSync(string scenario, string bsp, bool instanceOutput, bool useFast)
         {
-            await RunTool(ToolType.Tool, new() { "faux_data_sync", scenario, bsp }, instanceOutput);
+            await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new() { "faux_data_sync", scenario, bsp }, instanceOutput);
         }
 
         private static int FauxCalculateJobID(string scenario, string bsp)
@@ -83,7 +83,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // first sync
             progress.Status = "Syncing faux (this might take a while)...";
-            await FauxSync(scenario, bsp, instanceOutput);
+            await FauxSync(scenario, bsp, instanceOutput, useFast);
             progress.Report(1);
 
             int jobID = FauxCalculateJobID(scenario, bsp);
