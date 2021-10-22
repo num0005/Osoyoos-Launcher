@@ -59,7 +59,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             string quality = GetLightmapQuality(args);
 
-            if (args.instanceCount > 1 && Profile.IsMCC || Profile.CommunityTools)
+            if ((args.instanceCount > 1 && Profile.IsMCC) || (args.instanceCount > 1 && Profile.CommunityTools))
             {
                 if (progress is not null)
                     progress.MaxValue += 1 + args.instanceCount;
@@ -68,7 +68,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 {
                     if (index == 0 && !Profile.IsH2Codez()) // not needed for H2Codez
                     {
-                        if (progress is not null)
+                        if (progress is not null && args.instanceCount > 1)
                             progress.Status = "Delaying launch of zeroth instance";
                         await Task.Delay(1000 * 70, progress.GetCancellationToken());
                     }
@@ -110,7 +110,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     progress.DisableCancellation();
                     progress.MaxValue += 1;
                 }
-                await RunTool(ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+                await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
                 if (progress is not null)
                     progress.Report(1);
             }
