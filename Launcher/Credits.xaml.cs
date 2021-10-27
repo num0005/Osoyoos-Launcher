@@ -105,6 +105,7 @@ progress, token);
 
         private async void update_button_Click(object sender, RoutedEventArgs e)
         {
+            update_button.IsEnabled = false; // Make sure we can't click on this multiple times
             GitHubReleases gitHubReleases = new();
             IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("num0005", "Osoyoos-Launcher");
             Debug.Print(list.ToString());
@@ -113,7 +114,10 @@ progress, token);
                 "Use prerelease?", 
                 MessageBoxButton.YesNoCancel);
             if (result == MessageBoxResult.Cancel)
+            {
+                update_button.IsEnabled = true; // We're done
                 return;
+            }
             bool usePrerelease = result == MessageBoxResult.Yes;
             GitHubReleases.Release latestRelease = list.FirstOrDefault(r => !r.IsPreRelease || usePrerelease);
             if (latestRelease is null)
@@ -125,6 +129,7 @@ progress, token);
             if (MessageBox.Show($"Do you want to update to {latestRelease.Name} created at {latestRelease.CreationTime}?", "Update?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 CancelableProgressBarWindow<long> progress = new();
+                progress.Owner = this;
                 progress.Status = "Downloading update";
                 progress.Title = progress.Status;
 
@@ -136,6 +141,7 @@ progress, token);
                     progress.Complete = true;
                 }
             }
+            update_button.IsEnabled = true; // We're done
         }
     }
 }
