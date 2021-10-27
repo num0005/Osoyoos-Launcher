@@ -106,42 +106,49 @@ progress, token);
         private async void update_button_Click(object sender, RoutedEventArgs e)
         {
             update_button.IsEnabled = false; // Make sure we can't click on this multiple times
-            GitHubReleases gitHubReleases = new();
-            IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("num0005", "Osoyoos-Launcher");
-            Debug.Print(list.ToString());
-            MessageBoxResult result = MessageBox.Show(
-                "Do you want to use prerelease builds?\nPrerelease buidlds can be less stable than final builds", 
-                "Use prerelease?", 
-                MessageBoxButton.YesNoCancel);
-            if (result == MessageBoxResult.Cancel)
+            try 
             {
-                update_button.IsEnabled = true; // We're done
-                return;
-            }
-            bool usePrerelease = result == MessageBoxResult.Yes;
-            GitHubReleases.Release latestRelease = list.FirstOrDefault(r => !r.IsPreRelease || usePrerelease);
-            if (latestRelease is null)
-            {
-                _ = MessageBox.Show("No matching release found, can't update", "No matching release", MessageBoxButton.OK);
-            }
-
-            Debug.Print(latestRelease.ToString());
-            if (MessageBox.Show($"Do you want to update to {latestRelease.Name} created at {latestRelease.CreationTime}?", "Update?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            {
-                CancelableProgressBarWindow<long> progress = new();
-                progress.Owner = this;
-                progress.Status = "Downloading update";
-                progress.Title = progress.Status;
-
-                try {
-                    await DoUpdate(gitHubReleases, latestRelease, progress);
-                } catch (OperationCanceledException) {}
-                finally
+                GitHubReleases gitHubReleases = new();
+                IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("num0005", "Osoyoos-Launcher");
+                Debug.Print(list.ToString());
+                MessageBoxResult result = MessageBox.Show(
+                    "Do you want to use prerelease builds?\nPrerelease buidlds can be less stable than final builds",
+                    "Use prerelease?",
+                    MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Cancel)
+                    return;
+                bool usePrerelease = result == MessageBoxResult.Yes;
+                GitHubReleases.Release latestRelease = list.FirstOrDefault(r => !r.IsPreRelease || usePrerelease);
+                if (latestRelease is null)
                 {
-                    progress.Complete = true;
+                    _ = MessageBox.Show("No matching release found, can't update", "No matching release", MessageBoxButton.OK);
+                }
+
+                Debug.Print(latestRelease.ToString());
+                if (MessageBox.Show($"Do you want to update to {latestRelease.Name} created at {latestRelease.CreationTime}?", "Update?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    CancelableProgressBarWindow<long> progress = new();
+                    progress.Owner = this;
+                    progress.Status = "Downloading update";
+                    progress.Title = progress.Status;
+
+                    try
+                    {
+                        await DoUpdate(gitHubReleases, latestRelease, progress);
+                    }
+                    catch (OperationCanceledException) { }
+                    finally
+                    {
+                        progress.Complete = true;
+                    }
                 }
             }
-            update_button.IsEnabled = true; // We're done
+            finally
+            {
+                update_button.IsEnabled = true; // We're done
+            }
+
+
         }
     }
 }
