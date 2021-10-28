@@ -35,7 +35,7 @@ Launcher can do the following:
 
 ## Usage
 
-0. Download and install the [.NET 5 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/5.0/runtime).
+0. Download and install the [.NET 5 Desktop Runtime x64](https://dotnet.microsoft.com/download/dotnet/5.0/runtime).
 1. Download and run the launcher executable [from Github releases](https://github.com/num0005/Osoyoos-Launcher/releases).
 2. Use the setup dialog and/or profile wizard to setup the paths for all toolkits you wish to use.
 
