@@ -20,7 +20,6 @@ namespace ToolkitLauncher
             InitializeComponent();
             CanCancel = true;
             Show();
-            Owner = Application.Current.MainWindow;
             dispatcher = Dispatcher;
         }
 

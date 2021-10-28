@@ -719,6 +719,7 @@ namespace ToolkitLauncher
                 CancelableProgressBarWindow<int> progress = null;
                 if (halo_3 || ((halo_2_mcc || halo_2_standalone_community) && lightmaps_args.instanceCount > 1))
                     progress = new CancelableProgressBarWindow<int>();
+                    progress.Owner = this;
                 try
                 {
                     await toolkit.BuildLightmap(scen_path, info.BspName, lightmaps_args, progress);
@@ -766,7 +767,8 @@ namespace ToolkitLauncher
 
         private async void PackageLevel(object sender, RoutedEventArgs e)
         {
-            string cache_platform = "dx11_64";
+            // Halo 2 uses win64, win32, and xbox1 as platform options. Default if improper arg is given is win64
+            string cache_platform = "win64";
             if (halo_3)
                 cache_platform = "pc";
 
