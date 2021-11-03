@@ -701,7 +701,8 @@ namespace ToolkitLauncher
             if (levelCompileType.HasFlag(level_compile_type.compile))
             {
                 bool is_release = true;
-                await toolkit.ImportStructure(level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false);
+                string structure_command = structure_import_type.Text.ToString().ToLower();
+                await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false);
             }
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
@@ -755,7 +756,7 @@ namespace ToolkitLauncher
                 "3d",
                 "cubemaps",
                 "sprites",
-                "inteface"
+                "interface"
             };
         }
 

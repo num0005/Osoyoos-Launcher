@@ -32,10 +32,21 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "strings", path });
         }
 
-        override public async Task ImportStructure(string data_file, bool phantom_fix, bool release, bool useFast)
+        override public async Task ImportStructure(string structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
         {
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
-            await RunTool(tool, new() { "structure", data_file }, true);
+            string tool_command = "structure";
+            string data_path = data_file;
+            if (structure_command != "structure")
+            {
+                tool_command = tool_command + "-" + structure_command;
+                if (structure_command == "seams")
+                {
+                    data_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file));
+                }
+            }
+
+            await RunTool(tool, new() { tool_command, data_path }, true);
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharinge)
