@@ -273,6 +273,7 @@
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="*"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=13, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
                                                         <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=3, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="phantom_hack" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to fix phantom BSP errors on level compile.">
@@ -289,6 +290,13 @@
                                                         </Grid>
                                                         <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=12, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="instance_cmd" Content="Instance Output" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Keeps the instance output windows open if enabled. Disable if you live on the wild side."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=11, ElementName=toolkit_selection}">
+                                                            <ComboBox x:Name="structure_import_type" Grid.Column="4" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the level.">
+                                                                <ComboBoxItem Content="Structure"/>
+                                                                <ComboBoxItem Content="Design"/>
+                                                                <ComboBoxItem Content="Seams"/>
+                                                            </ComboBox>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>

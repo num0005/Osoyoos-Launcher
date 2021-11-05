@@ -80,7 +80,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 await RunTool(ToolType.Tool, new() { "animations", path }, true);
         }
 
-        public override async Task ImportStructure(string data_file, bool phantom_fix, bool release, bool useFast)
+        public override async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
         {
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             var info = SplitStructureFilename(data_file);

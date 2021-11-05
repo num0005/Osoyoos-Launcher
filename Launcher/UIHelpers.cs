@@ -208,13 +208,21 @@ namespace ToolkitLauncher
                     if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
                         grid = new GridLength(8);
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 13)
+                {
+                    if (MainWindow.halo_3)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
             }
             else
             {
                 //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                 if (parameter is string && Int32.Parse(parameter as string) == 9
                     || parameter is string && Int32.Parse(parameter as string) == 10
-                    || parameter is string && Int32.Parse(parameter as string) == 11)
+                    || parameter is string && Int32.Parse(parameter as string) == 11
+                    || parameter is string && Int32.Parse(parameter as string) == 13)
                 {
                     grid = new GridLength(1, GridUnitType.Star);
                 }

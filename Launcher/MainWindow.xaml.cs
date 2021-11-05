@@ -701,7 +701,9 @@ namespace ToolkitLauncher
             if (levelCompileType.HasFlag(level_compile_type.compile))
             {
                 bool is_release = true;
-                await toolkit.ImportStructure(level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false);
+                StructureType structure_command = (StructureType)structure_import_type.SelectedIndex;
+
+                await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false);
             }
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
@@ -718,8 +720,10 @@ namespace ToolkitLauncher
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
                 if (halo_3 || ((halo_2_mcc || halo_2_standalone_community) && lightmaps_args.instanceCount > 1))
+                {
                     progress = new CancelableProgressBarWindow<int>();
                     progress.Owner = this;
+                }
                 try
                 {
                     await toolkit.BuildLightmap(scen_path, info.BspName, lightmaps_args, progress);
@@ -755,7 +759,7 @@ namespace ToolkitLauncher
                 "3d",
                 "cubemaps",
                 "sprites",
-                "inteface"
+                "interface"
             };
         }
 
