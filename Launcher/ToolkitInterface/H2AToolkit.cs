@@ -64,7 +64,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "bitmaps", path, type, debug_plate.ToString() });
         }
 
-        override public async Task ImportStructure(string structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
         {
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");

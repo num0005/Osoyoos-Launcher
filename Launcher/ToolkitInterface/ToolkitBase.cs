@@ -28,6 +28,13 @@ namespace ToolkitLauncher.ToolkitInterface
         image_interface
     }
 
+    public enum StructureType
+    {
+        structure,
+        structure_design,
+        structure_seams
+    }
+
     [Flags]
     public enum ModelCompile
     {
@@ -143,7 +150,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="useFast">H2-H3: Run a play build of tool if the toolset has one</param>
         /// <param name="phantom_fix">CE: Whatever to apply the phantom fix</param>
         /// <returns></returns>
-        public abstract Task ImportStructure(string structure_command, string data_file, bool phantom_fix, bool release, bool useFast);
+        public abstract Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast);
 
         /// <summary>
         /// Import geometry to generate various types of model related tags
