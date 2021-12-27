@@ -731,8 +731,9 @@ namespace ToolkitLauncher
         public ProfileIndexViewModel()
         {
             int default_index = 0;
-            if (Settings.Default.set_profile >= 0)
+            if (Settings.Default.set_profile >= 0 && MainWindow.profile_mapping.Count > Settings.Default.set_profile)
                 default_index = Settings.Default.set_profile;
+
             SelectedProfileIndex = default_index;
         }
         private int _SelectedProfileIndex;
