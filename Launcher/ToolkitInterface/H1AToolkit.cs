@@ -67,7 +67,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="phantomFix"></param>
         /// <param name="h2SelectionLogic"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             if (importType.HasFlag(ModelCompile.render))
@@ -80,7 +80,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 await RunTool(ToolType.Tool, new() { "animations", path }, true);
         }
 
-        public override async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        public override async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             var info = SplitStructureFilename(data_file);

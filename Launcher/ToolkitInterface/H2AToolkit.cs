@@ -64,7 +64,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "bitmaps", path, type, debug_plate.ToString() });
         }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
@@ -83,7 +83,7 @@ namespace ToolkitLauncher.ToolkitInterface
             return flag_string;
         }
 
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
 #if !DEBUG
             renderPRT = false; // broken right now

@@ -37,7 +37,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "new-strings", path });
         }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
             string command = is_ass_file ? "structure-new-from-ass" : "structure-from-jms";
@@ -187,7 +187,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "model-render", path });
