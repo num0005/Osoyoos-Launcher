@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -66,6 +67,8 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
+            if (autoFBX) { await AutoFBX.Structure(this, data_file, false); }
+
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
             string command = is_ass_file ? "structure-new-from-ass" : "structure-from-jms";
@@ -101,6 +104,8 @@ namespace ToolkitLauncher.ToolkitInterface
             {
                 flags = set_flags(flags, "reset_compression");
             }
+
+            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "render", path, accurateRender.ToString(), renderPRT.ToString() });

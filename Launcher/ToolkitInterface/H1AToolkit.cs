@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -69,6 +70,8 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
+            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
+
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "model", path, h2SelectionLogic.ToString() }, true);
@@ -82,6 +85,8 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
+            if (autoFBX) { await AutoFBX.Structure(this, data_file, true); }
+
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             var info = SplitStructureFilename(data_file);
             await RunTool(ToolType.Tool, new () { "structure", info.ScenarioPath, info.BspName, phantom_fix.ToString() }, true);
