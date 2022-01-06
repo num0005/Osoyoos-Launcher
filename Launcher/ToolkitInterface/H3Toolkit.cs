@@ -188,7 +188,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         }
 
-        // Some nonsense
+        // Some nonsense, probably should be an enum actually
         private class ImportTypeInfo
         {
             public ModelCompile importType;
@@ -205,7 +205,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             new ImportTypeInfo(ModelCompile.render, "render", "render"),
             new ImportTypeInfo(ModelCompile.collision, "collision", "collision"),
-            new ImportTypeInfo(ModelCompile.physics, "physics", "physics-or-all")
+            new ImportTypeInfo(ModelCompile.physics, "physics", "physics")
         };
 
         private async Task ModelAutoFBX(string path, ModelCompile importType)
@@ -240,22 +240,27 @@ namespace ToolkitLauncher.ToolkitInterface
                 if (importType.HasFlag(importTypeInfo.importType))
                 {
                     string typeDir = rootDir + "\\" + importTypeInfo.folderName;
+
+                    /* Copy x.all.fbx output if it exists */
                     if (alls.Count > 0)
                     {
                         if (!Directory.Exists(typeDir)) { Directory.CreateDirectory(typeDir); }
 
                         foreach (FileInfo all in alls)
                         {
-                            string checkPath = typeDir + "\\" + (all.Name.ToLower().Replace(".all.fbx", ".fbx"));
-                            if (File.Exists(checkPath)) { continue; } // Skip x.all.fbx if there is an x.fbx with same name in the relevant subfolder
-
                             string inPath = rootDir + "\\" + (all.Name.ToLower().Replace(".all.fbx", "_" + importTypeInfo.folderName + ".jms"));
                             string outPath = typeDir + "\\" + (all.Name.ToLower().Replace(".all.fbx", ".jms"));
+
+                            string checkPath = typeDir + "\\" + (all.Name.ToLower().Replace(".all.fbx", ".fbx"));
+                            if (File.Exists(checkPath)) { File.Delete(inPath); continue; } // Skip x.all.fbx if there is an x.fbx with same name in the relevant subfolder
+
+                            if(File.Exists(outPath)) { File.Delete(outPath); }
 
                             File.Copy(inPath, outPath);
                             File.Delete(inPath);
                         }
                     }
+                    /* Convert fbx in relevant sub folders */
                     if (Directory.Exists(typeDir))
                     {
                         List<FileInfo> fbxs = new List<FileInfo>();
