@@ -141,7 +141,7 @@ namespace ToolkitLauncher.Utility
         {
             FbxDocument fbx = FbxIO.Read(path);
 
-            string FuckYou(UkooLabs.FbxSharpie.Tokens.Token token)
+            string GetTokenValueAsString(UkooLabs.FbxSharpie.Tokens.Token token)
             {
                 if(token is UkooLabs.FbxSharpie.Tokens.StringToken)
                 {
@@ -158,7 +158,7 @@ namespace ToolkitLauncher.Utility
                 return "{value}";
             }
 
-            long FuckYou2(UkooLabs.FbxSharpie.Tokens.Token token)
+            long GetTokenValueAsLong(UkooLabs.FbxSharpie.Tokens.Token token)
             {
                 if (token is UkooLabs.FbxSharpie.Tokens.Value.IntegerToken)
                 {
@@ -171,7 +171,7 @@ namespace ToolkitLauncher.Utility
                 return 0;
             }
 
-            FbxNode GetFuckYou(FbxDocument f, string identifier)
+            FbxNode GetNodeByIdentifierValue(FbxDocument f, string identifier)
             {
                 foreach (FbxNode n in f.Nodes)
                 {
@@ -186,12 +186,12 @@ namespace ToolkitLauncher.Utility
             /* Step #1 - Search "Objects" for any Models with a name starting with '@' or '$' and then grab the id values for it */
             List<FbxNode> StNodes5a = new List<FbxNode>();
             List<long> ModelIDs = new List<long>();
-            foreach(FbxNode node in GetFuckYou(fbx, "Objects").Nodes)
+            foreach(FbxNode node in GetNodeByIdentifierValue(fbx, "Objects").Nodes)
             {
                 if(node != null && node.Properties != null && node.Properties.Length > 2)
                 {
-                    string name = FuckYou(node.Properties[1]);
-                    long id = FuckYou2(node.Properties[0]);
+                    string name = GetTokenValueAsString(node.Properties[1]);
+                    long id = GetTokenValueAsLong(node.Properties[0]);
                     if (name.StartsWith("Model::@") || name.StartsWith("Model::$"))
                     {
                         ModelIDs.Add(id);
@@ -204,12 +204,12 @@ namespace ToolkitLauncher.Utility
             /* Step #2 - Search "Connections" for any entries containing the any ModelIDs we collected in property slot #2, store the value from slot #1 as that is the child id for the mesh */
             List<FbxNode> StNodes6a = new List<FbxNode>();
             List<long> MeshIDs = new List<long>();
-            foreach (FbxNode node in GetFuckYou(fbx, "Connections").Nodes)
+            foreach (FbxNode node in GetNodeByIdentifierValue(fbx, "Connections").Nodes)
             {
                 if (node != null && node.Properties != null && node.Properties.Length > 2)
                 {
-                    long id1 = FuckYou2(node.Properties[1]);
-                    long id2 = FuckYou2(node.Properties[2]);
+                    long id1 = GetTokenValueAsLong(node.Properties[1]);
+                    long id2 = GetTokenValueAsLong(node.Properties[2]);
                     if (ModelIDs.Contains(id2))
                     {
                         MeshIDs.Add(id1);
@@ -225,9 +225,9 @@ namespace ToolkitLauncher.Utility
             {
                 if (node != null && node.Properties != null && node.Properties.Length > 2)
                 {
-                    long id = FuckYou2(node.Properties[0]);
-                    string slot1 = FuckYou(node.Properties[1]);
-                    string slot2 = FuckYou(node.Properties[2]);
+                    long id = GetTokenValueAsLong(node.Properties[0]);
+                    string slot1 = GetTokenValueAsString(node.Properties[1]);
+                    string slot2 = GetTokenValueAsString(node.Properties[2]);
                     if (slot1.ToLower().Contains("geometry") && slot2.ToLower().Contains("mesh") && MeshIDs.Contains(id))
                     {
                         continue;
