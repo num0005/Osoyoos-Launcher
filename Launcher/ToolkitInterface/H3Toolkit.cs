@@ -210,7 +210,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if(autoFBX) { await AutoFBX.Model(this, path, importType); }
+            if(autoFBX) { await AutoFBX.Model(this, path, importType, false); }
 
             if (importType.HasFlag(ModelCompile.render))
                 if (skyRender)

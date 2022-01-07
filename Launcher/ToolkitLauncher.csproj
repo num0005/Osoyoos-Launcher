@@ -64,6 +64,7 @@
     <EmbeddedResource Include="Documentation.json" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FbxParser" Version="2.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.4.216">
@@ -74,6 +75,7 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="5.0.0" />
     <PackageReference Include="TlshSharp" Version="1.0.0" />
+    <PackageReference Include="UkooLabs.FbxSharpie" Version="1.0.99" />
     <PackageReference Include="WindowsAPICodePack-Shell">
       <Version>1.1.1</Version>
     </PackageReference>

@@ -202,7 +202,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
-            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
+            if (autoFBX) { await AutoFBX.Model(this, path, importType, false); }
 
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "model-render", path });
