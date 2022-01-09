@@ -5,6 +5,7 @@ using static ToolkitLauncher.ToolkitProfiles;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using ToolkitLauncher.Utility;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -16,6 +17,16 @@ namespace ToolkitLauncher.ToolkitInterface
         protected virtual string sapienWindowClass
         {
             get => "Sapien";
+        }
+
+        /* For AutoFBX */
+        public override List<ImportTypeInfo> GetImportTypeInfo()
+        {
+            return new List<ImportTypeInfo>() {
+                new ImportTypeInfo(ModelCompile.render, "render", "render"),
+                new ImportTypeInfo(ModelCompile.collision, "collision", "collision"),
+                new ImportTypeInfo(ModelCompile.physics, "physics", "physics")
+            };
         }
 
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
@@ -37,8 +48,10 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "new-strings", path });
         }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
+            if (autoFBX) { await AutoFBX.Structure(this, data_file, false); }
+
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
             string command = is_ass_file ? "structure-new-from-ass" : "structure-from-jms";
             string use_release = release ? "yes" : "no";
@@ -187,8 +200,10 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
+            if (autoFBX) { await AutoFBX.Model(this, path, importType, false); }
+
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "model-render", path });
             if (importType.HasFlag(ModelCompile.collision))

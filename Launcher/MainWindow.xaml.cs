@@ -703,7 +703,7 @@ namespace ToolkitLauncher
                 bool is_release = true;
                 StructureType structure_command = (StructureType)structure_import_type.SelectedIndex;
 
-                await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false);
+                await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false, struct_auto_fbx.IsChecked ?? false);
             }
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
@@ -859,7 +859,7 @@ namespace ToolkitLauncher
 
         private async void compile_model_Click(object sender, RoutedEventArgs e)
         {
-            await toolkit.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false, prt_enabled.IsChecked ?? false, fp_anim.IsChecked ?? false, character_fp_path.Text, weapon_fp_path.Text, accurate_render.IsChecked ?? false, verbose_anim.IsChecked ?? false, uncompressed_anim.IsChecked ?? false, sky_model.IsChecked ?? false, reset_compression.IsChecked ?? false);
+            await toolkit.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false, prt_enabled.IsChecked ?? false, fp_anim.IsChecked ?? false, character_fp_path.Text, weapon_fp_path.Text, accurate_render.IsChecked ?? false, verbose_anim.IsChecked ?? false, uncompressed_anim.IsChecked ?? false, sky_model.IsChecked ?? false, reset_compression.IsChecked ?? false, model_auto_fbx.IsChecked ?? false);
         }
 
         private async void import_sound_Click(object sender, RoutedEventArgs e)

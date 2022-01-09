@@ -89,6 +89,16 @@ namespace ToolkitLauncher.ToolkitInterface
             int instanceCount,
             bool instanceOutput);
 
+        /* For AutoFBX */
+        public record ImportTypeInfo(
+            ModelCompile importType,
+            string folderName,
+            string commandOption
+        );
+
+        /* For AutoFBX */
+        public abstract List<ImportTypeInfo> GetImportTypeInfo();
+
         /// <summary>
         /// Build a lightmap for a given scenario and BSP
         /// </summary>
@@ -149,8 +159,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="release">H2V: An unused bool. Always set to true</param>
         /// <param name="useFast">H2-H3: Run a play build of tool if the toolset has one</param>
         /// <param name="phantom_fix">CE: Whatever to apply the phantom fix</param>
+        /// <param name="autoFBX"></param>
         /// <returns></returns>
-        public abstract Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast);
+        public abstract Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX);
 
         /// <summary>
         /// Import geometry to generate various types of model related tags
@@ -166,8 +177,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="uncompressedAnim"></param>
         /// <param name="skyRender"></param>
         /// <param name="resetCompression"></param>
+        /// <param name="autoFBX"></param>
         /// <returns></returns>
-        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression);
+        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX);
 
         /// <summary>
         /// Import a WAV file to generate a sound tag

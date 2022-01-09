@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -11,8 +12,19 @@ namespace ToolkitLauncher.ToolkitInterface
     {
         public H1Toolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        /* For AutoFBX */
+        public override List<ImportTypeInfo> GetImportTypeInfo()
         {
+            return new List<ImportTypeInfo>() {
+                new ImportTypeInfo(ModelCompile.render, "models", ""), // Commands are blank because H1 tool doesn't have options for fbx-to-jms
+                new ImportTypeInfo(ModelCompile.physics, "physics", "")
+            };
+        }
+
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
+        {
+            if (autoFBX) { await AutoFBX.Structure(this, data_file, true); }
+
             var info = SplitStructureFilename(data_file);
             await RunTool(ToolType.Tool, new() { "structure", info.ScenarioPath, info.BspName });
         }
@@ -56,8 +68,10 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
+            if (autoFBX) { await AutoFBX.Model(this, path, importType, true); }
+
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "model", path });
             if (importType.HasFlag(ModelCompile.collision))

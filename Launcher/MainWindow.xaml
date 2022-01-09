@@ -273,6 +273,7 @@
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="*"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=13, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
                                                         <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=3, ElementName=toolkit_selection}">
@@ -288,11 +289,14 @@
                                                         <Grid Grid.Row="1">
                                                             <CheckBox x:Name="disable_asserts" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=5, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=3, ElementName=toolkit_selection}"/>
                                                         </Grid>
-                                                        <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=12, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="2">
+                                                            <CheckBox x:Name="struct_auto_fbx" Content="Auto FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Automatically run fbx-to-ass for relevant structure."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=12, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="instance_cmd" Content="Instance Output" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Keeps the instance output windows open if enabled. Disable if you live on the wild side."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=11, ElementName=toolkit_selection}">
-                                                            <ComboBox x:Name="structure_import_type" Grid.Column="4" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the level.">
+                                                        <Grid Grid.Row="4" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=11, ElementName=toolkit_selection}">
+                                                            <ComboBox x:Name="structure_import_type" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the level.">
                                                                 <ComboBoxItem Content="Structure"/>
                                                                 <ComboBoxItem Content="Design"/>
                                                                 <ComboBoxItem Content="Seams"/>
@@ -608,6 +612,7 @@
                                                                 <CheckBox Grid.Row="1" Grid.Column="1" x:Name="verbose_anim" Content="Verbose Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to have more verbose output during animation imports"/>
                                                                 <CheckBox Grid.Row="2" Grid.Column="1" x:Name="uncompressed_anim" Content="Uncompressed Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import uncompressed animations"/>
                                                                 <CheckBox Grid.Row="3" Grid.Column="1" x:Name="reset_compression" Content="Reset Compression" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to reset compression"/>
+                                                                <CheckBox Grid.Row="3" Grid.Column="0" x:Name="model_auto_fbx" Content="Auto Convert FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Automatically convert FBX files to JMS within the relevant data directory."/>
                                                             </Grid>
                                                         </Grid>
                                                     </Grid>

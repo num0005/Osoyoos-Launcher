@@ -74,6 +74,7 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="5.0.0" />
     <PackageReference Include="TlshSharp" Version="1.0.0" />
+    <PackageReference Include="UkooLabs.FbxSharpie" Version="1.0.99" />
     <PackageReference Include="WindowsAPICodePack-Shell">
       <Version>1.1.1</Version>
     </PackageReference>

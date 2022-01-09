@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -16,6 +18,16 @@ namespace ToolkitLauncher.ToolkitInterface
         protected string sapienWindowClass
         {
             get => "Sapien";
+        }
+
+        /* For AutoFBX */
+        public override List<ImportTypeInfo> GetImportTypeInfo()
+        {
+            return new List<ImportTypeInfo>() {
+                new ImportTypeInfo(ModelCompile.render, "render", "render"),
+                new ImportTypeInfo(ModelCompile.collision, "collision", "collision"),
+                new ImportTypeInfo(ModelCompile.physics, "physics", "physics")
+            };
         }
 
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
@@ -32,8 +44,10 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "strings", path });
         }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
+            if(autoFBX) { await AutoFBX.Structure(this, data_file, false); }
+
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             string tool_command = structure_command.ToString().Replace("_", "-");
             string data_path = data_file;
@@ -180,7 +194,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
         {
             string type = "";
             if (verboseAnim)
@@ -195,6 +209,8 @@ namespace ToolkitLauncher.ToolkitInterface
             {
                 type = "-reset";
             }
+
+            if(autoFBX) { await AutoFBX.Model(this, path, importType, false); }
 
             if (importType.HasFlag(ModelCompile.render))
                 if (skyRender)
