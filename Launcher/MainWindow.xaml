@@ -70,7 +70,8 @@
                     <Button Grid.Column="2" Grid.Row="0" Content="Run Guerilla" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=5, ElementName=toolkit_selection}" ToolTip="Start Guerilla (the tag/content editor)"/>
                     <Button Grid.Column="0" Grid.Row="2" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left" ToolTip="Open the command line in the base folder of the current toolkit."/>
                     <Button Grid.Column="1" Grid.Row="2" x:Name="open_explorer" Content="Open Toolkit Folder" Padding="4" HorizontalAlignment="Center" Click="open_explorer_Click" ToolTip="Open toolkit base folder in File Explorer."/>
-                    <Button Grid.Column="2" Grid.Row="2" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Right" ToolTip="Run a custom tool command."/>
+                    <Button Grid.Column="2" Grid.Row="2" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Center" ToolTip="Run a custom tool command."/>
+                    <ComboBox Grid.Column="2" Grid.Row="2" x:Name="recent_cmds" SelectionChanged="recent_cmds_SelectionChanged" IsEnabled="False" HorizontalContentAlignment="Left" HorizontalAlignment="Right" Padding="4" ToolTip="Recently run commands" />
                 </Grid>
             </GroupBox>
         </Grid>
