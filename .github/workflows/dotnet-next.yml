@@ -27,8 +27,6 @@ jobs:
         include-prerelease: true
     - name: Install dependencies
       run: dotnet restore
-    - name: Install nbgv
-      run: dotnet tool install -g nbgv
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
