@@ -70,7 +70,8 @@
                     <Button Grid.Column="2" Grid.Row="0" Content="Run Guerilla" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=5, ElementName=toolkit_selection}" ToolTip="Start Guerilla (the tag/content editor)"/>
                     <Button Grid.Column="0" Grid.Row="2" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left" ToolTip="Open the command line in the base folder of the current toolkit."/>
                     <Button Grid.Column="1" Grid.Row="2" x:Name="open_explorer" Content="Open Toolkit Folder" Padding="4" HorizontalAlignment="Center" Click="open_explorer_Click" ToolTip="Open toolkit base folder in File Explorer."/>
-                    <Button Grid.Column="2" Grid.Row="2" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Right" ToolTip="Run a custom tool command."/>
+                    <Button Grid.Column="2" Grid.Row="2" x:Name="custom_tool_cmd" Content="Custom Tool Command" Click="custom_tool_cmd_Click" Padding="4" HorizontalAlignment="Center" ToolTip="Run a custom tool command."/>
+                    <ComboBox Grid.Column="2" Grid.Row="2" x:Name="recent_cmds" SelectionChanged="recent_cmds_SelectionChanged"  FlowDirection="RightToLeft" IsEnabled="False" HorizontalContentAlignment="Left" HorizontalAlignment="Right" Padding="4" ToolTip="Recently run commands" />
                 </Grid>
             </GroupBox>
         </Grid>
@@ -942,7 +943,7 @@
             VerticalAlignment="Center" RenderTransformOrigin="0.508,-0.635" Margin="138,42,153,291" Height="80">
                 <StackPanel>
                     <TextBlock Margin="5" Foreground="{DynamicResource TextColor}" Text="Run Custom Command" FontWeight="Bold" FontFamily="Cambria" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.351,0.429" />
-                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="custom_command_text" Height="21" Width="215" ToolTip="Custom command"/>
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="custom_command_text" PreviewKeyDown="custom_command_text_PreviewKeyDown" Height="21" Width="215" ToolTip="Custom command"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button x:Name="custom_run" Margin="5" Content="Run" Background="{x:Null}" RenderTransformOrigin="0.24,0.45" Click="custom_run_Click" ToolTip="Run the custom command"/>
                         <Button x:Name="custom_cancel" Margin="5" Content="Cancel" Background="{x:Null}" Click="custom_cancel_Click" ToolTip="Cancel running the command."/>

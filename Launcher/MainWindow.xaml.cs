@@ -11,6 +11,7 @@ using ToolkitLauncher.ToolkitInterface;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
 using System.Windows.Documents;
+using System.Linq;
 
 namespace ToolkitLauncher
 {
@@ -858,7 +859,39 @@ namespace ToolkitLauncher
 
             _ = toolkit.RunCustomToolCommand(custom_command_text.Text);
 
+            if (!string.IsNullOrEmpty(custom_command_text.Text))
+            {
+                recent_cmds.IsEnabled = true;
+                recent_cmds.Items.Add(new ComboBoxItem { Content = custom_command_text.Text.Split(' ').FirstOrDefault() });
+            }
+
             custom_command_text.Text = "";
+        }
+
+        private void recent_cmds_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string cmd = (recent_cmds.SelectedItem as ComboBoxItem).Name;
+            Custom_Command.Visibility = Visibility.Visible;
+            custom_command_text.Text = cmd;
+        }
+
+        private void custom_command_text_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Custom_Command.Visibility = Visibility.Collapsed;
+                var process = new ProcessStartInfo();
+
+                _ = toolkit.RunCustomToolCommand(custom_command_text.Text);
+
+                if (!string.IsNullOrEmpty(custom_command_text.Text))
+                {
+                    recent_cmds.IsEnabled = true;
+                    recent_cmds.Items.Add(new ComboBoxItem { Content = custom_command_text.Text.Split(' ').FirstOrDefault() });
+                }
+
+                custom_command_text.Text = "";
+            }
         }
 
         private void lightmap_config_Click(object sender, RoutedEventArgs e)
