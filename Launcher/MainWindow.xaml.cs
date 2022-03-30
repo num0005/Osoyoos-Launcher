@@ -57,7 +57,7 @@ namespace ToolkitLauncher
         [Description("Light")]
         light,
         [Description("Dark")]
-        dark
+        dark,
     }
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
@@ -859,10 +859,10 @@ namespace ToolkitLauncher
 
             _ = toolkit.RunCustomToolCommand(custom_command_text.Text);
 
-            if (!string.IsNullOrEmpty(custom_command_text.Text))
+            if (!string.IsNullOrEmpty(custom_command_text.Text) && (recent_cmds.Items.Cast<ComboBoxItem>().Any(someitem => someitem.Content.Equals(custom_command_text.Text))) == false)
             {
                 recent_cmds.IsEnabled = true;
-                recent_cmds.Items.Add(new ComboBoxItem { Content = custom_command_text.Text.Split(' ').FirstOrDefault() });
+                recent_cmds.Items.Add(new ComboBoxItem { Content = custom_command_text.Text });
             }
 
             custom_command_text.Text = "";
@@ -870,7 +870,7 @@ namespace ToolkitLauncher
 
         private void recent_cmds_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string cmd = (recent_cmds.SelectedItem as ComboBoxItem).Name;
+            string cmd = (recent_cmds.SelectedItem as ComboBoxItem).Content.ToString();
             Custom_Command.Visibility = Visibility.Visible;
             custom_command_text.Text = cmd;
         }
@@ -884,10 +884,10 @@ namespace ToolkitLauncher
 
                 _ = toolkit.RunCustomToolCommand(custom_command_text.Text);
 
-                if (!string.IsNullOrEmpty(custom_command_text.Text))
+                if (!string.IsNullOrEmpty(custom_command_text.Text) && (recent_cmds.Items.Cast<ComboBoxItem>().Any(someitem => someitem.Content.Equals(custom_command_text.Text))) == false)
                 {
                     recent_cmds.IsEnabled = true;
-                    recent_cmds.Items.Add(new ComboBoxItem { Content = custom_command_text.Text.Split(' ').FirstOrDefault() });
+                    recent_cmds.Items.Add(new ComboBoxItem { Content = custom_command_text.Text });
                 }
 
                 custom_command_text.Text = "";
