@@ -16,8 +16,8 @@ namespace ToolkitLauncher
 {
     public enum build_type
     {
-        release_mcc,
-        release_standalone
+        release_standalone,
+        release_mcc
     }
 
     /// <summary>
@@ -267,36 +267,47 @@ namespace ToolkitLauncher
             setting_profile = true;
             profile_name.Text = "";
             tool_path.Text = "";
+            tool_fast_path.Text = "";
             sapien_path.Text = "";
             guerilla_path.Text = "";
-            gen_type.SelectedIndex = 0;
-            community_tools.IsChecked = false;
-            data_path.Text = "";
-            tag_path.Text = "";
-            verbose.IsChecked = false;
             game_path.Text = "";
             game_exe_path.Text = "";
+            data_path.Text = "";
+            tag_path.Text = "";
+            gen_type.SelectedIndex = 0;
+            community_tools.IsChecked = false;
+            is_mcc.IsChecked = false;
+            verbose.IsChecked = false;
             expert_mode.IsChecked = false;
             batch.IsChecked = false;
-            tool_fast_path.Text = "";
             h2codez_update_groupbox.Visibility = Visibility.Collapsed;
             if (profile_select != null && profile_select.SelectedItem != null && ToolkitProfiles.SettingsList.Count > profile_index && profile_index >= 0)
             {
-                isMCC.IsChecked = ToolkitProfiles.SettingsList[profile_index].IsMCC;
                 profile_name.Text = ToolkitProfiles.SettingsList[profile_index].ProfileName;
                 tool_path.Text = ToolkitProfiles.SettingsList[profile_index].ToolPath;
+                tool_fast_path.Text = ToolkitProfiles.SettingsList[profile_index].ToolFastPath;
                 sapien_path.Text = ToolkitProfiles.SettingsList[profile_index].SapienPath;
                 guerilla_path.Text = ToolkitProfiles.SettingsList[profile_index].GuerillaPath;
-                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_index].GameGen;
-                community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_index].CommunityTools;
-                data_path.Text = ToolkitProfiles.SettingsList[profile_index].DataPath;
-                tag_path.Text = ToolkitProfiles.SettingsList[profile_index].TagPath;
-                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_index].Verbose;
                 game_path.Text = ToolkitProfiles.SettingsList[profile_index].GamePath;
                 game_exe_path.Text = ToolkitProfiles.SettingsList[profile_index].GameExePath;
+                data_path.Text = ToolkitProfiles.SettingsList[profile_index].DataPath;
+                tag_path.Text = ToolkitProfiles.SettingsList[profile_index].TagPath;
+                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_index].GameGen;
+                build_type profile_build = ToolkitProfiles.SettingsList[profile_index].BuildType;
+                switch (profile_build)
+                {
+                    case build_type.release_standalone:
+                        is_mcc.IsChecked = false;
+                        break;
+                    case build_type.release_mcc:
+                        is_mcc.IsChecked = true;
+                        break;
+                }
+                community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_index].CommunityTools;
+                verbose.IsChecked = ToolkitProfiles.SettingsList[profile_index].Verbose;
                 expert_mode.IsChecked = ToolkitProfiles.SettingsList[profile_index].ExpertMode;
                 batch.IsChecked = ToolkitProfiles.SettingsList[profile_index].Batch;
-                tool_fast_path.Text = ToolkitProfiles.SettingsList[profile_index].ToolFastPath;
+
                 h2codez_update_groupbox.Visibility = ToolkitProfiles.SettingsList[profile_index].IsH2Codez() ?
                     Visibility.Visible : Visibility.Collapsed;
             }
@@ -335,20 +346,20 @@ namespace ToolkitLauncher
             {
                 ProfileName = profile_name.Text,
                 ToolPath = tool_path.Text,
+                ToolFastPath = tool_fast_path.Text,
                 SapienPath = sapien_path.Text,
                 GuerillaPath = guerilla_path.Text,
-                GameGen = gen_type.SelectedIndex,
-                CommunityTools = (bool)community_tools.IsChecked,
-                DataPath = data_path.Text,
-                TagPath = tag_path.Text,
-                Verbose = (bool)verbose.IsChecked,
                 GamePath = game_path.Text,
                 GameExePath = game_exe_path.Text,
+                DataPath = data_path.Text,
+                TagPath = tag_path.Text,
+                GameGen = gen_type.SelectedIndex,
+                BuildType = (bool)is_mcc.IsChecked ? build_type.release_mcc : build_type.release_standalone,
+                CommunityTools = (bool)community_tools.IsChecked,
+                Verbose = (bool)verbose.IsChecked,
                 ExpertMode = (bool)expert_mode.IsChecked,
                 Batch = (bool)batch.IsChecked,
-                ToolFastPath = tool_fast_path.Text,
             };
-            settings.IsMCC = isMCC.IsChecked ?? false;
             Debug.Assert(profile_index >= 0 && ToolkitProfiles.SettingsList.Count > profile_index);
             ToolkitProfiles.SettingsList[profile_index] = settings;
             h2codez_update_groupbox.Visibility = settings.IsH2Codez() ? Visibility.Visible : Visibility.Collapsed;
@@ -457,7 +468,7 @@ namespace ToolkitLauncher
                 guerilla_path.Text = guerillaPath;
                 game_exe_path.Text = gamePath;
                 gen_type.SelectedIndex = profile.GameGeneration - 1;
-                isMCC.IsChecked = profile.IsMCCBuild;
+                is_mcc.IsChecked = profile.IsMCCBuild;
                 community_tools.IsChecked = profile.Community;
                 ProfileSave();
             }

@@ -308,6 +308,18 @@ namespace ToolkitLauncher
             }
         }
 
+        public static bool halo_ce_standalone
+        {
+            get
+            {
+                if (profile_mapping.Count > 0 && profile_index >= 0)
+                {
+                    return toolkit_profile.GameGen == 0 && toolkit_profile.BuildType == build_type.release_standalone;
+                }
+                return false;
+            }
+        }
+
         public static bool halo_ce_standalone_community
         {
             get
@@ -399,6 +411,18 @@ namespace ToolkitLauncher
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
                     return toolkit_profile.GameGen == 2;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_3_odst
+        {
+            get
+            {
+                if (profile_mapping.Count > 0 && profile_index >= 0)
+                {
+                    return toolkit_profile.GameGen == 2 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -546,10 +570,18 @@ namespace ToolkitLauncher
                         new H2AToolkit(profile, base_path, tool_paths);
                     break;
                 case 2:
-                    toolkit = new H3Toolkit(profile, base_path, tool_paths);
+                    toolkit = profile.BuildType == build_type.release_standalone ?
+                    toolkit = new H3Toolkit(profile, base_path, tool_paths) :
+                    toolkit = new H3ODSTToolkit(profile, base_path, tool_paths);
+                    break;
+                default:
+                    Debug.Assert(false, "Profile has a game gen that isn't supported. Defaulting to Halo 1");
+                    toolkit = profile.BuildType == build_type.release_standalone ?
+                        new H1Toolkit(profile, base_path, tool_paths) :
+                        new H1AToolkit(profile, base_path, tool_paths);
                     break;
             }
-            Debug.Assert(toolkit is not null);
+
 
             toolkit.ToolFailure = (Utility.Process.Result result) =>
             {
@@ -679,19 +711,22 @@ namespace ToolkitLauncher
             // tool doesn't support a value of 0 or 1, the bounds are [0, 1], so we adjust the value a bit to get something reasonable
             float light_level_slider = (float)Math.Max(Math.Min(light_quality_slider.ConvertedValue, 0.999999), 0.000001);
             int instance_count = 1;
-            if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
+            if (!halo_ce && !halo_2_standalone_stock)
             {
-                if (Environment.ProcessorCount < instance_count)
+                if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
                 {
-                    //Prevent people from setting the instance count higher than their PC can realisticly run.
-                    MessageBox.Show(string.Format("Instance count exceeded logical processor count of {0}.", Environment.ProcessorCount) + "\n" + "Logical processor count is the cutoff." + "\n" + "This is for your own good.", "Woah there Partner", MessageBoxButton.OK);
-                    instance_value.Text = Environment.ProcessorCount.ToString();
-                    instance_count = Environment.ProcessorCount;
+                    if (Environment.ProcessorCount < instance_count)
+                    {
+                        //Prevent people from setting the instance count higher than their PC can realisticly run.
+                        MessageBox.Show(string.Format("Instance count exceeded logical processor count of {0}.", Environment.ProcessorCount) + "\n" + "Logical processor count is the cutoff." + "\n" + "This is for your own good.", "Woah there Partner", MessageBoxButton.OK);
+                        instance_value.Text = Environment.ProcessorCount.ToString();
+                        instance_count = Environment.ProcessorCount;
+                    }
                 }
-            }
-            else
-            {
-                MessageBox.Show("Invalid instance count!", "Error!");
+                else
+                {
+                    MessageBox.Show("Invalid instance count!", "Error!");
+                }
             }
             CompileLevel(compile_level_path.Text, bsp_path.Text, light_level, light_level_slider, Final.IsChecked is true, instance_count, phantom_hack.IsChecked is true, lightmap_group.Text);
         }
@@ -719,7 +754,7 @@ namespace ToolkitLauncher
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path);
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
-                if (halo_3 || ((halo_2_mcc || halo_2_standalone_community) && lightmaps_args.instanceCount > 1))
+                if (!halo_ce && !halo_2_standalone_stock && lightmaps_args.instanceCount > 1 || !halo_ce && !halo_2)
                 {
                     progress = new CancelableProgressBarWindow<int>();
                     progress.Owner = this;
@@ -859,7 +894,7 @@ namespace ToolkitLauncher
 
         private async void compile_model_Click(object sender, RoutedEventArgs e)
         {
-            await toolkit.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false, prt_enabled.IsChecked ?? false, fp_anim.IsChecked ?? false, character_fp_path.Text, weapon_fp_path.Text, accurate_render.IsChecked ?? false, verbose_anim.IsChecked ?? false, uncompressed_anim.IsChecked ?? false, sky_model.IsChecked ?? false, reset_compression.IsChecked ?? false, model_auto_fbx.IsChecked ?? false);
+            await toolkit.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false, prt_enabled.IsChecked ?? false, fp_anim.IsChecked ?? false, character_fp_path.Text, weapon_fp_path.Text, accurate_render.IsChecked ?? false, verbose_anim.IsChecked ?? false, uncompressed_anim.IsChecked ?? false, sky_model.IsChecked ?? false, pda_model.IsChecked ?? false, reset_compression.IsChecked ?? false, model_auto_fbx.IsChecked ?? false);
         }
 
         private async void import_sound_Click(object sender, RoutedEventArgs e)
@@ -1199,7 +1234,13 @@ namespace ToolkitLauncher
                 saveDialog.Title = title_string;
                 saveDialog.Filter = filter_string;
 
-                saveDialog.InitialDirectory = toolkit.GetDataDirectory();
+                string data_dir = toolkit.GetDataDirectory();
+                if (fbxFileDir.StartsWith(data_dir))
+                    saveDialog.InitialDirectory = Path.GetDirectoryName(fbxFileDir);
+
+                else
+                    saveDialog.InitialDirectory = toolkit.GetDataDirectory();
+
                 if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     outputFileName = saveDialog.FileName;
@@ -1212,7 +1253,7 @@ namespace ToolkitLauncher
 
         private async void convert_level_from_fbx_Click(object sender, RoutedEventArgs e)
         {
-            if (!halo_mcc)
+            if (halo_ce_standalone || halo_2_standalone)
             {
                 Debug.Fail("toolkit is not MCC, FBX not supported!");
                 return;
@@ -1280,7 +1321,7 @@ namespace ToolkitLauncher
 
         private async void convert_model_from_fbx_Click(object sender, RoutedEventArgs e)
         {
-            if (!halo_mcc)
+            if (halo_ce_standalone || halo_2_standalone)
             {
                 Debug.Fail("toolkit is not MCC, FBX not supported!");
                 return;

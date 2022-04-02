@@ -176,10 +176,11 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="verboseAnim"></param>
         /// <param name="uncompressedAnim"></param>
         /// <param name="skyRender"></param>
+        /// <param name="PDARender"></param>
         /// <param name="resetCompression"></param>
         /// <param name="autoFBX"></param>
         /// <returns></returns>
-        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX);
+        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX);
 
         /// <summary>
         /// Import a WAV file to generate a sound tag

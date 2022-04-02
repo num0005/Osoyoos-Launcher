@@ -73,7 +73,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             string quality = GetLightmapQuality(args);
 
-            if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
+            if (args.instanceCount > 1 && (Profile.BuildType == build_type.release_mcc || Profile.CommunityTools)) // multi instance?
             {
                 if (progress is not null)
                     progress.MaxValue += 1 + args.instanceCount;
@@ -125,7 +125,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     progress.DisableCancellation();
                     progress.MaxValue += 1;
                 }
-                await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+                await RunTool((args.NoAssert && Profile.BuildType == build_type.release_mcc) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
                 if (progress is not null)
                     progress.Report(1);
             }
@@ -134,7 +134,7 @@ namespace ToolkitLauncher.ToolkitInterface
         private async Task RunMergeLightmap(string scenario, string bsp, int workerCount, bool useFast)
         {
 
-            if (Profile.IsMCC)
+            if (Profile.BuildType == build_type.release_mcc)
             {
                 await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new()
                 {
@@ -159,7 +159,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         private async Task<Utility.Process.Result> RunLightmapWorker(string scenario, string bsp, string quality, int workerCount, int index, bool useFast, CancellationToken cancelationToken, bool output)
         {
-            if (Profile.IsMCC)
+            if (Profile.BuildType == build_type.release_mcc)
             {
                 bool wereWeExperts = Profile.ElevatedToExpert;
                 Profile.ElevatedToExpert = true;
@@ -200,7 +200,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool resetCompression, bool autoFBX)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX)
         {
             if (autoFBX) { await AutoFBX.Model(this, path, importType, false); }
 

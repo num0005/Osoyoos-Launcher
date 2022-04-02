@@ -40,11 +40,26 @@ namespace ToolkitLauncher
             [JsonPropertyName("tool_path")]
             public string ToolPath { get; set; } = "";
 
+            [JsonPropertyName("tool_fast_path")]
+            public string ToolFastPath { get; set; } = "";
+
             [JsonPropertyName("sapien_path")]
             public string SapienPath { get; set; } = "";
 
             [JsonPropertyName("guerilla_path")]
             public string GuerillaPath { get; set; } = "";
+
+            [JsonPropertyName("game_path")]
+            public string GamePath { get; set; } = "";
+
+            [JsonPropertyName("game_exe_path")]
+            public string GameExePath { get; set; } = "";
+
+            [JsonPropertyName("data_path")]
+            public string DataPath { get; set; } = "";
+
+            [JsonPropertyName("tag_path")]
+            public string TagPath { get; set; } = "";
 
             [JsonPropertyName("game_gen")]
             public int GameGen { get; set; }
@@ -56,23 +71,14 @@ namespace ToolkitLauncher
             [JsonPropertyName("community_tools")]
             public bool CommunityTools { get; set; }
 
-            [JsonPropertyName("data_path")]
-            public string DataPath { get; set; } = "";
-
-            [JsonPropertyName("tag_path")]
-            public string TagPath { get; set; } = "";
-
             [JsonPropertyName("verbose")]
             public bool Verbose { get; set; }
 
-            [JsonPropertyName("game_path")]
-            public string GamePath { get; set; } = "";
-
-            [JsonPropertyName("game_exe_path")]
-            public string GameExePath { get; set; } = "";
-
             [JsonPropertyName("expert_mode")]
             private bool experMode { get; set; }
+
+            [JsonPropertyName("batch")]
+            public bool Batch { get; set; }
 
             /// <summary>
             /// Whatever we should temporarily be experts
@@ -91,20 +97,6 @@ namespace ToolkitLauncher
                 }
             }
 
-
-            [JsonPropertyName("batch")]
-            public bool Batch { get; set; }
-
-            [JsonPropertyName("tool_fast_path")]
-            public string ToolFastPath { get; set; } = "";
-
-            [JsonIgnore]
-            public bool IsMCC
-            {
-                get => BuildType == build_type.release_mcc || GameGen == 2;
-                set => BuildType = value ? build_type.release_mcc : build_type.release_standalone;
-            }
-
             private string GetH2CodezPath()
             {
                 return Path.Combine(Path.GetDirectoryName(ToolPath) ?? "", "h2codez.dll");
@@ -116,7 +108,7 @@ namespace ToolkitLauncher
             /// <returns></returns>
             public bool IsH2Codez()
             {
-                return CommunityTools && !IsMCC && File.Exists(GetH2CodezPath());
+                return CommunityTools && BuildType == build_type.release_standalone && GameGen == 2 && File.Exists(GetH2CodezPath());
             }
         }
 #nullable restore

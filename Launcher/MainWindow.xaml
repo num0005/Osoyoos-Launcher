@@ -271,8 +271,8 @@
                                                     <Grid Grid.Row="1" Grid.Column="1">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="*"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=14, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=13, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
@@ -595,24 +595,38 @@
                                                                 </CheckBox>
                                                             </Grid>
                                                             <Grid Grid.Row="1" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=12, ElementName=toolkit_selection}">
-                                                                <Grid.RowDefinitions>
-                                                                    <RowDefinition Height="*"/>
-                                                                    <RowDefinition Height="*"/>
-                                                                    <RowDefinition Height="*"/>
-                                                                    <RowDefinition Height="*"/>
-                                                                </Grid.RowDefinitions>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                </Grid.ColumnDefinitions>
-                                                                <CheckBox Grid.Row="0" Grid.Column="0" x:Name="accurate_render" Content="Accurate Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to disable the plane builder"/>
-                                                                <CheckBox Grid.Row="1" Grid.Column="0" x:Name="prt_enabled" Content="PRT Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import render models with PRT"/>
-                                                                <CheckBox Grid.Row="2" Grid.Column="0" x:Name="sky_model" Content="Sky Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable if you're importing a sky model" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=11, ElementName=toolkit_selection}"/>
-                                                                <CheckBox Grid.Row="0" Grid.Column="1" x:Name="fp_anim" Content="First Person Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import first person animations"/>
-                                                                <CheckBox Grid.Row="1" Grid.Column="1" x:Name="verbose_anim" Content="Verbose Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to have more verbose output during animation imports"/>
-                                                                <CheckBox Grid.Row="2" Grid.Column="1" x:Name="uncompressed_anim" Content="Uncompressed Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import uncompressed animations"/>
-                                                                <CheckBox Grid.Row="3" Grid.Column="1" x:Name="reset_compression" Content="Reset Compression" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to reset compression"/>
-                                                                <CheckBox Grid.Row="3" Grid.Column="0" x:Name="model_auto_fbx" Content="Auto Convert FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Automatically convert FBX files to JMS within the relevant data directory."/>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*"/>
+                                                                        <ColumnDefinition Width="*"/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid Grid.Column="0">
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="*"/>
+                                                                            <RowDefinition Height="*"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
+                                                                        </Grid.RowDefinitions>
+                                                                        <CheckBox Grid.Row="0" x:Name="accurate_render" Content="Accurate Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to disable the plane builder"/>
+                                                                        <CheckBox Grid.Row="1" x:Name="prt_enabled" Content="PRT Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import render models with PRT"/>
+                                                                        <CheckBox Grid.Row="2" x:Name="sky_model" Content="Sky Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable if you're importing a sky model" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=11, ElementName=toolkit_selection}"/>
+                                                                        <CheckBox Grid.Row="3" x:Name="pda_model" Content="PDA Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable if you're importing a PDA model" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                                        <CheckBox Grid.Row="4" x:Name="model_auto_fbx" Content="Auto Convert FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Automatically convert FBX files to JMS within the relevant data directory."/>
+                                                                    </Grid>
+                                                                    <Grid Grid.Column="1">
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="*"/>
+                                                                            <RowDefinition Height="*"/>
+                                                                            <RowDefinition Height="*"/>
+                                                                            <RowDefinition Height="*"/>
+                                                                        </Grid.RowDefinitions>
+                                                                        <CheckBox Grid.Row="0" x:Name="fp_anim" Content="First Person Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import first person animations"/>
+                                                                        <CheckBox Grid.Row="1" x:Name="verbose_anim" Content="Verbose Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to have more verbose output during animation imports"/>
+                                                                        <CheckBox Grid.Row="2" x:Name="uncompressed_anim" Content="Uncompressed Animation" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import uncompressed animations"/>
+                                                                        <CheckBox Grid.Row="3" x:Name="reset_compression" Content="Reset Compression" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to reset compression"/>
+                                                                    </Grid>
+                                                                </Grid>
                                                             </Grid>
                                                         </Grid>
                                                     </Grid>
@@ -625,8 +639,8 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sound" Margin="-2,6,0,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=10, ElementName=toolkit_selection}">
-                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=10, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sound" Margin="-2,6,0,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=9, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=9, ElementName=toolkit_selection}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
                                         <RowDefinition Height="*"/>

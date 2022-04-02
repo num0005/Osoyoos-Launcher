@@ -154,7 +154,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 3)
                 {
-                    if (MainWindow.halo_mcc)
+                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
                         grid = new GridLength(8);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 4)
@@ -164,7 +164,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 5)
                 {
-                    if (!MainWindow.halo_3)
+                    if (MainWindow.halo_ce || MainWindow.halo_2)
                         grid = new GridLength(8);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 6)
@@ -198,19 +198,33 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 11)
                 {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock)
                         grid = new GridLength(8);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 13)
                 {
                     if (MainWindow.halo_3)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 14)
+                {
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 15)
+                {
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2)
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
@@ -222,7 +236,9 @@ namespace ToolkitLauncher
                 if (parameter is string && Int32.Parse(parameter as string) == 9
                     || parameter is string && Int32.Parse(parameter as string) == 10
                     || parameter is string && Int32.Parse(parameter as string) == 11
-                    || parameter is string && Int32.Parse(parameter as string) == 13)
+                    || parameter is string && Int32.Parse(parameter as string) == 13
+                    || parameter is string && Int32.Parse(parameter as string) == 14
+                    || parameter is string && Int32.Parse(parameter as string) == 15)
                 {
                     grid = new GridLength(1, GridUnitType.Star);
                 }
@@ -267,7 +283,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 1)
                 {
-                    if (MainWindow.halo_mcc)
+                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 2)
@@ -297,12 +313,12 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 7)
                 {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 8)
                 {
-                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community || MainWindow.halo_2_mcc || MainWindow.halo_3)
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone_stock)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 9)
@@ -323,12 +339,12 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 11)
                 {
-                    if (MainWindow.halo_3)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 13)
@@ -343,7 +359,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 15)
                 {
-                    if (MainWindow.halo_mcc)
+                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 16)
@@ -354,6 +370,11 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 17)
                 {
                     if (MainWindow.halo_2_standalone_community || MainWindow.halo_3)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 18)
+                {
+                    if (MainWindow.halo_3_odst)
                         vis = Visibility.Visible;
                 }
             }
@@ -473,6 +494,7 @@ namespace ToolkitLauncher
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            int selection_index = (int)value;
             object enum_item = null;
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
@@ -499,7 +521,7 @@ namespace ToolkitLauncher
                     {
                         enum_item = Enum.GetValues(typeof(h2_quality_settings_mcc));
                     }
-                    else if (MainWindow.halo_3)
+                    else if (MainWindow.halo_3 || MainWindow.halo_3_odst)
                     {
                         enum_item = Enum.GetValues(typeof(h3_quality_settings_stock));
                     }
@@ -536,6 +558,22 @@ namespace ToolkitLauncher
                         enum_item = "Select a sound tag to modify.";
                     }
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                {
+                    enum_item = "Is MCC";
+                    if (selection_index >= 2)
+                    {
+                        enum_item = "Is ODST";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 8)
+                {
+                    enum_item = "Is this an MCC build or legacy?";
+                    if (selection_index >= 2)
+                    {
+                        enum_item = "Is this an Halo 3 or Halo 3 ODST?";
+                    }
+                }
             }
             else
             {
@@ -567,6 +605,14 @@ namespace ToolkitLauncher
                 {
                     enum_item = "Select a folder with sound files to import.";
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                {
+                    enum_item = "Is MCC";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 8)
+                {
+                    enum_item = "Is this an MCC build or legacy?";
+                }
             }
 
             return enum_item;
@@ -587,13 +633,13 @@ namespace ToolkitLauncher
                 if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 0)
                 {
                     //Check if the build type and gentype are set to an MCC Halo 1 or Halo 2 for tags and data directory args along with the verbose flag
-                    if (isMCC && gen_type_selection != 2)
+                    if (isMCC && gen_type_selection <= 1)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 1)
                 {
                     //Check if the build type and gentype are set to a standalone Halo 1 or Halo 2 profile community flags
-                    if (!isMCC && gen_type_selection != 2)
+                    if (!isMCC && gen_type_selection <= 1)
                         vis = Visibility.Visible;
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 2)
@@ -616,8 +662,8 @@ namespace ToolkitLauncher
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
-                    //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
-                    if (isMCC && (gen_type_selection == 1 || gen_type_selection == 2))
+                    //Check if the build type is set to a MCC and gentype is not Halo CE or is Halo 3 and above
+                    if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
                         vis = Visibility.Visible;
                 }
             }
@@ -664,7 +710,7 @@ namespace ToolkitLauncher
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 3)
                 {
                     //Check if the build type is MCC Halo 2 profile for the asset directory
-                    if (isMCC)
+                    if (isMCC && gen_type_selection <= 1)
                         grid = new GridLength(8);
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 4)
@@ -675,29 +721,20 @@ namespace ToolkitLauncher
                 }
                 else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
-                    //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
-                    if (isMCC && gen_type_selection == 1 || isMCC && gen_type_selection == 2)
-                        grid = new GridLength(8);
-                }
-                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
-                {
-                    //Check if the build type and gentype are set to a MCC Halo 2 or Halo 3 for tool fast
-
-                    if (isMCC && (gen_type_selection == 1 || gen_type_selection == 2))
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
+                    //Check if the build type is set to a MCC and gentype is not Halo CE or is Halo 3 and above
+                    if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
             }
             else
             {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
-                    grid = new GridLength(1, GridUnitType.Star);
+                    grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
                 else
                 {
+                    //Either we're in desinger or there are no profiles. Reveal ourselves either way.
                     grid = new GridLength(8);
                 }
             }
