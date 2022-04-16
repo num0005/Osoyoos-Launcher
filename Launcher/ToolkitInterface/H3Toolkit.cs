@@ -20,16 +20,6 @@ namespace ToolkitLauncher.ToolkitInterface
             get => "Sapien";
         }
 
-        /* For AutoFBX */
-        public override List<ImportTypeInfo> GetImportTypeInfo()
-        {
-            return new List<ImportTypeInfo>() {
-                new ImportTypeInfo(ModelCompile.render, "render", "render"),
-                new ImportTypeInfo(ModelCompile.collision, "collision", "collision"),
-                new ImportTypeInfo(ModelCompile.physics, "physics", "physics")
-            };
-        }
-
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
         {
             // todo(num0005): is this required? Might be able to just use bitmaps-with-type for both
@@ -210,7 +200,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if(autoFBX) { await AutoFBX.Model(this, path, importType, false); }
+            if(autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
                 if (skyRender)

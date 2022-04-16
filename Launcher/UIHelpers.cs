@@ -571,7 +571,15 @@ namespace ToolkitLauncher
                     enum_item = "Is this an MCC build or legacy?";
                     if (selection_index >= 2)
                     {
-                        enum_item = "Is this an Halo 3 or Halo 3 ODST?";
+                        enum_item = "Is this Halo 3 or Halo 3 ODST?";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 9)
+                {
+                    enum_item = "Automatically run fbx-to-jms for relevant structure.";
+                    if (!MainWindow.halo_ce_mcc)
+                    {
+                        enum_item = "Automatically run fbx-to-ass for relevant structure.";
                     }
                 }
             }
@@ -612,6 +620,10 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 8)
                 {
                     enum_item = "Is this an MCC build or legacy?";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 9)
+                {
+                    enum_item = "Automatically run fbx-to-jms for relevant structure.";
                 }
             }
 

@@ -37,7 +37,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if(autoFBX) { await AutoFBX.Model(this, path, importType, false); }
+            if(autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
                 if (skyRender)
