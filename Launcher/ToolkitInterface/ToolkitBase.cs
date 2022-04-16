@@ -89,16 +89,6 @@ namespace ToolkitLauncher.ToolkitInterface
             int instanceCount,
             bool instanceOutput);
 
-        /* For AutoFBX */
-        public record ImportTypeInfo(
-            ModelCompile importType,
-            string folderName,
-            string commandOption
-        );
-
-        /* For AutoFBX */
-        public abstract List<ImportTypeInfo> GetImportTypeInfo();
-
         /// <summary>
         /// Build a lightmap for a given scenario and BSP
         /// </summary>

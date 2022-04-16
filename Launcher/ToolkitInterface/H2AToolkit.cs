@@ -105,7 +105,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 flags = set_flags(flags, "reset_compression");
             }
 
-            if (autoFBX) { await AutoFBX.Model(this, path, importType, false); }
+            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
                 await RunTool(ToolType.Tool, new() { "render", path, accurateRender.ToString(), renderPRT.ToString() });
