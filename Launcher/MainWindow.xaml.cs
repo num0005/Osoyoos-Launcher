@@ -291,7 +291,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.BuildType == build_type.release_mcc || toolkit_profile.GameGen > 1;
                 }
                 return false;
             }
