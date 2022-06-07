@@ -97,7 +97,10 @@ public class FilePicker
     {
 		string? local_path = ConvertFSPathToLocalPath(path, options.pathRoot);
 		if (local_path is null)
+        {
+			MessageBox.Show("File path was not within the current toolkit directory", "Error!");
 			return false;
+		}
 		if (options.strip_extension)
 			local_path = local_path.Substring(0, local_path.Length - Path.GetExtension(local_path).Length);
 		if (options.parent)

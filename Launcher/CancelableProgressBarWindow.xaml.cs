@@ -103,10 +103,12 @@ namespace ToolkitLauncher
                 progress.IsIndeterminate = true;
             } else if (Complete)
             {
+                stopwatch.Stop();
+                string timeElapsed = String.Format("Time elapsed: {0:00}:{1:00}:{2:00}", stopwatch.Elapsed.Hours, stopwatch.Elapsed.Minutes, stopwatch.Elapsed.Seconds);
                 if (IsCancelled)
-                    Status = cancelReason is null ? "Canceled!" : $"Canceled ({cancelReason})!";
+                    Status = cancelReason is null ? "Canceled! " + timeElapsed : $"Canceled ({cancelReason})! " + timeElapsed;
                 else
-                    Status = "Done!";
+                    Status = "Done! " + timeElapsed;
                 progress.IsIndeterminate = false;
                 progress.Value = progress.Maximum;
             }
@@ -164,6 +166,8 @@ namespace ToolkitLauncher
             else
                 Cancel();
         }
+
+        private Stopwatch stopwatch = Stopwatch.StartNew();
     }
 
     /// <summary>
