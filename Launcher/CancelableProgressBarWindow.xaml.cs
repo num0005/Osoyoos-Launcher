@@ -104,7 +104,7 @@ namespace ToolkitLauncher
             } else if (Complete)
             {
                 stopwatch.Stop();
-                string timeElapsed = String.Format("Time elapsed: {0:00}:{1:00}:{2:00}", stopwatch.Elapsed.Hours, stopwatch.Elapsed.Minutes, stopwatch.Elapsed.Seconds);
+                string timeElapsed = String.Format("({0:00}:{1:00})", stopwatch.Elapsed.Hours, stopwatch.Elapsed.Minutes);
                 if (IsCancelled)
                     Status = cancelReason is null ? "Canceled! " + timeElapsed : $"Canceled ({cancelReason})! " + timeElapsed;
                 else
