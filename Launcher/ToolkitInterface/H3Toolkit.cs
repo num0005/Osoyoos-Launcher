@@ -271,11 +271,20 @@ namespace ToolkitLauncher.ToolkitInterface
                     int currentLine = counter + 7;
 
                     // Take each material name, strip symbols, add to list
+                    string shaderNameStripped;
                     for (int i = 0; i < numMats; i++)
                     {
                         string[] shaderNameSections = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First().Split(' ');
-                        string shaderName = Regex.Replace(shaderNameSections[1], "[^0-9a-zA-Z_.]", String.Empty);
-                        shaders.Add(shaderName);
+                        if (shaderNameSections.Count() >= 2)
+                        {
+                            shaderNameStripped = Regex.Replace(shaderNameSections[1], "[^0-9a-zA-Z_.]", String.Empty);
+                        }
+                        else
+                        {
+                            shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", String.Empty);
+                        }
+                        
+                        shaders.Add(shaderNameStripped);
                         currentLine += 4;
                     }
 
