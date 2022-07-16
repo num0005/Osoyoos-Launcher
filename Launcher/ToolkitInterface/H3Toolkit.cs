@@ -209,7 +209,7 @@ namespace ToolkitLauncher.ToolkitInterface
             {
                 // Variables
                 string line = "", full_jms_path = "";
-                List<string> shaders = new List<string>();
+                List<string> shaders = new();
                 int counter = 0;
 
                 //Grabbing full path from drive letter to render folder
@@ -222,35 +222,36 @@ namespace ToolkitLauncher.ToolkitInterface
                 // Need to find a better way to do this :/
                 try
                 {
-                    if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<String>())
+                    if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>())
                     {
-                        System.Diagnostics.Debug.WriteLine("Folder exists but contains no shaders, proceeding");
-                        shaderGen(files, full_jms_path, line, counter, shaders, destinationShadersFolder, BaseDirectory);
+                        Debug.WriteLine("Folder exists but contains no shaders, proceeding");
+                        shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory);
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("Shaders already exist!");
+                        Debug.WriteLine("Shaders already exist!");
                         MessageBox.Show("Shaders for this model already exist, skipping shader generation!", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 catch (DirectoryNotFoundException)
                 {
-                    System.Diagnostics.Debug.WriteLine("No folders exist, proceeding with shader gen");
-                    shaderGen(files, full_jms_path, line, counter, shaders, destinationShadersFolder, BaseDirectory);
+                    Debug.WriteLine("No folders exist, proceeding with shader gen");
+                    shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory);
                 }
 
-                static void shaderGen(string[] files, string full_jms_path, string line, int counter, List<string> shaders, string destinationShadersFolder, string BaseDirectory)
+                static void shaderGen(string[] files, string full_jms_path, int counter, List<string> shaders, string destinationShadersFolder, string BaseDirectory)
                 {
+                    string line;
                     // Find name of jms file
                     foreach (string file in files)
                     {
-                        if (file.Substring(file.Length - 4) == ".JMS" || file.Substring(file.Length - 4) == ".jms")
+                        if (file[^4..] is ".JMS" or ".jms")
                         {
                             full_jms_path = file;
                         }
                     }
 
-                    StreamReader sr = new StreamReader(full_jms_path);
+                    StreamReader sr = new(full_jms_path);
 
                     // Find Materials definition header in JMS file
                     while ((line = sr.ReadLine()) != null)
@@ -259,12 +260,11 @@ namespace ToolkitLauncher.ToolkitInterface
                         {
                             break;
                         }
-
                         counter++;
                     }
 
                     //Grab number of materials from file
-                    int numMats = Int32.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
+                    int numMats = int.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
                     // Line number of first shader name
                     int currentLine = counter + 7;
 
@@ -273,15 +273,15 @@ namespace ToolkitLauncher.ToolkitInterface
                     for (int i = 0; i < numMats; i++)
                     {
                         string[] shaderNameSections = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First().Split(' ');
-                        if (shaderNameSections.Count() >= 2)
+                        if (shaderNameSections.Length < 2)
                         {
-                            shaderNameStripped = Regex.Replace(shaderNameSections[1], "[^0-9a-zA-Z_.]", String.Empty);
+                            shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", string.Empty);
                         }
                         else
                         {
-                            shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", String.Empty);
+                            shaderNameStripped = Regex.Replace(shaderNameSections[1], "[^0-9a-zA-Z_.]", string.Empty);
                         }
-                        
+
                         shaders.Add(shaderNameStripped);
                         currentLine += 4;
                     }
@@ -301,13 +301,12 @@ namespace ToolkitLauncher.ToolkitInterface
                         {
                             File.Copy(defaultShader, Path.Combine(destinationShadersFolder, shaderName));
                         }
-                        catch (System.IO.IOException)
+                        catch (IOException)
                         {
                             Console.WriteLine("Shader tag probably already exists!");
                         }
                     }
                 }
-
             }
 
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
