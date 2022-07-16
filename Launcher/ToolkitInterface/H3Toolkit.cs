@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,7 +39,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
-            if(autoFBX) { await AutoFBX.Structure(this, data_file, false); }
+            if (autoFBX) { await AutoFBX.Structure(this, data_file, false); }
 
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             string tool_command = structure_command.ToString().Replace("_", "-");
@@ -172,7 +175,8 @@ namespace ToolkitLauncher.ToolkitInterface
             try
             {
                 await FauxLocalFarm(scenario, bsp, lightmap_group, quality, args.instanceCount, args.NoAssert, args.instanceOutput, progress);
-            } catch (OperationCanceledException)
+            }
+            catch (OperationCanceledException)
             {
             }
 
@@ -184,7 +188,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
             string type = "";
             if (verboseAnim)
@@ -200,7 +204,106 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if(autoFBX) { await AutoFBX.Model(this, path, importType); }
+            // Generate shaders if requested
+            if (genShaders)
+            {
+                // Variables
+                string line = "";
+                List<string> shaders = new List<string>();
+                int counter = 0;
+                string full_jms_path = "";
+
+                //Grabbing full path from drive letter to render folder
+                string path_stripped = path.Replace(@"\\", @"\");
+                string jms_Path = BaseDirectory + @"\data\" + path_stripped + @"\render";
+                string jms_Path_stripped = jms_Path.Replace("\\\\", "\\");
+                // Get all files in render foler
+                string[] files = Directory.GetFiles(jms_Path_stripped);
+                string destinationShadersFolder = BaseDirectory + @"\tags\" + path_stripped + @"\shaders";
+
+                // Need to find a better way to do this :/
+                try
+                {
+                    if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<String>())
+                    {
+                        System.Diagnostics.Debug.WriteLine("Folder exists but contains no shaders, proceeding");
+                        shaderGen(files, full_jms_path, line, counter, shaders, destinationShadersFolder, BaseDirectory);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Shaders already exist!");
+                        MessageBox.Show("Shaders for this model already exist, skipping shader generation!", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    System.Diagnostics.Debug.WriteLine("No folders exist, proceeding with shader gen");
+                    shaderGen(files, full_jms_path, line, counter, shaders, destinationShadersFolder, BaseDirectory);
+                }
+
+                static void shaderGen(string[] files, string full_jms_path, string line, int counter, List<string> shaders, string destinationShadersFolder, string BaseDirectory)
+                {
+                    // Find name of jms file
+                    foreach (string file in files)
+                    {
+                        if (file.Substring(file.Length - 4) == ".JMS" || file.Substring(file.Length - 4) == ".jms")
+                        {
+                            full_jms_path = file;
+                        }
+                    }
+
+                    StreamReader sr = new StreamReader(full_jms_path);
+
+                    // Find Materials definition header in JMS file
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains(";### MATERIALS ###"))
+                        {
+                            break;
+                        }
+
+                        counter++;
+                    }
+
+                    //Grab number of materials from file
+                    int numMats = Int32.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
+                    // Line number of first shader name
+                    int currentLine = counter + 7;
+
+                    // Take each material name, strip symbols, add to list
+                    for (int i = 0; i < numMats; i++)
+                    {
+                        string shaderName = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First();
+                        shaderName = Regex.Replace(shaderName, "[^a-zA-Z0-9._ ]", String.Empty);
+                        shaders.Add(shaderName);
+                        currentLine += 4;
+                    }
+
+                    // Remove duplicate shader names
+                    shaders = shaders.Distinct().ToList();
+
+                    // Create directories               
+
+                    Directory.CreateDirectory(destinationShadersFolder);
+
+                    string defaultShader = BaseDirectory + @"\tags\levels\shared\shaders\simple\default.shader";
+                    foreach (string shader in shaders)
+                    {
+                        string shaderName = shader + ".shader";
+                        try
+                        {
+                            File.Copy(defaultShader, Path.Combine(destinationShadersFolder, shaderName));
+                        }
+                        catch (System.IO.IOException)
+                        {
+                            Console.WriteLine("Shader tag probably already exists!");
+                        }
+                    }
+                }
+
+            }
+
+            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
                 if (skyRender)

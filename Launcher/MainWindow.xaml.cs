@@ -927,7 +927,7 @@ namespace ToolkitLauncher
 
         private async void compile_model_Click(object sender, RoutedEventArgs e)
         {
-            await toolkit.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false, prt_enabled.IsChecked ?? false, fp_anim.IsChecked ?? false, character_fp_path.Text, weapon_fp_path.Text, accurate_render.IsChecked ?? false, verbose_anim.IsChecked ?? false, uncompressed_anim.IsChecked ?? false, sky_model.IsChecked ?? false, pda_model.IsChecked ?? false, reset_compression.IsChecked ?? false, model_auto_fbx.IsChecked ?? false);
+            await toolkit.ImportModel(compile_model_path.Text, model_compile_type, phantom_hack_collision.IsChecked ?? false, h2_lod_logic.IsChecked ?? false, prt_enabled.IsChecked ?? false, fp_anim.IsChecked ?? false, character_fp_path.Text, weapon_fp_path.Text, accurate_render.IsChecked ?? false, verbose_anim.IsChecked ?? false, uncompressed_anim.IsChecked ?? false, sky_model.IsChecked ?? false, pda_model.IsChecked ?? false, reset_compression.IsChecked ?? false, model_auto_fbx.IsChecked ?? false, model_generate_shaders.IsChecked ?? false);
         }
 
         private async void import_sound_Click(object sender, RoutedEventArgs e)

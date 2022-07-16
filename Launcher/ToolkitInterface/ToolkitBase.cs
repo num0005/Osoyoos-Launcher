@@ -169,8 +169,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="PDARender"></param>
         /// <param name="resetCompression"></param>
         /// <param name="autoFBX"></param>
+        /// <param name="model_generate_shaders"></param>
         /// <returns></returns>
-        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX);
+        public abstract Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders);
 
         /// <summary>
         /// Import a WAV file to generate a sound tag
