@@ -208,18 +208,16 @@ namespace ToolkitLauncher.ToolkitInterface
             if (genShaders)
             {
                 // Variables
-                string line = "";
+                string line = "", full_jms_path = "";
                 List<string> shaders = new List<string>();
                 int counter = 0;
-                string full_jms_path = "";
 
                 //Grabbing full path from drive letter to render folder
-                string path_stripped = path.Replace(@"\\", @"\");
-                string jms_Path = BaseDirectory + @"\data\" + path_stripped + @"\render";
-                string jms_Path_stripped = jms_Path.Replace("\\\\", "\\");
+                string jmsPath = (BaseDirectory + @"\data\" + path + @"\render").Replace("\\\\", "\\");
+
                 // Get all files in render foler
-                string[] files = Directory.GetFiles(jms_Path_stripped);
-                string destinationShadersFolder = BaseDirectory + @"\tags\" + path_stripped + @"\shaders";
+                string[] files = Directory.GetFiles(jmsPath);
+                string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
 
                 // Need to find a better way to do this :/
                 try
