@@ -850,6 +850,7 @@ namespace ToolkitLauncher
         {
             Custom_Command.Visibility = Visibility.Collapsed;
             custom_command_text.Text = "";
+            recent_cmds.SelectedIndex = -1;
         }
 
         private void custom_run_Click(object sender, RoutedEventArgs e)
@@ -866,13 +867,17 @@ namespace ToolkitLauncher
             }
 
             custom_command_text.Text = "";
+            recent_cmds.SelectedIndex = -1;
         }
 
         private void recent_cmds_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string cmd = (recent_cmds.SelectedItem as ComboBoxItem).Content.ToString();
-            Custom_Command.Visibility = Visibility.Visible;
-            custom_command_text.Text = cmd;
+            if (recent_cmds.IsDropDownOpen)
+            {
+                string cmd = (recent_cmds.SelectedItem as ComboBoxItem).Content.ToString();
+                Custom_Command.Visibility = Visibility.Visible;
+                custom_command_text.Text = cmd;
+            }
         }
 
         private void custom_command_text_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -891,6 +896,7 @@ namespace ToolkitLauncher
                 }
 
                 custom_command_text.Text = "";
+                recent_cmds.SelectedIndex = -1;
             }
         }
 
