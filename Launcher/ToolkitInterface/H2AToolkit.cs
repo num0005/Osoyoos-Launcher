@@ -105,6 +105,9 @@ namespace ToolkitLauncher.ToolkitInterface
                 flags = set_flags(flags, "reset_compression");
             }
 
+            // Generate shaders if requested
+            if (genShaders) { AutoShadersGen2.GenerateEmptyShaders(BaseDirectory, path); }
+
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
