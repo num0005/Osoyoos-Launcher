@@ -72,10 +72,38 @@ class AutoShadersGen3
             // Line number of first shader name
             int currentLine = counter + 7;
 
+            // Open shader_collections.txt
+            List<string> collections = new();
+            try
+            {
+                sr = new(BaseDirectory + @"\tags\levels\shader_collections.txt");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not find shader_collections.txt!\nMake sure you shader_collections.txt in\n\"H3EK/tags/levels\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            // Grab every shader collection prefix
+            while ((line = sr.ReadLine()) != null)
+            {
+                if ((line.Contains("levels") || line.Contains("scenarios") || line.Contains("objects")) && !line.Contains("shader_collections.txt"))
+                {
+                    if (line.Contains('\t'))
+                    {
+                        collections.Add(line.Substring(0, line.IndexOf('\t')));
+                    }
+                    else
+                    {
+                        collections.Add(line.Substring(0, line.IndexOf(' ')));
+                    }       
+                }
+            }
+            
             // Take each material name, strip symbols, add to list
             // Typically the most "complex" H3 materials come in the format: prefix name extra1 extra2 extra3...
             // So if a prefix exists, grab second word, else grab first word, ignore any suffixes
             // TODO: Will break in the case of spaces in the actual material "name", need to think of a workaround
+            // Probably best to check shader collections txt and then only strip those prefixes
             string shaderNameStripped;
             for (int i = 0; i < numMats; i++)
             {
@@ -83,13 +111,20 @@ class AutoShadersGen3
                 if (shaderNameSections.Length < 2)
                 {
                     shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", string.Empty);
+                    shaders.Add(shaderNameStripped);
                 }
-                else
+                else // Shader name has spaces in it
                 {
-                    shaderNameStripped = Regex.Replace(shaderNameSections[1], "[^0-9a-zA-Z_.]", string.Empty);
+                    // Check if section before first space is a valid shader collection prefix
+                    if (!collections.Contains(shaderNameSections[0]))
+                    {
+                        // Shader is not in a collection, so probably just has a space in the name
+                        shaderNameStripped = Regex.Replace(shaderNameSections[0] + ' ' + shaderNameSections[1], "[^0-9a-zA-Z_.]", string.Empty);
+                        shaders.Add(shaderNameStripped);
+                    }
+                    // Otherwise shader is part of an existing collection, so no need to create a new tag for it
                 }
-
-                shaders.Add(shaderNameStripped);
+                // Skip to next shader name
                 currentLine += 4;
             }
 
