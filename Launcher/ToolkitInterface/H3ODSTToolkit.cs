@@ -37,7 +37,10 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if(autoFBX) { await AutoFBX.Model(this, path, importType); }
+            // Generate shaders if requested
+            if (genShaders) { AutoShadersGen3.GenerateEmptyShaders(BaseDirectory, path); }
+
+            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
                 if (skyRender)

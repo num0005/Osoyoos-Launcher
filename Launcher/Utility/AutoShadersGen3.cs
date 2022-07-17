@@ -107,9 +107,10 @@ class AutoShadersGen3
                 {
                     File.Copy(defaultShader, Path.Combine(destinationShadersFolder, shaderName));
                 }
-                catch (IOException)
+                catch (FileNotFoundException)
                 {
-                    Console.WriteLine("Shader tag probably already exists!");
+                    MessageBox.Show("Could not find default shader!\nShaders will not be generated - if this\nis your first time using this function,\ncreate a blank shader tag with Guerilla:\n\"tags/levels/shared/shaders/simple/default.shader\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
                 }
             }
         }
