@@ -38,7 +38,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
 
             // Generate shaders if requested
-            if (genShaders) { AutoShadersGen3.GenerateEmptyShaders(BaseDirectory, path); }
+            if (genShaders) { AutoShadersGen3.GenerateEmptyShaders(BaseDirectory, path, "H3ODST"); }
 
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 

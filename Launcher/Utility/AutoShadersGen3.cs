@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 class AutoShadersGen3
 {
-    public static void GenerateEmptyShaders(string BaseDirectory, string path)
+    public static void GenerateEmptyShaders(string BaseDirectory, string path, string gameType)
     {
         // Variables
         string full_jms_path = "";
@@ -22,13 +22,14 @@ class AutoShadersGen3
         string[] files = Directory.GetFiles(jmsPath);
         string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
 
-        // Need to find a better way to do this :/
+        // Checking if shaders already exist, if so don't re-gen them
+        // There must be a better way of doing this that doesn't involve try-catch, but I'm tired...
         try
         {
             if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>())
             {
                 Debug.WriteLine("Folder exists but contains no shaders, proceeding");
-                shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory);
+                shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory, gameType);
             }
             else
             {
@@ -39,11 +40,11 @@ class AutoShadersGen3
         catch (DirectoryNotFoundException)
         {
             Debug.WriteLine("No folders exist, proceeding with shader gen");
-            shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory);
+            shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory, gameType);
         }
 
-        static void shaderGen(string[] files, string full_jms_path, int counter, List<string> shaders, string destinationShadersFolder, string BaseDirectory)
-        {
+        static void shaderGen(string[] files, string full_jms_path, int counter, List<string> shaders, string destinationShadersFolder, string BaseDirectory, string gameType)
+        { 
             string line;
             // Find name of jms file
             foreach (string file in files)
@@ -96,18 +97,28 @@ class AutoShadersGen3
             shaders = shaders.Distinct().ToList();
 
             // Create directories               
-
             Directory.CreateDirectory(destinationShadersFolder);
-            string defaultShader = "";
 
-            defaultShader = BaseDirectory + @"\tags\levels\shared\shaders\simple\default.shader";
-            
+            string defaultShaderLocation = BaseDirectory + @"\tags\levels\shared\shaders\simple\default.shader";
+            if (!File.Exists(defaultShaderLocation))
+            {
+                if (gameType == "H3")
+                {
+                    File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH3);
+                }
+                else
+                {
+                    File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultODST);
+                }
+                
+            }
+
             foreach (string shader in shaders)
             {
                 string shaderName = shader + ".shader";
                 try
                 {
-                    File.Copy(defaultShader, Path.Combine(destinationShadersFolder, shaderName));
+                    File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, shaderName));
                 }
                 catch (FileNotFoundException)
                 {
@@ -116,5 +127,5 @@ class AutoShadersGen3
                 }
             }
         }
-    }
+    }       
 }

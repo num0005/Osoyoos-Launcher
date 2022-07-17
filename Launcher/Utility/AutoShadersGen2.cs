@@ -22,7 +22,8 @@ class AutoShadersGen2
         string[] files = Directory.GetFiles(jmsPath);
         string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
 
-        // Need to find a better way to do this :/
+        // Checking if shaders already exist, if so don't re-gen them
+        // There must be a better way of doing this that doesn't involve try-catch, but I'm tired...
         try
         {
             if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>())
@@ -100,16 +101,19 @@ class AutoShadersGen2
             // Create directories               
 
             Directory.CreateDirectory(destinationShadersFolder);
-            string defaultShader = "";
 
-            defaultShader = BaseDirectory + @"\tags\shaders\default.shader";
+            string defaultShaderLocation = BaseDirectory + @"\tags\shaders\default.shader";
+            if(!File.Exists(defaultShaderLocation))
+            {
+                File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
+            }
 
             foreach (string shader in shaders)
             {
                 string shaderName = shader + ".shader";
                 try
                 {
-                    File.Copy(defaultShader, Path.Combine(destinationShadersFolder, shaderName));
+                    File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, shaderName));
                 }
                 catch (FileNotFoundException)
                 {
