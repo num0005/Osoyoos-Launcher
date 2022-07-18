@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-class AutoShadersGen2
+internal class AutoShadersGen2
 {
     public static void GenerateEmptyShaders(string BaseDirectory, string path)
     {
@@ -147,7 +147,7 @@ class AutoShadersGen2
             Directory.CreateDirectory(destinationShadersFolder);
 
             string defaultShaderLocation = BaseDirectory + @"\tags\shaders\default.shader";
-            if(!File.Exists(defaultShaderLocation))
+            if (!File.Exists(defaultShaderLocation))
             {
                 File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
             }
@@ -164,7 +164,7 @@ class AutoShadersGen2
                 {
                     // Will probably only occur if user somehow deletes default.shader after the check for its existence occurs,
                     // but before shaders are generated
-                    if(MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    if (MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                     {
                         File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
                         counter = 0;

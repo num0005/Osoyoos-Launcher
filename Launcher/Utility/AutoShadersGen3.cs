@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-class AutoShadersGen3
+internal class AutoShadersGen3
 {
     public static void GenerateEmptyShaders(string BaseDirectory, string path, string gameType)
     {
@@ -33,7 +33,7 @@ class AutoShadersGen3
             else
             {
                 Debug.WriteLine("Shaders already exist!");
-                MessageBox.Show("Shaders for this model already exist, skipping shader generation!", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Shaders for this model already exist, skipping shader generation!", "Shader Gen. Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         catch (DirectoryNotFoundException)
@@ -43,7 +43,7 @@ class AutoShadersGen3
         }
 
         static void shaderGen(string[] files, string full_jms_path, int counter, string destinationShadersFolder, string BaseDirectory, string gameType)
-        { 
+        {
             string line;
             List<string> shaders = new();
             // Find name of jms file
@@ -95,7 +95,7 @@ class AutoShadersGen3
                     else
                     {
                         collections.Add(line.Substring(0, line.IndexOf(' ')));
-                    }       
+                    }
                 }
             }
 
@@ -154,7 +154,7 @@ class AutoShadersGen3
                 {
                     File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultODST);
                 }
-                
+
             }
 
             // Write each shader
@@ -169,7 +169,7 @@ class AutoShadersGen3
                 {
                     // Will probably only occur if user somehow deletes default.shader after the check for its existence occurs,
                     // but before shaders are generated
-                    if(MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    if (MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                     {
                         if (gameType == "H3")
                         {
@@ -187,9 +187,8 @@ class AutoShadersGen3
                     {
                         break;
                     }
-                    
                 }
             }
         }
-    }       
+    }
 }
