@@ -12,7 +12,6 @@ class AutoShadersGen2
     {
         // Variables
         string full_jms_path = "";
-        List<string> shaders = new();
         int counter = 0;
 
         //Grabbing full path from drive letter to render folder
@@ -29,7 +28,7 @@ class AutoShadersGen2
             if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>())
             {
                 Debug.WriteLine("Folder exists but contains no shaders, proceeding");
-                shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory);
+                shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
             }
             else
             {
@@ -40,12 +39,13 @@ class AutoShadersGen2
         catch (DirectoryNotFoundException)
         {
             Debug.WriteLine("No folders exist, proceeding with shader gen");
-            shaderGen(files, full_jms_path, counter, shaders, destinationShadersFolder, BaseDirectory);
+            shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
         }
 
-        static void shaderGen(string[] files, string full_jms_path, int counter, List<string> shaders, string destinationShadersFolder, string BaseDirectory)
+        static void shaderGen(string[] files, string full_jms_path, int counter, string destinationShadersFolder, string BaseDirectory)
         {
             string line;
+            List<string> shaders = new();
             // Find name of jms file
             foreach (string file in files)
             {
@@ -108,6 +108,7 @@ class AutoShadersGen2
                 File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
             }
 
+            // Write each shader
             foreach (string shader in shaders)
             {
                 string shaderName = shader + ".shader";
@@ -117,8 +118,19 @@ class AutoShadersGen2
                 }
                 catch (FileNotFoundException)
                 {
-                    MessageBox.Show("Could not find default shader!\nShaders will not be generated - if this\nis your first time using this function,\ncreate a blank shader tag with Guerilla:\n\"H2EK/tags/shaders/default.shader\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    break;
+                    // Will probably only occur if user somehow deletes default.shader after the check for its existence occurs,
+                    // but before shaders are generated
+                    if(MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    {
+                        File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
+                        counter = 0;
+                        shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
