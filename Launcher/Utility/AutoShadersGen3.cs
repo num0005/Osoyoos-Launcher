@@ -80,7 +80,7 @@ class AutoShadersGen3
             }
             catch (Exception)
             {
-                MessageBox.Show("Could not find shader_collections.txt!\nMake sure you shader_collections.txt in\n\"H3EK/tags/levels\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Could not find shader_collections.txt!\nMake sure you have shader_collections.txt in\n\"H3EK/tags/levels\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             // Grab every shader collection prefix
