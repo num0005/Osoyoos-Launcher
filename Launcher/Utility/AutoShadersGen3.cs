@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 internal class AutoShadersGen3
 {
-    public static void GenerateEmptyShaders(string BaseDirectory, string path, string gameType)
+    public static bool GenerateEmptyShaders(string BaseDirectory, string path, string gameType)
     {
         // Variables
         string full_jms_path = "";
@@ -17,8 +17,18 @@ internal class AutoShadersGen3
         //Grabbing full path from drive letter to render folder
         string jmsPath = (BaseDirectory + @"\data\" + path + @"\render").Replace("\\\\", "\\");
 
-        // Get all files in render foler
-        string[] files = Directory.GetFiles(jmsPath);
+        // Get all files in render folder
+        string[] files = Array.Empty<string>();
+        try
+        {
+            files = Directory.GetFiles(jmsPath);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            MessageBox.Show("Unable to find JMS filepath!\nThis usually happens if your filepath contains invalid characters.\nAborting model import and shader generation...", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
+        
         string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
 
         // Checking if shaders already exist, if so don't re-gen them
@@ -190,5 +200,6 @@ internal class AutoShadersGen3
                 }
             }
         }
+        return true;
     }
 }

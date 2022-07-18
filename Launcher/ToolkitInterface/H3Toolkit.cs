@@ -202,7 +202,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
 
             // Generate shaders if requested
-            if (genShaders) { AutoShadersGen3.GenerateEmptyShaders(BaseDirectory, path, "H3"); }
+            if (genShaders) { if (!AutoShadersGen3.GenerateEmptyShaders(BaseDirectory, path, "H3")) { return; }; }
 
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
