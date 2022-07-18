@@ -98,11 +98,12 @@ class AutoShadersGen2
                             }
                         }
                     }
-                    
+
                     // Take each material name, strip symbols, add to list
-                    // Typically the most "complex" H3 materials come in the format: prefix name extra1 extra2 extra3...
-                    // So if a prefix exists, grab second word, else grab first word, ignore any suffixes
-                    // TODO: Will break in the case of spaces in the actual material "name", need to think of a workaround
+                    // Typically the most "complex" materials come in the format: prefix name extra1 extra2 extra3...
+                    // So if a prefix exists, check that it is a valid collection, if so ignore it as shader will be grabbed from collection,
+                    // but if it isn't, it should be treated as part of the full shader name
+                    string[] extras = { "lm:", "lp:", "hl:", "ds:" };
                     string shaderNameStripped;
                     for (int i = 0; i < numMats; i++)
                     {
@@ -118,7 +119,16 @@ class AutoShadersGen2
                             if (!collections.Contains(shaderNameSections[0]))
                             {
                                 // Shader is not in a collection, so probably just has a space in the name
-                                shaderNameStripped = Regex.Replace(shaderNameSections[0] + ' ' + shaderNameSections[1], "[^0-9a-zA-Z_.]", string.Empty);
+                                string shaderPrefixAndName = "";
+                                // Check if any section is an "extra" material property, if so don't include it
+                                foreach (string part in shaderNameSections)
+                                {
+                                    if (!extras.Any(part.Contains))
+                                    {
+                                        shaderPrefixAndName += part + ' ';
+                                    }
+                                }
+                                shaderNameStripped = Regex.Replace(shaderPrefixAndName, "[^0-9a-zA-Z_. ]", string.Empty).Trim();
                                 shaders.Add(shaderNameStripped);
                             }
                             // Otherwise shader is part of an existing collection, so no need to create a new tag for it
