@@ -32,7 +32,6 @@ internal class AutoShadersGen2
         string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
 
         // Checking if shaders already exist, if so don't re-gen them
-        // There must be a better way of doing this that doesn't involve try-catch, but I'm tired...
         try
         {
             if (!(Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>()))
@@ -159,9 +158,9 @@ internal class AutoShadersGen2
             shaders = shaders.Distinct().ToList();
 
             // Create directories               
-
             Directory.CreateDirectory(destinationShadersFolder);
 
+            // Make sure default.shader exists, if not, create it
             string defaultShaderLocation = BaseDirectory + @"\tags\shaders\default.shader";
             if (!File.Exists(defaultShaderLocation))
             {
@@ -203,6 +202,7 @@ internal class AutoShadersGen2
                 }
             }
         }
+        // Default fall-through
         return true;
     }
 }
