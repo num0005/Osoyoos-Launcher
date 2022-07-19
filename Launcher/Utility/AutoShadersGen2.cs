@@ -35,15 +35,17 @@ internal class AutoShadersGen2
         // There must be a better way of doing this that doesn't involve try-catch, but I'm tired...
         try
         {
-            if (Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>())
+            if (!(Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>()))
             {
-                Debug.WriteLine("Folder exists but contains no shaders, proceeding");
-                shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                Debug.WriteLine("Shaders already exist!");
+                if (MessageBox.Show("Shaders for this model already exist!\nWould you like to generate any missing shaders?", "Shader Gen. Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                }
             }
             else
             {
-                Debug.WriteLine("Shaders already exist!");
-                MessageBox.Show("Shaders for this model already exist, skipping shader generation!", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return true;
             }
         }
         catch (DirectoryNotFoundException)
@@ -166,24 +168,27 @@ internal class AutoShadersGen2
             foreach (string shader in shaders)
             {
                 string shaderName = shader + ".shader";
-                try
+                if(!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
                 {
-                    File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, shaderName));
-                }
-                catch (FileNotFoundException)
-                {
-                    // Will probably only occur if user somehow deletes default.shader after the check for its existence occurs,
-                    // but before shaders are generated
-                    if (MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    try
                     {
-                        File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
-                        counter = 0;
-                        shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
-                        break;
+                        File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, shaderName));
                     }
-                    else
+                    catch (FileNotFoundException)
                     {
-                        break;
+                        // Will probably only occur if user somehow deletes default.shader after the check for its existence occurs,
+                        // but before shaders are generated
+                        if (MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        {
+                            File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
+                            counter = 0;
+                            shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
