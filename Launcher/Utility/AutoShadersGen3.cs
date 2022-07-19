@@ -58,7 +58,7 @@ internal class AutoShadersGen3
         {
             string line;
             List<string> shaders = new();
-            // Find name of jms file
+            // Find name of each jms file, then grab every material name from it
             foreach (string file in files)
             {
                 counter = 0;
@@ -174,6 +174,11 @@ internal class AutoShadersGen3
             foreach (string shader in shaders)
             {
                 string shaderName = shader + ".shader";
+                if (shaderName == ".shader")
+                {
+                    MessageBox.Show("Detected an invalid (possibly blank) shader name!\nThis shader will not be generated.\nTool.exe will also likely not process it.", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    continue;
+                }
                 if(!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
                 {
                     try

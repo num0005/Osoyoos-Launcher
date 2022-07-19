@@ -17,7 +17,7 @@ internal class AutoShadersGen2
         //Grabbing full path from drive letter to render folder
         string jmsPath = (BaseDirectory + @"\data\" + path + @"\render").Replace("\\\\", "\\");
 
-        // Get all files in render foler
+        // Get all files in render folder
         string[] files = Array.Empty<string>();
         try
         {
@@ -168,6 +168,11 @@ internal class AutoShadersGen2
             foreach (string shader in shaders)
             {
                 string shaderName = shader + ".shader";
+                if (shaderName == ".shader")
+                {
+                    MessageBox.Show("Detected an invalid (possibly blank) shader name!\nThis shader will not be generated.\nTool.exe will also likely not process it.", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    continue;
+                }
                 if(!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
                 {
                     try
