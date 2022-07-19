@@ -46,7 +46,11 @@ internal class AutoShadersGen3
                 {
                     return true;
                 }
-            }   
+            }
+            else
+            {
+                shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory, gameType);
+            }
         }
         catch (DirectoryNotFoundException)
         {

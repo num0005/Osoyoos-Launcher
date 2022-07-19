@@ -42,10 +42,14 @@ internal class AutoShadersGen2
                 {
                     shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
                 }
+                else
+                {
+                    return true;
+                }
             }
             else
             {
-                return true;
+                shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
             }
         }
         catch (DirectoryNotFoundException)
