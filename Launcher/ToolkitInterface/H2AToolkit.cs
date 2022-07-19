@@ -105,12 +105,11 @@ namespace ToolkitLauncher.ToolkitInterface
                 flags = set_flags(flags, "reset_compression");
             }
 
-            // Generate shaders if requested
-            if (genShaders) { if (!AutoShadersGen2.GenerateEmptyShaders(BaseDirectory, path)) {return; }; }
-
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
+                // Generate shaders if requested
+                if (genShaders) { if (!AutoShadersGen2.GenerateEmptyShaders(BaseDirectory, path)) { return; }; }
                 await RunTool(ToolType.Tool, new() { "render", path, accurateRender.ToString(), renderPRT.ToString() });
             if (importType.HasFlag(ModelCompile.collision))
                 await RunTool(ToolType.Tool, new() { "collision", path });

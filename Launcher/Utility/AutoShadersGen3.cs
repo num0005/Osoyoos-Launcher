@@ -176,7 +176,8 @@ internal class AutoShadersGen3
                 string shaderName = shader + ".shader";
                 if (shaderName == ".shader")
                 {
-                    MessageBox.Show("Detected an invalid (possibly blank) shader name!\nThis shader will not be generated.\nTool.exe will also likely not process it.", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Detected an invalid (possibly blank) shader name!\nThis shader will not be generated.\nThis won't work well in-game.", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    try { File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, "im.too.dumb.to.name.my.shader")); } catch { Debug.WriteLine("ah well"); };
                     continue;
                 }
                 if(!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
