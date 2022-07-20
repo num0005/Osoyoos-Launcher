@@ -39,7 +39,8 @@ internal class AutoShadersGen2
                 Debug.WriteLine("Shaders already exist!");
                 if (MessageBox.Show("Shaders for this model already exist!\nWould you like to generate any missing shaders?", "Shader Gen. Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                    string[] shaders = MaterialReaderGen2.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory);
+                    shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory);
                 }
                 else
                 {
@@ -48,115 +49,19 @@ internal class AutoShadersGen2
             }
             else
             {
-                shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                string[] shaders = MaterialReaderGen2.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory);
+                shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory);
             }
         }
         catch (DirectoryNotFoundException)
         {
             Debug.WriteLine("No folders exist, proceeding with shader gen");
-            shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+            string[] shaders = MaterialReaderGen2.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory);
+            shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory);
         }
 
-        static void shaderGen(string[] files, string full_jms_path, int counter, string destinationShadersFolder, string BaseDirectory)
+        static void shaderGen(string[] shaders, int counter, string full_jms_path, string destinationShadersFolder, string BaseDirectory)
         {
-            string line;
-            List<string> shaders = new();
-            // Find name of jms file
-            foreach (string file in files)
-            {
-                counter = 0;
-
-                if (file[^4..] is ".JMS" or ".jms")
-                {
-                    full_jms_path = file;
-
-                    StreamReader sr = new(full_jms_path);
-
-                    // Find Materials definition header in JMS file
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if (line.Contains(";### MATERIALS ###"))
-                        {
-                            break;
-                        }
-                        counter++;
-                    }
-
-                    //Grab number of materials from file
-                    int numMats = int.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
-                    // Line number of first shader name
-                    int currentLine = counter + 7;
-
-                    // Open shader_collections.txt
-                    List<string> collections = new();
-                    try
-                    {
-                        sr = new(BaseDirectory + @"\tags\scenarios\shaders\shader_collections.shader_collections");
-                    }
-                    catch (DirectoryNotFoundException)
-                    {
-                        MessageBox.Show("Could not find shader_collections file!\nMake sure you have shader_collections.shader_collections in\n\"H2EK/tags/scenarios/shaders\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-
-                    // Grab every shader collection prefix
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if ((line.Contains("scenarios") || line.Contains("objects") || line.Contains("test")) && !line.Contains('='))
-                        {
-                            if (line.Contains('\t'))
-                            {
-                                collections.Add(line.Substring(0, line.IndexOf('\t')));
-                            }
-                            else
-                            {
-                                collections.Add(line.Substring(0, line.IndexOf(' ')));
-                            }
-                        }
-                    }
-
-                    // Take each material name, strip symbols, add to list
-                    // Typically the most "complex" materials come in the format: prefix name extra1 extra2 extra3...
-                    // So if a prefix exists, check that it is a valid collection, if so ignore it as shader will be grabbed from collection,
-                    // but if it isn't, it should be treated as part of the full shader name
-                    string[] extras = { "lm:", "lp:", "hl:", "ds:" };
-                    string shaderNameStripped;
-                    for (int i = 0; i < numMats; i++)
-                    {
-                        string[] shaderNameSections = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First().Split(' ');
-                        if (shaderNameSections.Length < 2)
-                        {
-                            shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", string.Empty);
-                            shaders.Add(shaderNameStripped);
-                        }
-                        else // Shader name has spaces in it
-                        {
-                            // Check if section before first space is a valid shader collection prefix
-                            if (!collections.Contains(shaderNameSections[0]))
-                            {
-                                // Shader is not in a collection, so probably just has a space in the name
-                                string shaderPrefixAndName = "";
-                                // Check if any section is an "extra" material property, if so don't include it
-                                foreach (string part in shaderNameSections)
-                                {
-                                    if (!extras.Any(part.Contains))
-                                    {
-                                        shaderPrefixAndName += part + ' ';
-                                    }
-                                }
-                                shaderNameStripped = Regex.Replace(shaderPrefixAndName, "[^0-9a-zA-Z_. ]", string.Empty).Trim();
-                                shaders.Add(shaderNameStripped);
-                            }
-                            // Otherwise shader is part of an existing collection, so no need to create a new tag for it
-                        }
-                        // Skip to next shader name
-                        currentLine += 4;
-                    }
-                }
-            }
-
-            // Remove duplicate shader names
-            shaders = shaders.Distinct().ToList();
-
             // Create directories               
             Directory.CreateDirectory(destinationShadersFolder);
 
@@ -191,7 +96,7 @@ internal class AutoShadersGen2
                         {
                             File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
                             counter = 0;
-                            shaderGen(files, full_jms_path, counter, destinationShadersFolder, BaseDirectory);
+                            shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory);
                             break;
                         }
                         else
@@ -204,5 +109,111 @@ internal class AutoShadersGen2
         }
         // Default fall-through
         return true;
+    }
+}
+
+internal class MaterialReaderGen2
+{
+    public static string[] ReadAllMaterials(string[] files, int counter, string full_jms_path, string BaseDirectory)
+    {
+        string line;
+        List<string> shaders = new();
+        // Find name of jms file
+        foreach (string file in files)
+        {
+            counter = 0;
+
+            if (file[^4..] is ".JMS" or ".jms")
+            {
+                full_jms_path = file;
+
+                StreamReader sr = new(full_jms_path);
+
+                // Find Materials definition header in JMS file
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.Contains(";### MATERIALS ###"))
+                    {
+                        break;
+                    }
+                    counter++;
+                }
+
+                //Grab number of materials from file
+                int numMats = int.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
+                // Line number of first shader name
+                int currentLine = counter + 7;
+
+                // Open shader_collections.txt
+                List<string> collections = new();
+                try
+                {
+                    sr = new(BaseDirectory + @"\tags\scenarios\shaders\shader_collections.shader_collections");
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    MessageBox.Show("Could not find shader_collections file!\nMake sure you have shader_collections.shader_collections in\n\"H2EK/tags/scenarios/shaders\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                // Grab every shader collection prefix
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if ((line.Contains("scenarios") || line.Contains("objects") || line.Contains("test")) && !line.Contains('='))
+                    {
+                        if (line.Contains('\t'))
+                        {
+                            collections.Add(line.Substring(0, line.IndexOf('\t')));
+                        }
+                        else
+                        {
+                            collections.Add(line.Substring(0, line.IndexOf(' ')));
+                        }
+                    }
+                }
+
+                // Take each material name, strip symbols, add to list
+                // Typically the most "complex" materials come in the format: prefix name extra1 extra2 extra3...
+                // So if a prefix exists, check that it is a valid collection, if so ignore it as shader will be grabbed from collection,
+                // but if it isn't, it should be treated as part of the full shader name
+                string[] extras = { "lm:", "lp:", "hl:", "ds:" };
+                string shaderNameStripped;
+                for (int i = 0; i < numMats; i++)
+                {
+                    string[] shaderNameSections = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First().Split(' ');
+                    if (shaderNameSections.Length < 2)
+                    {
+                        shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", string.Empty);
+                        shaders.Add(shaderNameStripped);
+                    }
+                    else // Shader name has spaces in it
+                    {
+                        // Check if section before first space is a valid shader collection prefix
+                        if (!collections.Contains(shaderNameSections[0]))
+                        {
+                            // Shader is not in a collection, so probably just has a space in the name
+                            string shaderPrefixAndName = "";
+                            // Check if any section is an "extra" material property, if so don't include it
+                            foreach (string part in shaderNameSections)
+                            {
+                                if (!extras.Any(part.Contains))
+                                {
+                                    shaderPrefixAndName += part + ' ';
+                                }
+                            }
+                            shaderNameStripped = Regex.Replace(shaderPrefixAndName, "[^0-9a-zA-Z_. ]", string.Empty).Trim();
+                            shaders.Add(shaderNameStripped);
+                        }
+                        // Otherwise shader is part of an existing collection, so no need to create a new tag for it
+                    }
+                    // Skip to next shader name
+                    currentLine += 4;
+                }
+            }
+        }
+
+        // Remove duplicate shader names
+        shaders = shaders.Distinct().ToList();
+
+        return shaders.ToArray();
     }
 }
