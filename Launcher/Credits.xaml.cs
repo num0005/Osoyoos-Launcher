@@ -150,5 +150,20 @@ progress, token);
 
 
         }
+
+        private void license_info_open_Click(object sender, RoutedEventArgs e)
+        {
+            string license_file_name = Path.Combine(Path.GetTempPath(), $"launcher_copyright_{Guid.NewGuid()}.txt");
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("LicenseInfoFull.txt"));
+            using Stream stream = assembly.GetManifestResourceStream(resourceName);
+            using (StreamWriter fileStream = File.CreateText(license_file_name))
+            {
+                stream.CopyTo(fileStream.BaseStream);
+            }
+            ProcessStartInfo startInfo = new(license_file_name);
+            startInfo.UseShellExecute = true;
+            System.Diagnostics.Process.Start(startInfo);
+        }
     }
 }
