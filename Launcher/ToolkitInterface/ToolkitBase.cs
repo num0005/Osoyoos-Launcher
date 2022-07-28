@@ -425,7 +425,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (data_file.EndsWith(".scenario"))
             {
                 scenario_path = Path.GetDirectoryName(data_file).ToLower() ?? "";
-                scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
+                scenario_name = Path.GetFileNameWithoutExtension(data_file).ToLower();
                 bsp_name = "all";
                 if (!string.IsNullOrEmpty(bsp_data_file))
                 {
