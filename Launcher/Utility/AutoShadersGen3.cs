@@ -28,7 +28,7 @@ internal class AutoShadersGen3
             MessageBox.Show("Unable to find JMS filepath!\nThis usually happens if your filepath contains invalid characters.\nAborting model import and shader generation...", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
-        
+
         string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
 
         // Checking if shaders already exist, if so don't re-gen them
@@ -39,7 +39,7 @@ internal class AutoShadersGen3
                 Debug.WriteLine("Shaders already exist!");
                 if (MessageBox.Show("Shaders for this model already exist!\nWould you like to generate any missing shaders?", "Shader Gen. Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    string[] shaders = MaterialReaderGen3.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory);
+                    string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
                     shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
                 }
                 else
@@ -49,14 +49,14 @@ internal class AutoShadersGen3
             }
             else
             {
-                string[] shaders = MaterialReaderGen3.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory);
+                string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
                 shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
             }
         }
         catch (DirectoryNotFoundException)
         {
             Debug.WriteLine("No folders exist, proceeding with shader gen");
-            string[] shaders = MaterialReaderGen3.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory);
+            string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
             shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
         }
 
@@ -90,7 +90,7 @@ internal class AutoShadersGen3
                     try { File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, "im.too.dumb.to.name.my.shader")); } catch { Debug.WriteLine("ah well"); };
                     continue;
                 }
-                if(!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
+                if (!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
                 {
                     try
                     {
@@ -119,7 +119,7 @@ internal class AutoShadersGen3
                             break;
                         }
                     }
-                }       
+                }
             }
         }
         // Default fall-through
@@ -127,10 +127,11 @@ internal class AutoShadersGen3
     }
 }
 
+// JMS Material Parser
 // TODO (PepperMan) - Make this less hardcoded, changes to line positions in JMS format will break this
-internal class MaterialReaderGen3
+internal class JMSMaterialReader
 {
-    public static string[] ReadAllMaterials(string[] files, int counter, string full_jms_path, string BaseDirectory)
+    public static string[] ReadAllMaterials(string[] files, int counter, string full_jms_path, string BaseDirectory, string gameType)
     {
         string line;
         List<string> shaders = new();
@@ -161,33 +162,68 @@ internal class MaterialReaderGen3
 
                 // Open shader_collections.txt
                 List<string> collections = new();
-                try
+                if (gameType == "H3" || gameType == "H3ODST")
                 {
-                    sr = new(BaseDirectory + @"\tags\levels\shader_collections.txt");
+                    try
+                    {
+                        sr = new(BaseDirectory + @"\tags\levels\shader_collections.txt");
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Could not find shader_collections.txt!\nMake sure you have shader_collections.txt in\n\"H3EK/tags/levels\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
-                catch (Exception)
+                else
                 {
-                    MessageBox.Show("Could not find shader_collections.txt!\nMake sure you have shader_collections.txt in\n\"H3EK/tags/levels\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    try
+                    {
+                        sr = new(BaseDirectory + @"\tags\scenarios\shaders\shader_collections.shader_collections");
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        MessageBox.Show("Could not find shader_collections file!\nMake sure you have shader_collections.shader_collections in\n\"H2EK/tags/scenarios/shaders\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
 
+
                 // Grab every shader collection prefix
-                while ((line = sr.ReadLine()) != null)
+                if (gameType == "H3" || gameType == "H3ODST")
                 {
-                    if ((line.Contains("levels") || line.Contains("scenarios") || line.Contains("objects")) && !line.Contains("shader_collections.txt"))
+                    while ((line = sr.ReadLine()) != null)
                     {
-                        if (line.Contains('\t'))
+                        if ((line.Contains("levels") || line.Contains("scenarios") || line.Contains("objects")) && !line.Contains("shader_collections.txt"))
                         {
-                            collections.Add(line.Substring(0, line.IndexOf('\t')));
+                            if (line.Contains('\t'))
+                            {
+                                collections.Add(line.Substring(0, line.IndexOf('\t')));
+                            }
+                            else
+                            {
+                                collections.Add(line.Substring(0, line.IndexOf(' ')));
+                            }
                         }
-                        else
+                    }
+                }
+                else
+                {
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if ((line.Contains("scenarios") || line.Contains("objects") || line.Contains("test")) && !line.Contains('='))
                         {
-                            collections.Add(line.Substring(0, line.IndexOf(' ')));
+                            if (line.Contains('\t'))
+                            {
+                                collections.Add(line.Substring(0, line.IndexOf('\t')));
+                            }
+                            else
+                            {
+                                collections.Add(line.Substring(0, line.IndexOf(' ')));
+                            }
                         }
                     }
                 }
 
                 // Take each material name, strip symbols, add to list
-                // Typically the most "complex" H3 materials come in the format: prefix name extra1 extra2 extra3...
+                // Typically the most "complex" materials come in the format: prefix name extra1 extra2 extra3...
                 // So if a prefix exists, check that it is a valid collection, if so ignore it as shader will be grabbed from collection,
                 // but if it isn't, it should be treated as part of the full shader name
                 string[] extras = { "lm:", "lp:", "hl:", "ds:", "pf:", "lt:", "to:", "at:", "ro:" };
