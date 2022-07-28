@@ -41,12 +41,14 @@
     <None Remove="BultinProfiles.json" />
     <None Remove="Documentation.json" />
     <None Remove="Images\gear.png" />
+    <None Remove="Resources\LicenseInfoFull.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
     <Resource Include="Images\gear.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="Resources\LicenseInfoFull.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -75,9 +77,6 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="5.0.0" />
     <PackageReference Include="TlshSharp" Version="1.0.0" />
-    <PackageReference Include="WindowsAPICodePack-Shell">
-      <Version>1.1.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Credits.xaml.cs">
