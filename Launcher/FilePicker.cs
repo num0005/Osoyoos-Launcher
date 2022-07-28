@@ -1,5 +1,4 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 using ToolkitLauncher.ToolkitInterface;
@@ -59,16 +58,10 @@ public class FilePicker
 		this.toolkitInterface = toolkit;
 		this.options = options;
 		if (options.IsFolderSelect()) {
-			folderDialog = new CommonOpenFileDialog();
-			folderDialog.Title = options.title;
-			folderDialog.IsFolderPicker = true;
+			folderDialog = new FolderBrowserDialog();
+			folderDialog.Description = options.title;
 
-			folderDialog.AllowNonFileSystemItems = false;
-			folderDialog.EnsureFileExists = true;
-			folderDialog.EnsurePathExists = true;
-			folderDialog.Multiselect = false;
-			folderDialog.ShowPlacesList = true;
-			folderDialog.InitialDirectory = InitialDirectory;
+			folderDialog.SelectedPath = InitialDirectory;
 		} else {
 			fileDialog = new OpenFileDialog();
 			fileDialog.Title = options.title;
@@ -80,9 +73,9 @@ public class FilePicker
     {
 		if (folderDialog is null && fileDialog is null)
 			throw new InvalidOperationException("No valid dialog");
-		if (folderDialog is not null && folderDialog.ShowDialog() == CommonFileDialogResult.Ok)
+		if (folderDialog is not null && folderDialog.ShowDialog() == DialogResult.OK)
         {
-			return ProcessInput(folderDialog.FileName);
+			return ProcessInput(folderDialog.SelectedPath);
 		}
 		if (fileDialog is not null && fileDialog.ShowDialog() == DialogResult.OK)
 		{
@@ -144,7 +137,7 @@ public class FilePicker
 #nullable restore
 
 	private OpenFileDialog fileDialog;
-	private CommonOpenFileDialog folderDialog;
+	private FolderBrowserDialog folderDialog;
 	private System.Windows.Controls.TextBox textBox;
 	private ToolkitBase toolkitInterface;
 	private Options options;

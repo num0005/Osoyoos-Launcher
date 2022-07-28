@@ -36,7 +36,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
         {
-            if(autoFBX) { await AutoFBX.Structure(this, data_file, false); }
+            if (autoFBX) { await AutoFBX.Structure(this, data_file, false); }
 
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             string tool_command = structure_command.ToString().Replace("_", "-");
@@ -172,7 +172,8 @@ namespace ToolkitLauncher.ToolkitInterface
             try
             {
                 await FauxLocalFarm(scenario, bsp, lightmap_group, quality, args.instanceCount, args.NoAssert, args.instanceOutput, progress);
-            } catch (OperationCanceledException)
+            }
+            catch (OperationCanceledException)
             {
             }
 
@@ -184,7 +185,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="importType"></param>
         /// <returns></returns>
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
             string type = "";
             if (verboseAnim)
@@ -200,9 +201,11 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if(autoFBX) { await AutoFBX.Model(this, path, importType); }
+            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
+                // Generate shaders if requested
+                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { return; }; }
                 if (skyRender)
                     await RunTool(ToolType.Tool, new() { "render-sky", path });
                 else if (accurateRender)

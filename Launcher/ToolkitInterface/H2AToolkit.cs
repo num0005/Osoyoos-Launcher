@@ -86,7 +86,7 @@ namespace ToolkitLauncher.ToolkitInterface
             return flag_string;
         }
 
-        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX)
+        public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
 #if !DEBUG
             renderPRT = false; // broken right now
@@ -108,6 +108,8 @@ namespace ToolkitLauncher.ToolkitInterface
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
+                // Generate shaders if requested
+                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H2")) { return; }; }
                 await RunTool(ToolType.Tool, new() { "render", path, accurateRender.ToString(), renderPRT.ToString() });
             if (importType.HasFlag(ModelCompile.collision))
                 await RunTool(ToolType.Tool, new() { "collision", path });
