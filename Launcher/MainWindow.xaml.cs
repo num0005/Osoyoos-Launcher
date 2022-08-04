@@ -1072,7 +1072,7 @@ namespace ToolkitLauncher
 
         readonly FilePicker.Options gen1BitmapOptions = FilePicker.Options.FileSelect(
            "Select Image File",
-           "Supported image files|*.tif",
+           "Supported image files|*.tif;*tiff",
            FilePicker.Options.PathRoot.Data,
            parent: true
         );
