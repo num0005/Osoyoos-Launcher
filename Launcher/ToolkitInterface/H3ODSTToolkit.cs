@@ -40,6 +40,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
             if (importType.HasFlag(ModelCompile.render))
+            {
                 // Generate shaders if requested
                 if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3ODST")) { return; }; }
                 if (skyRender)
@@ -50,6 +51,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     await RunTool(ToolType.Tool, new() { "render-pda", path });
                 else
                     await RunTool(ToolType.Tool, new() { "render", path, renderPRT ? "final" : "draft" });
+            }
             if (importType.HasFlag(ModelCompile.collision))
                 await RunTool(ToolType.Tool, new() { "collision", path });
             if (importType.HasFlag(ModelCompile.physics))
