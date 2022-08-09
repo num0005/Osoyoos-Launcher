@@ -438,22 +438,22 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 4)
                 {
                     //Tool
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
+                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath) && MainWindow.toolkit_profile != null)
                         is_enabled = true;
                 }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
+                else if (parameter is string && Int32.Parse(parameter as string) == 5 && MainWindow.toolkit_profile != null)
                 {
                     //Guerilla
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
+                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath) && MainWindow.toolkit_profile != null)
                         is_enabled = true;
                 }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                else if (parameter is string && Int32.Parse(parameter as string) == 6 && MainWindow.toolkit_profile != null)
                 {
                     //Sapien
                     if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
                         is_enabled = true;
                 }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                else if (parameter is string && Int32.Parse(parameter as string) == 7 && MainWindow.toolkit_profile != null)
                 {
                     //Game
                     if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))

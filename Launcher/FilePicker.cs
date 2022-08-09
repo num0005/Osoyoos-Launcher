@@ -15,7 +15,7 @@ public class FilePicker
 			Data,
 			Tag_Data
         }
-		static public Options FileSelect(string title, string filter, PathRoot pathRoot, bool parent = false, bool strip_extension = true)
+		static public Options FileSelect(string title, string filter, PathRoot pathRoot, bool parent = false, bool strip_extension = true, bool add_string = false)
         {
 			Options opt = new Options();
 			opt.title = title;
@@ -23,6 +23,7 @@ public class FilePicker
 			opt.pathRoot = pathRoot;
 			opt.parent = parent;
 			opt.strip_extension = strip_extension;
+			opt.add_string = add_string;
 
 			return opt;
 		}
@@ -46,7 +47,7 @@ public class FilePicker
 		internal PathRoot pathRoot;
 		internal bool parent;
 		internal bool strip_extension;
-
+		internal bool add_string;
 	}
 #nullable restore
 
@@ -98,7 +99,10 @@ public class FilePicker
 			local_path = local_path.Substring(0, local_path.Length - Path.GetExtension(local_path).Length);
 		if (options.parent)
 			local_path = local_path.Substring(0, local_path.Length - Path.GetFileName(local_path).Length);
-		textBox.Text = local_path;
+		if (options.add_string)
+			textBox.Text += Environment.NewLine + local_path;
+		else
+			textBox.Text = local_path;
 		return true;
 	}
 

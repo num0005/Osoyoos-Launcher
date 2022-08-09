@@ -543,7 +543,7 @@ namespace ToolkitLauncher
         private static ToolkitBase CreateToolkitFromProfile(ToolkitProfiles.ProfileSettingsLauncher profile)
         {
             string base_path = Path.GetDirectoryName(profile.ToolPath);
-            Debug.Assert(base_path is not null, "base_path should never be null");
+            Debug.Assert(base_path is not null, "base_path should never be null"); // except when you try to skip through the processes & it now no longer opens lol
 
             Dictionary<ToolType, string> tool_paths = new()
             {
@@ -814,8 +814,11 @@ namespace ToolkitLauncher
 
             CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
             ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
-
-            await toolkit.BuildCache(package_level_path.Text, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+            var all_selected_paths = package_level_path.Text.Split(Environment.NewLine);
+            foreach (string s in all_selected_paths)
+            {
+                await toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+            }
         }
 
         private void CompileOnly_Checked(object sender, RoutedEventArgs e)
@@ -1132,6 +1135,16 @@ namespace ToolkitLauncher
             string default_path = get_default_path(package_level_path.Text, tag_dir: true, is_file: true);
             var picker = new FilePicker(package_level_path, toolkit, packageOptions, default_path);
             picker.Prompt();
+        }
+        private void browse_package_level_add_Click(object sender, RoutedEventArgs e)
+        {
+            string default_path = get_default_path(package_level_path.Text, tag_dir: true, is_file: true);
+            packageOptions.add_string = true;
+            var picker = new FilePicker(package_level_path, toolkit, packageOptions, default_path);
+            picker.Prompt();
+            packageOptions.add_string = false; 
+            // lol, certified bad implementation, might as well have just added an extra input to the method, 
+            // did not realize this was a class when devining this implementation
         }
 
         readonly FilePicker.Options modelOptions = FilePicker.Options.FolderSelect(
