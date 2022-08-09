@@ -809,19 +809,17 @@ namespace ToolkitLauncher
 
         private async void PackageLevel(object sender, RoutedEventArgs e)
         {
-            if (levels_list.Count == 0)
-            {
-                // Halo 2 uses win64, win32, and xbox1 as platform options. Default if improper arg is given is win64
-                string cache_platform = "win64";
-                if (halo_3)
-                    cache_platform = "pc";
+            // Halo 2 uses win64, win32, and xbox1 as platform options. Default if improper arg is given is win64
+            string cache_platform = "win64";
+            if (halo_3)
+                cache_platform = "pc";
 
             CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
             ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
             var all_selected_paths = package_level_path.Text.Split(Environment.NewLine);
             foreach (string s in all_selected_paths)
             {
-                await toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+                toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
             }
         }
 

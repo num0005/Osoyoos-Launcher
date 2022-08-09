@@ -829,14 +829,13 @@
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Button x:Name="browse_package_level" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_Click" MinWidth="75" MinHeight="26" ToolTip="Select the scenario file to package."/>
                                             <Button x:Name="browse_package_level_add" Grid.Column="1" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_add_Click" MinWidth="55" MinHeight="26" ToolTip="Select the scenario file to add to the package list."/>
                                             <Grid Grid.Column="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="3" Text="Select a scenario file to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
+                                                <TextBlock Grid.Column="3" Text="Select scenario file(s) to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                             </Grid>
                                             <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="100" CaretBrush="{DynamicResource TextColor}" TextWrapping="Wrap" AcceptsReturn="True" />
                                         </Grid>
@@ -903,9 +902,7 @@
                                                 </Grid>
                                             </Grid>
                                         </GroupBox>
-
-                                        <Button Grid.Row="5" Content="Add Level to Compile List" VerticalAlignment="Bottom" Click="AddLevelCompile" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Add the selected level to the compile list." Margin="0,0,0,26"/>
-                                        <Button Grid.Row="6" x:Name="compile_button" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Package the level!"/>
+                                        <Button Grid.Row="5" x:Name="compile_button" Content="Package Level(s)" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Package the level(s)!"/>
                                     </Grid>
                                 </Grid>
                             </TabItem>
