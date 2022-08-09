@@ -65,6 +65,7 @@ public class FilePicker
 			folderDialog.SelectedPath = InitialDirectory;
 		} else {
 			fileDialog = new OpenFileDialog();
+			fileDialog.Multiselect = options.add_string;
 			fileDialog.Title = options.title;
 			fileDialog.Filter = options.filter;
 			fileDialog.InitialDirectory = InitialDirectory;
@@ -80,7 +81,10 @@ public class FilePicker
 		}
 		if (fileDialog is not null && fileDialog.ShowDialog() == DialogResult.OK)
 		{
-			return ProcessInput(fileDialog.FileName);
+			// is the output ever even used?, if so then what for, i assumed this was for debugging, so i have it return true if all files process correctly, otherwise false if at least one fails
+			bool output = true; 
+			for (int i = 0; i < fileDialog.FileNames.Length; i++) output &= ProcessInput(fileDialog.FileNames[i]);
+			return output;
 		}
 		return false;
     }
