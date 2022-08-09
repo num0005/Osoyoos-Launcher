@@ -901,7 +901,9 @@
                                                 </Grid>
                                             </Grid>
                                         </GroupBox>
-                                        <Button Grid.Row="5" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Package the level!"/>
+
+                                        <Button Grid.Row="5" Content="Add Level to Compile List" VerticalAlignment="Bottom" Click="AddLevelCompile" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Add the selected level to the compile list." Margin="0,0,0,26"/>
+                                        <Button Grid.Row="6" x:Name="compile_button" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Package the level!"/>
                                     </Grid>
                                 </Grid>
                             </TabItem>

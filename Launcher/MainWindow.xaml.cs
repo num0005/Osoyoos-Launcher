@@ -260,6 +260,8 @@ namespace ToolkitLauncher
             multilingual_test
         }
 
+        List<Object[]> levels_list = new List<Object[]>();
+
         // todo(num0005) this is ugly, rework it
         public static int profile_index = 0;
         public static List<int> profile_mapping = new();
@@ -807,15 +809,43 @@ namespace ToolkitLauncher
 
         private async void PackageLevel(object sender, RoutedEventArgs e)
         {
-            // Halo 2 uses win64, win32, and xbox1 as platform options. Default if improper arg is given is win64
-            string cache_platform = "win64";
+            if (levels_list.Count == 0)
+            {
+                // Halo 2 uses win64, win32, and xbox1 as platform options. Default if improper arg is given is win64
+                string cache_platform = "win64";
+                if (halo_3)
+                    cache_platform = "pc";
+
+                CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
+                ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
+
+                await toolkit.BuildCache(package_level_path.Text, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+            }
+            else
+            {
+                foreach (Object[] level_to_compile in levels_list)
+                {
+                    await toolkit.BuildCache(level_to_compile[0].ToString(), (CacheType) level_to_compile[1], (ToolkitBase.ResourceMapUsage) level_to_compile[2], (bool) level_to_compile[3], level_to_compile[4].ToString(), (bool) level_to_compile[5], (bool) level_to_compile[6], (bool) level_to_compile[7], (bool)level_to_compile[8], (bool)level_to_compile[9]);
+                }
+            }
+        }
+
+        private async void AddLevelCompile(object sender, RoutedEventArgs e)
+        {
+            if (levels_list.Count == 0)
+            {
+                compile_button.Content = "Package Levels";
+            }
             if (halo_3)
+            {
+                string cache_platform = "win64";
                 cache_platform = "pc";
+                CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
+                ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
 
-            CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
-            ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
-
-            await toolkit.BuildCache(package_level_path.Text, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+                Object[] level_data = new Object[] { package_level_path.Text, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false };
+                levels_list.Add(level_data);
+            }
         }
 
         private void CompileOnly_Checked(object sender, RoutedEventArgs e)
