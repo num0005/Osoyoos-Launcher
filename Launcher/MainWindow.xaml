@@ -830,14 +830,15 @@
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <Button x:Name="browse_package_level_add" Grid.Column="1" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_add_Click" MinWidth="55" MinHeight="26" ToolTip="Select the scenario file to add to the package list."/>
+                                            <Button x:Name="package_level_remove" Grid.Column="2" Content="Remove" Padding="4" Click="package_level_remove_Click" MinWidth="55" MinHeight="26" ToolTip="Removes the most recently added level from the list." Grid.ColumnSpan="2" Margin="5,0,304,0"/>
                                             <Grid Grid.Column="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="3" Text="Select scenario file(s) to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
+                                                <TextBlock Grid.Column="1" Text="Select scenario file(s) to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4" Margin="60,0,0,0"/>
                                             </Grid>
-                                            <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="100" CaretBrush="{DynamicResource TextColor}" TextWrapping="Wrap" AcceptsReturn="True" />
+                                            <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="100" CaretBrush="{DynamicResource TextColor}" TextWrapping="Wrap" AcceptsReturn="True" Margin="57,0,0,0" />
                                         </Grid>
                                         <GroupBox Grid.Row="2" x:Name="package_settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=16, ElementName=toolkit_selection}">
                                             <GroupBox.Header>

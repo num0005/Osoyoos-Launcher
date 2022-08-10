@@ -1149,6 +1149,18 @@ namespace ToolkitLauncher
             // did not realize this was a class when devining this implementation
         }
 
+        private void package_level_remove_Click(object sender, RoutedEventArgs e)
+        {
+            if (package_level_path.Text.Contains(Environment.NewLine))
+            {
+                package_level_path.Text = package_level_path.Text.Remove(package_level_path.Text.TrimEnd().LastIndexOf(Environment.NewLine));
+            }
+            else
+            {
+                package_level_path.Text = "";
+            }
+        }
+
         readonly FilePicker.Options modelOptions = FilePicker.Options.FolderSelect(
            "Select model folder",
            FilePicker.Options.PathRoot.Data
