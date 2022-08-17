@@ -817,18 +817,18 @@ namespace ToolkitLauncher
             CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
             ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
             var all_selected_paths = package_level_path.Text.Split(Environment.NewLine);
-            if (halo_ce || halo_ce_mcc)
+            if (halo_3)
             {
                 foreach (string s in all_selected_paths)
                 {
-                   await toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+                   toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
                 }
             }
             else
             {
                 foreach (string s in all_selected_paths)
                 {
-                    toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
+                    await toolkit.BuildCache(s, cache_type_item, usage, log_tag_loads.IsChecked ?? false, cache_platform, cache_compress.IsChecked ?? false, cache_resource_sharing.IsChecked ?? false, cache_multilingual_sounds.IsChecked ?? false, cache_remastered_support.IsChecked ?? false, cache_mp_tag_sharing.IsChecked ?? false);
                 }
             }
         }
