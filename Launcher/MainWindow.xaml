@@ -829,7 +829,7 @@
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Button x:Name="browse_package_level_add" Grid.Column="1" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_add_Click" MinWidth="55" MinHeight="26" ToolTip="Select the scenario file to add to the package list."/>
+                                            <Button x:Name="browse_package_level_add" Grid.Column="1" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_package_level_add_Click" MinWidth="55" MinHeight="26" ToolTip="Select the scenario file to add to the package list. WARNING: It is advised not to compile more levels than your CPU has threads."/>
                                             <Button x:Name="package_level_remove" Grid.Column="2" Content="Remove" Padding="4" Click="package_level_remove_Click" MinWidth="55" MinHeight="26" ToolTip="Removes the most recently added level from the list." Grid.ColumnSpan="2" Margin="5,0,304,0"/>
                                             <Grid Grid.Column="4">
                                                 <Grid.ColumnDefinitions>
