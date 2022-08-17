@@ -817,7 +817,7 @@ namespace ToolkitLauncher
             CacheType cache_type_item = (CacheType)cache_type.SelectedIndex;
             ToolkitBase.ResourceMapUsage usage = (ToolkitBase.ResourceMapUsage)resource_map_usage.SelectedIndex;
             var all_selected_paths = package_level_path.Text.Split(Environment.NewLine);
-            if (halo_3)
+            if (halo_3 || halo_3_odst)
             {
                 foreach (string s in all_selected_paths)
                 {
