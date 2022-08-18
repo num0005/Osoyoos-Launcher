@@ -260,8 +260,6 @@ namespace ToolkitLauncher
             multilingual_test
         }
 
-        List<Object[]> levels_list = new List<Object[]>();
-
         // todo(num0005) this is ugly, rework it
         public static int profile_index = 0;
         public static List<int> profile_mapping = new();
