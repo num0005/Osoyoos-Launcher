@@ -15,6 +15,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
+using System.Reflection;
 
 namespace ToolkitLauncher
 {
@@ -2130,10 +2131,13 @@ namespace ToolkitLauncher
         {
             XElement header;
 
+            string version = Assembly.GetEntryAssembly()
+                .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+
             header = new XElement("Header",
                         new XElement("MainRev", "0"),
                         new XElement("PointRev", "6"),
-                        new XElement("Description", "Created By Osoyoos SideCar Gen v1.0"),
+                        new XElement("Description", $"Created By Osoyoos SideCar Gen v1.0 ({version})"),
                         new XElement("Created", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")), // Long live ISO 8601!
                         new XElement("By", Environment.UserName),
                         new XElement("DirectoryType", "TAE.Shared.NWOAssetDirectory"),
