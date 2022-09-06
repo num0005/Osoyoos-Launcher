@@ -435,7 +435,7 @@ namespace ToolkitLauncher
             var vis = Visibility.Collapsed;
             if (ToolkitProfiles.SettingsList.Count > 0)
             {
-                if (MainWindow.halo_2_mcc && is_fp || MainWindow.halo_3 && is_fp)
+                if (MainWindow.halo_2_mcc && is_fp || MainWindow.halo_3 && is_fp || MainWindow.halo_reach && is_fp)
                     vis = Visibility.Visible;
             }
             else
