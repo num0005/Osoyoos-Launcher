@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="Osoyoos"
         SizeToContent="WidthAndHeight"
-        FlowDirection="LeftToRight" Closing="MainWindow_Closing" Height="575" Width="600" MinHeight="575" MinWidth="600" MaxHeight="575">
+        FlowDirection="LeftToRight" Closing="MainWindow_Closing" MinHeight="440" MinWidth="620">
     <Window.Resources>
         <Visibility x:Key="show_light_slider">Visible</Visibility>
         <local:TextContentModifier x:Key="TextContentModifier" />
@@ -67,7 +67,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Column="0" Grid.Row="0" Content="Run Sapien" Click="RunSapien" Padding="4" HorizontalAlignment="Left" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=6, ElementName=toolkit_selection}" ToolTip="Start a new instance of Sapien (the world editor)."/>
                     <Button Grid.Column="1" Grid.Row="0" Content="Run Game" Click="RunGame" Padding="4" HorizontalAlignment="Center" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=7, ElementName=toolkit_selection}" ToolTip="Start the game (only works if game path is set)."/>
-                    <Button Grid.Column="2" Grid.Row="0" Content="Run Guerilla" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=5, ElementName=toolkit_selection}" ToolTip="Start Guerilla (the tag/content editor)"/>
+                    <Button Grid.Column="2" Grid.Row="0" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=11, ElementName=toolkit_selection}" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=5, ElementName=toolkit_selection}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=12, ElementName=toolkit_selection}"/>
                     <Button Grid.Column="0" Grid.Row="2" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left" ToolTip="Open the command line in the base folder of the current toolkit."/>
                     <Button Grid.Column="1" Grid.Row="2" x:Name="open_explorer" Content="Open Toolkit Folder" Padding="4" HorizontalAlignment="Center" Click="open_explorer_Click" ToolTip="Open toolkit base folder in File Explorer."/>
                     <Grid Grid.Column="2" Grid.Row="2" HorizontalAlignment="Right">
@@ -81,7 +81,7 @@
                 </Grid>
             </GroupBox>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="3" Height="Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid Grid.Column="1" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <GroupBox x:Name="tasks_box">
                 <GroupBox.Header>
                     <TextBlock>
@@ -151,7 +151,7 @@
                                                 <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=12, ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <GroupBox x:Name="light_quality_select_box" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}" IsManipulationEnabled="True">
+                                            <GroupBox x:Name="light_quality_select_box" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}" IsManipulationEnabled="True">
                                                 <GroupBox.Header>
                                                     <TextBlock>
                                                         <Run Text="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=1, ElementName=toolkit_selection}"></Run>
@@ -279,9 +279,21 @@
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=14, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=16, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=13, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=17, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
                                                         <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=3, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="phantom_hack" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to fix phantom BSP errors on level compile.">
@@ -296,18 +308,54 @@
                                                         <Grid Grid.Row="1">
                                                             <CheckBox x:Name="disable_asserts" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=5, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=3, ElementName=toolkit_selection}"/>
                                                         </Grid>
-                                                        <Grid Grid.Row="2">
+                                                        <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=20, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="struct_auto_fbx" Content="Auto FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=9, ElementName=toolkit_selection}"/>
                                                         </Grid>
                                                         <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=12, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="instance_cmd" Content="Instance Output" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Keeps the instance output windows open if enabled. Disable if you live on the wild side."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="4" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=11, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="4" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=20, ElementName=toolkit_selection}">
                                                             <ComboBox x:Name="structure_import_type" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the level.">
                                                                 <ComboBoxItem Content="Structure"/>
                                                                 <ComboBoxItem Content="Design"/>
                                                                 <ComboBoxItem Content="Seams"/>
                                                             </ComboBox>
+                                                        </Grid>
+                                                        <Grid Grid.Row="5" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_check" Content="Check" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Run the import process but produce no output files."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="6" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_force" Content="Force" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Force all files to import even if they haven't changed."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="7" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_verbose" Content="Verbose" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Dump extra import progress."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="8" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_repro" Content="Repro" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Assumes GR2 and sidecar files are in the same directory, tags built to tags\\repro."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="9" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_draft" Content="Draft" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(model only) Skip generating PRT data, faster speed, lower quality."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="10" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_seam_debug" Content="Seam Debug" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Extra seam debugging information."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="11" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_skip_instances" Content="Skip Instances" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Skip importing all instances."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="12" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_local" Content="Local" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Build is orphaned from the depot."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="13" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_farm_seams" Content="Farm Seams" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Specifics a content index to stamp with."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="14" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_farm_bsp" Content="Farm BSP" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Do not rebuild seams.  Use the seam content index on structures you build."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="15" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_decompose_instances" Content="Decompose Instances" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Run convex decomposition for poop physics (very slow)."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="16" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=21, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="import_supress_errors_to_vrml" Content="Supress Errors To VRML" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Do not write errors to VRML files."/>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
@@ -577,6 +625,7 @@
                                                         <Grid Grid.Row="1" Grid.Column="1">
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
+                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
                                                                 <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
                                                             </Grid.RowDefinitions>
                                                             <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=3, ElementName=toolkit_selection}">
@@ -902,6 +951,158 @@
                                             </Grid>
                                         </GroupBox>
                                         <Button Grid.Row="5" Content="Package Level" VerticalAlignment="Bottom" Click="PackageLevel" IsEnabled="{Binding Text.Length, ElementName=package_level_path, Mode=OneWay}" ToolTip="Package the level!"/>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Import Sidecar" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=12, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="1" Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=3, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" x:Name="convert_model_from_fbx_to_gr2" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="40" MinHeight="26" FontFamily="Arial" FontWeight="ExtraBold" Content="FBX" FontStyle="Italic" ToolTip="Create a GR2 file from an FBX file." Click="convert_model_from_fbx_to_gr2_Click"/>
+                                            <Button Grid.Column="2" x:Name="browse_folderPath" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_path_Click" MinWidth="75" MinHeight="26" ToolTip="Select an asset folder."/>
+                                            <Grid Grid.Column="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="1" x:Name="textBlockImport" Text="Select asset folder" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource brushWatermarkForeground}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
+                                            </Grid>
+                                            <TextBox Grid.Column="4" Name="xml_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" TextChanged="xml_path_TextChanged"/>
+                                        </Grid>
+                                        <Grid Grid.Row="3">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="8"/>
+                                                <RowDefinition Height="30"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="7"/>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <RadioButton Grid.Column="0" Foreground="{DynamicResource TextColor}" x:Name="generate_sidecar" Content="Generate Sidecar" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" ToolTip="Only Generate a sidecar from existing GR2s. Do not import anything." Click="radioSelectionChanged"/>
+                                            <RadioButton Grid.Column="2" Foreground="{DynamicResource TextColor}" x:Name="fbx_to_gr2" Content="Batch FBX to GR2" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Export all FBX files saved within the asset folder to GR2 files." Click="radioSelectionChanged"/>
+                                            <RadioButton Grid.Column="3" Foreground="{DynamicResource TextColor}" x:Name="import_sidecar" Content="Import Sidecar" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Only import the sidecar to tags. Does not rebuild existing sidecars." Click="radioSelectionChanged"/>
+                                            <RadioButton Grid.Column="0" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="import_all" Content="All" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Only import the sidecar to tags. Does not rebuild existing sidecars." Click="radioSelectionChanged"/>
+                                        </Grid>
+                                        <Grid Grid.Row="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="10"/>
+                                            </Grid.RowDefinitions>
+                                            <GroupBox Grid.Column="0" x:Name="asset_type_group" Header="Asset Type" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                                                <Grid VerticalAlignment="Center">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="8"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <ComboBox x:Name="asset_type" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Type of asset you wish to generate a sidecar for." SelectionChanged="asset_type_SelectionChanged">
+                                                        <ComboBoxItem Content="Model"/>
+                                                        <ComboBoxItem Content="Scenario"/>
+                                                        <ComboBoxItem Content="Decorator Set"/>
+                                                        <ComboBoxItem Content="Particle Model"/>
+                                                        <!--<ComboBoxItem Content="Cinematic"/>-->
+                                                    </ComboBox>
+                                                    <CheckBox Grid.Column="0" Grid.Row="2" x:Name="createDirectories" Content="Create Asset Sub-Directories" Foreground="{DynamicResource TextColor}"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="2" x:Name="import_settings_group" Header="FBX to GR2 Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="7"/>
+                                                        <RowDefinition Height="23"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <CheckBox Grid.Row="1" x:Name="show_output" Content="Show Output" Foreground="{DynamicResource TextColor}" />
+                                                    <CheckBox Grid.Row="3" x:Name="json_rebuild" Content="Rebuild JSON files" Foreground="{DynamicResource TextColor}" />
+                                                </Grid>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="5">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="5"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox x:Name="output_tags_box" Header="Output Tags" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="5"/>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <CheckBox Grid.Row="1" Grid.Column="1" x:Name="biped" Content="Biped" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="crate" Content="Crate" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="4" Grid.Column="1" x:Name="creature" Content="Creature" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="6" Grid.Column="1" x:Name="device_control" Content="Device Control" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="1" Grid.Column="2" x:Name="device_machine" Content="Device Machine" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="2" Grid.Column="2" x:Name="device_terminal" Content="Device Terminal" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="4" Grid.Column="2" x:Name="effect_scenery" Content="Effect Scenery" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="6" Grid.Column="2" x:Name="equipment" Content="Equipment" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="1" Grid.Column="3" x:Name="giant" Content="Giant" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="2" Grid.Column="3" x:Name="scenery" Content="Scenery" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="4" Grid.Column="3" x:Name="vehicle" Content="Vehicle" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                    <CheckBox Grid.Row="6" Grid.Column="3" x:Name="weapon" Content="Weapon" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            <Button Grid.Row="6" Content="Import" Click="GenerateXML" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=xml_path, Mode=OneWay}" ToolTip="Run the import process using the above parameters"/>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </TabItem>

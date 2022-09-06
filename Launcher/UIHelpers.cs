@@ -229,6 +229,27 @@ namespace ToolkitLauncher
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 16)
+                {
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 17)
+                {
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2 && !MainWindow.halo_reach)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 18)
+                {
+                    if (MainWindow.halo_reach)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
             }
             else
             {
@@ -238,7 +259,10 @@ namespace ToolkitLauncher
                     || parameter is string && Int32.Parse(parameter as string) == 11
                     || parameter is string && Int32.Parse(parameter as string) == 13
                     || parameter is string && Int32.Parse(parameter as string) == 14
-                    || parameter is string && Int32.Parse(parameter as string) == 15)
+                    || parameter is string && Int32.Parse(parameter as string) == 15
+                    || parameter is string && Int32.Parse(parameter as string) == 16
+                    || parameter is string && Int32.Parse(parameter as string) == 17
+                    || parameter is string && Int32.Parse(parameter as string) == 18)
                 {
                     grid = new GridLength(1, GridUnitType.Star);
                 }
@@ -377,6 +401,21 @@ namespace ToolkitLauncher
                     if (MainWindow.halo_3_odst)
                         vis = Visibility.Visible;
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 19)
+                {
+                    if (!MainWindow.halo_reach)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 20)
+                {
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 21)
+                {
+                    if (MainWindow.halo_reach)
+                        vis = Visibility.Visible;
+                }
             }
             else
             {
@@ -480,6 +519,11 @@ namespace ToolkitLauncher
                     if (!is_level_import)
                         is_enabled = true;
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 12)
+                {
+                    if (MainWindow.halo_reach)
+                        is_enabled = true;
+                }
             }
             else
             {
@@ -524,6 +568,10 @@ namespace ToolkitLauncher
                     else if (MainWindow.halo_3 || MainWindow.halo_3_odst)
                     {
                         enum_item = Enum.GetValues(typeof(h3_quality_settings_stock));
+                    }
+                    else if (MainWindow.halo_reach)
+                    {
+                        enum_item = Enum.GetValues(typeof(hr_quality_settings_stock));
                     }
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 3)
@@ -582,6 +630,46 @@ namespace ToolkitLauncher
                         enum_item = "Automatically run fbx-to-ass for relevant structure.";
                     }
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 10)
+                {
+                    enum_item = "Guerilla Path";
+                    if (selection_index >= 3)
+                    {
+                        enum_item = "Foundation Path";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 11)
+                {
+                    enum_item = "Run Guerilla";
+                    if (MainWindow.halo_reach)
+                    {
+                        enum_item = "Run Foundation";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 12)
+                {
+                    enum_item = "Start Guerilla (the tag/content editor)";
+                    if (MainWindow.halo_reach)
+                    {
+                        enum_item = "Start Foundation (the tag/content editor)";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 13)
+                {
+                    enum_item = "Select Guerilla Application";
+                    if (selection_index >= 3)
+                    {
+                        enum_item = "Select Foundation Application";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 14)
+                {
+                    enum_item = "Path to Guerilla.exe (content/tag editor).";
+                    if (selection_index >= 3)
+                    {
+                        enum_item = "Path to Foundation.exe (content/tag editor).";
+                    }
+                }
             }
             else
             {
@@ -625,6 +713,26 @@ namespace ToolkitLauncher
                 {
                     enum_item = "Automatically run fbx-to-jms for relevant structure.";
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 10)
+                {
+                    enum_item = "Guerilla Path";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 11)
+                {
+                    enum_item = "Run Guerilla";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 12)
+                {
+                    enum_item = "Start Guerilla (the tag/content editor)";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 13)
+                {
+                    enum_item = "Select Guerilla Application";
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 14)
+                {
+                    enum_item = "Path to Guerilla.exe (content/tag editor).";
+                }
             }
 
             return enum_item;
@@ -644,7 +752,8 @@ namespace ToolkitLauncher
             {
                 if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 0)
                 {
-                    //Check if the build type and gentype are set to an MCC Halo 1 or Halo 2 for tags and data directory args along with the verbose flag
+                    //Check if the build type and gentype are set to an MCC
+                    //or Halo 2 for tags and data directory args along with the verbose flag
                     if (isMCC && gen_type_selection <= 1)
                         vis = Visibility.Visible;
                 }
@@ -676,6 +785,12 @@ namespace ToolkitLauncher
                 {
                     //Check if the build type is set to a MCC and gentype is not Halo CE or is Halo 3 and above
                     if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                {
+                    //Check if the gen type is not Reach
+                    if (gen_type_selection < 3)
                         vis = Visibility.Visible;
                 }
             }
@@ -737,12 +852,30 @@ namespace ToolkitLauncher
                     if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                {
+                    //Check if the gentype is not Reach
+                    if (gen_type_selection < 3)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 7)
+                {
+                    //Check if the gentype is not Reach
+                    if (gen_type_selection < 3)
+                        grid = new GridLength(8);
+                }
             }
             else
             {
                 if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
                     grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                {
+                    grid = new GridLength(1, GridUnitType.Star);
                 }
                 else
                 {

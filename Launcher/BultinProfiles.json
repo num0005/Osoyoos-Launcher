@@ -228,40 +228,76 @@
             ]
         }
     },
-    {
-        "ToolkitName": "H3ODSTEK",
-        "Description": "The MCC Halo 3 ODST Toolset.",
-        "GameGeneration": 3,
-        "IsMCCBuild": true,
-        "Tool": {
-            "TLSH": "0F47AD5572B0ACE8F066C0349656A51BEBB07C758B314BDB62A0226D1F3FBE06D7B710",
-            "MD5": [
-                "71c98eb867e6bbeb5bab48595d52b8a6"
-            ]
-        },
-        "ToolFast": {
-            "TLSH": "69479C52B6B06CD8F036D0349697951BEBB03C768B214BDB62A0665D1F3FBE0697B310",
-            "MD5": [
-                "e3c29062fd107e3a954158b7fa136d6f"
-            ]
-        },
-        "Guerilla": {
-            "TLSH": "DA279C8532B090D8D06AD039D9579A0BEBB17C548F3147CB56A033AE6F37BE12E7B611",
-            "MD5": [
-                "39b2e2f7296781255dac8e8769322ad1"
-            ]
-        },
-        "Sapien": {
-            "TLSH": "8F379D86327094E8E066D039D556D90BEBB07C658B710BCB62B0279E5F3BBE06C7B711",
-            "MD5": [
-                "632403c5e60fd5068147db362cb65df8"
-            ]
-        },
-        "Standalone": {
-            "TLSH": "9B579D463260ACD8F06AD039D557990BFBB178758B2157CB22A0639E1F3FBD06D7B221",
-            "MD5": [
-                "d03e27be51f15bb810e55a7acc86f73c"
-            ]
-        }
+  {
+    "ToolkitName": "H3ODSTEK",
+    "Description": "The MCC Halo 3 ODST Toolset.",
+    "GameGeneration": 3,
+    "IsMCCBuild": true,
+    "Tool": {
+      "TLSH": "0F47AD5572B0ACE8F066C0349656A51BEBB07C758B314BDB62A0226D1F3FBE06D7B710",
+      "MD5": [
+        "71c98eb867e6bbeb5bab48595d52b8a6"
+      ]
+    },
+    "ToolFast": {
+      "TLSH": "69479C52B6B06CD8F036D0349697951BEBB03C768B214BDB62A0665D1F3FBE0697B310",
+      "MD5": [
+        "e3c29062fd107e3a954158b7fa136d6f"
+      ]
+    },
+    "Guerilla": {
+      "TLSH": "DA279C8532B090D8D06AD039D9579A0BEBB17C548F3147CB56A033AE6F37BE12E7B611",
+      "MD5": [
+        "39b2e2f7296781255dac8e8769322ad1"
+      ]
+    },
+    "Sapien": {
+      "TLSH": "8F379D86327094E8E066D039D556D90BEBB07C658B710BCB62B0279E5F3BBE06C7B711",
+      "MD5": [
+        "632403c5e60fd5068147db362cb65df8"
+      ]
+    },
+    "Standalone": {
+      "TLSH": "9B579D463260ACD8F06AD039D557990BFBB178758B2157CB22A0639E1F3FBD06D7B221",
+      "MD5": [
+        "d03e27be51f15bb810e55a7acc86f73c"
+      ]
     }
+  },
+  {
+    "ToolkitName": "HREK",
+    "Description": "The MCC Halo Reach Toolset.",
+    "GameGeneration": 4,
+    "IsMCCBuild": true,
+    "Tool": {
+      "TLSH": "0F47AD5572B0ACE8F066C0349656A51BEBB07C758B314BDB62A0226D1F3FBE06D7B710",
+      "MD5": [
+        "71c98eb867e6bbeb5bab48595d52b8a6"
+      ]
+    },
+    "ToolFast": {
+      "TLSH": "69479C52B6B06CD8F036D0349697951BEBB03C768B214BDB62A0665D1F3FBE0697B310",
+      "MD5": [
+        "e3c29062fd107e3a954158b7fa136d6f"
+      ]
+    },
+    "Guerilla": {
+      "TLSH": "DA279C8532B090D8D06AD039D9579A0BEBB17C548F3147CB56A033AE6F37BE12E7B611",
+      "MD5": [
+        "39b2e2f7296781255dac8e8769322ad1"
+      ]
+    },
+    "Sapien": {
+      "TLSH": "8F379D86327094E8E066D039D556D90BEBB07C658B710BCB62B0279E5F3BBE06C7B711",
+      "MD5": [
+        "632403c5e60fd5068147db362cb65df8"
+      ]
+    },
+    "Standalone": {
+      "TLSH": "9B579D463260ACD8F06AD039D557990BFBB178758B2157CB22A0639E1F3FBD06D7B221",
+      "MD5": [
+        "d03e27be51f15bb810e55a7acc86f73c"
+      ]
+    }
+  }
 ]

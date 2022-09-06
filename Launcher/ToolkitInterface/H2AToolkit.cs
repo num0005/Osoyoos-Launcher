@@ -65,7 +65,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "bitmaps", path, type, debug_plate.ToString() });
         }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
             if (autoFBX) { await AutoFBX.Structure(this, data_file, false); }
 

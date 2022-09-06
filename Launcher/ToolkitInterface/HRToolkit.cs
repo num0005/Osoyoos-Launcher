@@ -5,15 +5,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
-    public class H3Toolkit : ToolkitBase, IToolkitFBX2Jointed, IToolkitFBX2ASS, IToolkitFBX2JMI
+    public class HRToolkit : ToolkitBase, IToolkitFBX2GR2
     {
 
-        public H3Toolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
+        public HRToolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
 
         protected string sapienWindowClass
         {
@@ -36,15 +37,37 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
-            if (autoFBX) { await AutoFBX.Structure(this, data_file, false); }
-
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
-            string tool_command = structure_command.ToString().Replace("_", "-");
-            string data_path = data_file;
-            if (structure_command == StructureType.structure_seams)
-                data_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file));
 
-            await RunTool(tool, new() { tool_command, data_path }, true);
+            List<string> args = new List<string>();
+            args.Add("import");
+            args.Add(data_file);
+            if (import_args.import_check)
+                args.Add("check");
+            if (import_args.import_force)
+                args.Add("force");
+            if (import_args.import_verbose)
+                args.Add("verbose");
+            if (import_args.import_repro)
+                args.Add("repro");
+            if (import_args.import_draft)
+                args.Add("draft");
+            if (import_args.import_seam_debug)
+                args.Add("seam_debug");
+            if (import_args.import_skip_instances)
+                args.Add("skip_instances");
+            if (import_args.import_local)
+                args.Add("local");
+            if (import_args.import_farm_seams)
+                args.Add("farm_seams");
+            if (import_args.import_farm_bsp)
+                args.Add("farm_bsp");
+            if (import_args.import_decompose_instances)
+                args.Add("decompose_instances");
+            if (import_args.import_supress_errors_to_vrml)
+                args.Add("supress_errors_to_vrml");
+
+            await RunTool(tool, args, true);
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharinge)
@@ -56,7 +79,7 @@ namespace ToolkitLauncher.ToolkitInterface
             string compression_type = "";
             string use_fmod_data = "";
 
-            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path, cachePlatform, audio_configuration, target_language, dedicated_server, compression_type, use_fmod_data });
+            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path });
         }
 
         private static string GetLightmapQuality(LightmapArgs lightmapArgs)
@@ -138,14 +161,13 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // start farm
             progress.Status = "Initializing lightmap farm...";
-            await RunFastool(new() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString() }, instanceOutput);
+            await RunFastool(new() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString(), "true" }, instanceOutput);
 
             // run farm
 
             await RunStage("dillum");
             await RunStage("pcast");
-            await RunStage("radest");
-            await RunStage("extillum");
+            await RunStage("radest_extillum");
             await RunStage("fgather");
 
             // end farm
@@ -154,9 +176,8 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // todo(num0005): are all these strictly required?
             progress.Status = "A few final steps...";
-            await RunFastool(new() { "faux-build-linear-textures-with-intensity-from-quadratic", scenario, bsp }, instanceOutput);
-            await RunFastool(new() { "faux-compress-scenario-bitmaps-dxt5", scenario, bsp }, instanceOutput);
-            await RunFastool(new() { "faux-farm-compression-merge", scenario, bsp }, instanceOutput);
+            await RunFastool(new() { "faux-reorganize-mesh-for-analytical-lights", scenario, bsp }, instanceOutput);
+            await RunFastool(new() { "faux-build-vmf-textures-from-quadratic", scenario, bsp, "true", "true" }, instanceOutput);
         }
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
@@ -201,19 +222,13 @@ namespace ToolkitLauncher.ToolkitInterface
                 type = "-reset";
             }
 
-            if (autoFBX) { await AutoFBX.Model(this, path, importType); }
-
             if (importType.HasFlag(ModelCompile.render))
-            {
-                // Generate shaders if requested
-                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { return; }; }
                 if (skyRender)
                     await RunTool(ToolType.Tool, new() { "render-sky", path });
                 else if (accurateRender)
                     await RunTool(ToolType.Tool, new() { "render-accurate", path, renderPRT ? "final" : "draft" });
                 else
                     await RunTool(ToolType.Tool, new() { "render", path, renderPRT ? "final" : "draft" });
-            }
             if (importType.HasFlag(ModelCompile.collision))
                 await RunTool(ToolType.Tool, new() { "collision", path });
             if (importType.HasFlag(ModelCompile.physics))
@@ -231,53 +246,25 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         /// <summary>
-        /// Create a JMA from an FBX file
-        /// </summary>
-        /// <param name="fbxPath">Path to the FBX file</param>
-        /// <param name="jmaPath">Path to save the JMA at</param>
-        /// <param name="startIndex">First keyframe index to include</param>
-        /// <param name="startIndex">Last keyframe index to include</param>
-        /// <returns></returns>
-        public async Task JMAFromFBX(string fbxPath, string jmaPath, int startIndex = 0, int? endIndex = null)
-        {
-            if (endIndex is not null)
-                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
-            else
-                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString() });
-        }
-
-        /// <summary>
-        /// Create an JMS from an FBX file
+        /// Create a GR2 from an FBX file
         /// </summary>
         /// <param name="fbxPath"></param>
-        /// <param name="jmsPath"></param>
-        /// <param name="geoClass"></param>
+        /// <param name="jsonPath"></param>
+        /// <param name="gr2Path"></param>
         /// <returns></returns>
-        public async Task JMSFromFBX(string fbxPath, string jmsPath, string geoClass)
+        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-jms", geoClass, fbxPath, jmsPath });
+            await RunTool(ToolType.Tool, new() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path });
         }
 
-        /// <summary>
-        /// Create an JMI from an FBX file
-        /// </summary>
-        /// <param name="fbxPath"></param>
-        /// <param name="jmiPath"></param>
-        /// <returns></returns>
-        public async Task JMIFromFBX(string fbxPath, string jmiPath)
+        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, string json_rebuild, bool showOutput)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-jmi", fbxPath, jmiPath });
+            await RunTool(ToolType.Tool, new() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild }, showOutput);
         }
 
-        /// <summary>
-        /// Create an ASS from an FBX file
-        /// </summary>
-        /// <param name="fbxPath"></param>
-        /// <param name="assPath"></param>
-        /// <returns></returns>
-        public async Task ASSFromFBX(string fbxPath, string assPath)
+        public async Task ImportSidecar(string sidecarPath)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-ass", fbxPath, assPath });
+            await RunTool(ToolType.Tool, new() { "import", sidecarPath });
         }
 
         public override bool IsMutexLocked(ToolType tool)

@@ -195,7 +195,7 @@
                             <TextBox Grid.Column="2" Grid.Row="2" Name="sapien_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Grid.Row="6" x:Name="guerilla_path_box" Header="Guerilla Path" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Path to Guerilla.exe (content/tag editor).">
+                    <GroupBox Grid.Column="2" Grid.Row="6" x:Name="guerilla_path_box" Header="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=10, ElementName=gen_type}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=14, ElementName=gen_type}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -208,7 +208,7 @@
                                     <ColumnDefinition Width="2"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="1" Text="Select Guerilla Application" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=guerilla_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=13, ElementName=gen_type}" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=guerilla_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                             </Grid>
                             <TextBox Grid.Column="2" Grid.Row="4" Name="guerilla_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                         </Grid>
@@ -338,8 +338,26 @@
             <Grid Grid.Row="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="8"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition>
+                        <ColumnDefinition.Width>
+                            <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                <Binding ElementName="is_mcc" Path="IsChecked" />
+                                <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                <Binding ElementName="community_tools" Path="IsChecked" />
+                                <Binding Source="7" />
+                            </MultiBinding>
+                        </ColumnDefinition.Width>
+                    </ColumnDefinition>
+                    <ColumnDefinition>
+                        <ColumnDefinition.Width>
+                            <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
+                                <Binding ElementName="is_mcc" Path="IsChecked" />
+                                <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                <Binding ElementName="community_tools" Path="IsChecked" />
+                                <Binding Source="6" />
+                            </MultiBinding>
+                        </ColumnDefinition.Width>
+                    </ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Generation" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
                     <Grid>
@@ -347,10 +365,19 @@
                             <ComboBoxItem Content="Gen 1 (Halo 1)"/>
                             <ComboBoxItem Content="Gen 2 (Halo 2 Vista/Halo 2 Classic)"/>
                             <ComboBoxItem Content="Gen 3 (Halo 3/Halo 3 ODST)"/>
+                            <ComboBoxItem Content="Gen 4 (Halo Reach/Halo 4/ Halo 2 Anniversary"/>
                         </ComboBox>
                     </Grid>
                 </GroupBox>
                 <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
+                    <GroupBox.Visibility>
+                        <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                            <Binding ElementName="is_mcc" Path="IsChecked" />
+                            <Binding ElementName="gen_type" Path="SelectedIndex" />
+                            <Binding ElementName="community_tools" Path="IsChecked" />
+                            <Binding Source="6" />
+                        </MultiBinding>
+                    </GroupBox.Visibility>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5"/>
