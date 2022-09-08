@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 using System.Windows.Navigation;
 using System.Windows.Documents;
 using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using System.Threading;
+using System.Reflection;
 
 namespace ToolkitLauncher
 {
@@ -161,6 +165,29 @@ namespace ToolkitLauncher
         super_slow,
     }
 
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum hr_quality_settings_stock
+    {
+        [Description("Direct Only")]
+        direct_only,
+        [Description("Draft")]
+        draft,
+        [Description("Low")]
+        low,
+        [Description("Medium")]
+        medium,
+        [Description("High")]
+        high,
+        [Description("Super")]
+        super_slow,
+        [Description("Checkerboard")]
+        checkerboard,
+        [Description("Special V1")]
+        special_v1,
+        [Description("Special Weekend")]
+        special_weekend,
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -175,6 +202,14 @@ namespace ToolkitLauncher
                 return toolkits[toolkit_selection.SelectedIndex];
             }
         }
+
+        string assetName;
+        string default_path;
+        string fullPath;
+        string dataPath;
+        string inputFileType = ".fbx";
+
+        List<CheckBox> TagTypes = new List<CheckBox>();
 
         [Flags]
         enum level_compile_type : byte
@@ -429,7 +464,21 @@ namespace ToolkitLauncher
             }
         }
 
+        public static bool halo_reach
+        {
+            get
+            {
+                if (profile_mapping.Count > 0 && profile_index >= 0)
+                {
+                    return toolkit_profile.GameGen == 3;
+                }
+                return false;
+            }
+        }
+
         public static int string_encoding_index { get; set; }
+        public ToolkitBase Toolkit { get; internal set; }
+
         private bool handling_exception = false;
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
@@ -574,6 +623,9 @@ namespace ToolkitLauncher
                     toolkit = profile.BuildType == build_type.release_standalone ?
                     toolkit = new H3Toolkit(profile, base_path, tool_paths) :
                     toolkit = new H3ODSTToolkit(profile, base_path, tool_paths);
+                    break;
+                case 3:
+                    toolkit = new HRToolkit(profile, base_path, tool_paths);
                     break;
                 default:
                     Debug.Assert(false, "Profile has a game gen that isn't supported. Defaulting to Halo 1");
@@ -739,7 +791,22 @@ namespace ToolkitLauncher
                 bool is_release = true;
                 StructureType structure_command = (StructureType)structure_import_type.SelectedIndex;
 
-                await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false, struct_auto_fbx.IsChecked ?? false);
+                var import_args = new ToolkitBase.ImportArgs(
+                    import_check.IsChecked ?? false,
+                    import_force.IsChecked ?? false,
+                    import_verbose.IsChecked ?? false,
+                    import_repro.IsChecked ?? false,
+                    import_draft.IsChecked ?? false,
+                    import_seam_debug.IsChecked ?? false,
+                    import_skip_instances.IsChecked ?? false,
+                    import_local.IsChecked ?? false,
+                    import_farm_seams.IsChecked ?? false,
+                    import_farm_bsp.IsChecked ?? false,
+                    import_decompose_instances.IsChecked ?? false,
+                    import_supress_errors_to_vrml.IsChecked ?? false
+                    );
+
+                await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false, struct_auto_fbx.IsChecked ?? false, import_args);
             }
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
@@ -752,7 +819,8 @@ namespace ToolkitLauncher
                     instance_count,
                     instance_cmd.IsChecked ?? false
                     );
-                var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path);
+
+                var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path, Path.GetDirectoryName(toolkit_profile.ToolPath));
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
                 if (!halo_ce && !halo_2_standalone_stock && lightmaps_args.instanceCount > 1 || !halo_ce && !halo_2)
@@ -1047,6 +1115,13 @@ namespace ToolkitLauncher
             strip_extension: false
             );
 
+        readonly FilePicker.Options XMLlevelOptions = FilePicker.Options.FileSelect(
+            "Select your level",
+            "map data|*.XML;*.scenario",
+            FilePicker.Options.PathRoot.Tag_Data,
+            strip_extension: false
+            );
+
         private void browse_level_compile_Click(object sender, RoutedEventArgs e)
         {
             bool tag_dir = false;
@@ -1061,6 +1136,10 @@ namespace ToolkitLauncher
                 if (halo_2_standalone_community || halo_2_mcc)
                 {
                     levelOptions = ASSJMSlevelOptions;
+                }
+                else if (halo_reach)
+                {
+                    levelOptions = XMLlevelOptions;
                 }
             }
             var picker = new FilePicker(compile_level_path, toolkit, levelOptions, default_path);
@@ -1335,6 +1414,7 @@ namespace ToolkitLauncher
 
             IToolkitFBX2ASS FBX2ASS = toolkit as IToolkitFBX2ASS;
             IToolkitFBX2Jointed FBX2Jointed = toolkit as IToolkitFBX2Jointed;
+            IToolkitFBX2GR2 FBX2GR2 = toolkit as IToolkitFBX2GR2;
 
             (string ext, string fbxFileName, string outputFileName)? FBXArgs;
 
@@ -1372,6 +1452,14 @@ namespace ToolkitLauncher
                         }
                     }
                     break;
+                case 3:
+                    FBXArgs = PromptForFBXPaths("Select GR2 save location", "Granny3D 2|*.GR2");
+                    if (FBXArgs is not null)
+                    {
+                        string jsonPath = Path.GetFileNameWithoutExtension(FBXArgs.Value.fbxFileName) + ".json";
+                        await FBX2GR2.GR2FromFBX(FBXArgs.Value.fbxFileName, jsonPath, FBXArgs.Value.outputFileName);
+                    }
+                    break;
 
             }
         }
@@ -1403,6 +1491,7 @@ namespace ToolkitLauncher
 
             IToolkitFBX2JMI FBX2JMI = toolkit as IToolkitFBX2JMI;
             IToolkitFBX2Jointed FBX2Jointed = toolkit as IToolkitFBX2Jointed;
+            IToolkitFBX2GR2 FBX2GR2 = toolkit as IToolkitFBX2GR2;
 
             (string ext, string fbxFileName, string outputFileName)? FBXArgs;
 
@@ -1484,6 +1573,15 @@ namespace ToolkitLauncher
                                 break;
                         }
                     break;
+
+                case 3:
+                    FBXArgs = PromptForFBXPaths("Select GR2 save location", "Granny3D 2|*.GR2");
+                    if (FBXArgs is not null)
+                    {
+                        string jsonPath = Path.GetFileNameWithoutExtension(FBXArgs.Value.fbxFileName) + ".json";
+                        await FBX2GR2.GR2FromFBX(FBXArgs.Value.fbxFileName, jsonPath, FBXArgs.Value.outputFileName);
+                    }
+                    break;
             }
         }
 
@@ -1493,6 +1591,1006 @@ namespace ToolkitLauncher
             process.StartInfo.FileName = toolkit.BaseDirectory;
             process.StartInfo.UseShellExecute = true;
             process.Start();
+        }
+
+        private async void GenerateXML(object sender, RoutedEventArgs e)
+        {
+            TagTypes.Clear();
+            TagTypes.Add(biped);
+            TagTypes.Add(crate);
+            TagTypes.Add(creature);
+            TagTypes.Add(device_control);
+            TagTypes.Add(device_machine);
+            TagTypes.Add(device_terminal);
+            TagTypes.Add(effect_scenery);
+            TagTypes.Add(equipment);
+            TagTypes.Add(giant);
+            TagTypes.Add(scenery);
+            TagTypes.Add(vehicle);
+            TagTypes.Add(weapon);
+
+            HRToolkit tool = toolkit as HRToolkit;
+
+            if (generate_sidecar.IsChecked == true)
+            {
+                if (createDirectories.IsChecked == true)
+                    CreateModelFolders();
+
+                switch (asset_type.SelectedIndex)
+                {
+                    case 0:
+                        bool error = true;
+
+                        foreach (CheckBox c in TagTypes)
+                        {
+                            if (c.IsChecked == true)
+                                error = false;
+                        }
+
+                        if (error)
+                            MessageBox.Show("No output tags selected. Model sidecar generation aborted.");
+                        else
+                            await GenerateModelSidecar();
+                        break;
+                    case 1:
+                        await GenerateStructureSidecar();
+                        break;
+                    case 2:
+                        await GenerateDecoratorSidecar();
+                        break;
+                    case 3:
+                        await GenerateParticleSidecar();
+                        break;
+                    case 4:
+                        MessageBox.Show("Cinematics Not Currently Supported Yet!"); // Need more info about how cinematic sidecars work before this can be implemented
+                        //GenerateCinematicSidecar();
+                        break;
+                }
+            }
+            else if (fbx_to_gr2.IsChecked == true)
+                await ConvertFBX();
+
+            else if (import_sidecar.IsChecked == true)
+                await tool.ImportSidecar(dataPath + "\\" + assetName + ".sidecar.xml");
+
+            else if (import_all.IsChecked == true)
+            {
+                if (createDirectories.IsChecked == true)
+                    CreateModelFolders();
+
+                await ConvertFBX();
+                var processes = Process.GetProcessesByName("tool"); // waits for the fbx-to-gr2 windows to complete before moving onto sidecar generation.
+
+                if (processes.Length > 0)
+                {
+                    foreach (var process in processes)
+                    {
+                        process.WaitForExit();
+                    }
+                }
+                switch (asset_type.SelectedIndex)
+                {
+                    case 0:
+                        await GenerateModelSidecar();
+                        break;
+                    case 1:
+                        await GenerateStructureSidecar();
+                        break;
+                    case 2:
+                        await GenerateDecoratorSidecar();
+                        break;
+                    case 3:
+                        await GenerateParticleSidecar();
+                        break;
+                    case 4:
+                        MessageBox.Show("Cinematics Not Currently Supporterd Yet!");
+                        //await GenerateCinematicSidecar();
+                        break;
+                }
+
+                await tool.ImportSidecar(dataPath + "\\" + assetName + ".sidecar.xml");
+            }
+        }
+
+        private async Task ConvertFBX()
+        {
+            HRToolkit tool = toolkit as HRToolkit;
+
+            string[] folders = Directory.EnumerateDirectories(fullPath).ToArray();
+
+            foreach (var folder in folders)
+            {
+                string[] s = folder.Split("\\");
+                string folderName = s.Last();
+                int count = 0;
+
+                string[] assetFolders = new string[] { "animations", "collision", "markers", "physics", "render", "skeleton" };
+
+                if (assetFolders.Any(folderName.Contains))
+                {
+                    if (folderName == "animations")
+                    {
+                        try
+                        {
+                            string[] subfolders = new string[] { "JMM", "JMA", "JMT", "JMZ", "JMV", "JMO (Keyframe)", "JMO (Pose)", "JMR (Local)", "JMR (Object)" };
+                            foreach (string sub in subfolders)
+                            {
+                                string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName + "\\" + sub, "*.fbx").ToArray();
+
+                                foreach (var f in files)
+                                {
+                                    if (count == Environment.ProcessorCount)
+                                    {
+                                        count = 0;
+                                        Thread.Sleep(250);
+                                    }
+
+                                    if (!(bool)show_output.IsChecked)
+                                        Thread.Sleep(250);
+
+                                    tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                                    count++;
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName, "*.fbx").ToArray();
+
+                            foreach (var f in files)
+                            {
+                                if (count == Environment.ProcessorCount)
+                                {
+                                    count = 0;
+                                    Thread.Sleep(250);
+                                }
+
+                                if (!(bool)show_output.IsChecked)
+                                    Thread.Sleep(250);
+
+                                tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                                count++;
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+                else
+                {
+                    string[] subfolders = new string[] { "structure", "structure_design" };
+                    foreach (string sub in subfolders)
+                    {
+                        try
+                        {
+                            string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName + "\\" + sub, "*.fbx").ToArray();
+
+                            foreach (var f in files)
+                            {
+                                if (count == Environment.ProcessorCount)
+                                {
+                                    count = 0;
+                                    Thread.Sleep(250);
+                                }
+
+                                if (!(bool)show_output.IsChecked)
+                                    Thread.Sleep(250);
+
+                                tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                                count++;
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        private string getFilepath(string file)
+        {
+            string[] t = file.Split(".");
+            string filepath = "";
+            for (int i = 0; i < t.Length - 1; i++)
+                filepath += t[i];
+
+            return filepath;
+        }
+
+        private void CreateModelFolders()
+        {
+            try
+            {
+                dataPath = xml_path.Text.ToLower();
+                fullPath = default_path + "\\" + dataPath;
+
+                if (!Directory.Exists(fullPath))
+                {
+                    DirectoryInfo newfolder = Directory.CreateDirectory(fullPath);
+                }
+
+                DirectoryInfo folder;
+
+                string[] modelFolders = new string[] { "\\render", "\\physics", "\\markers", "\\skeleton", "\\collision" };
+                string[] animationFolders = new string[] { "\\animations\\JMM", "\\animations\\JMA", "\\animations\\JMA", "\\animations\\JMT", "\\animations\\JMZ", "\\animations\\JMV", "\\animations\\JMO (Keyframe)", "\\animations\\JMO (Pose)", "\\animations\\JMR (Local)", "\\animations\\JMR (Object)" };
+                string[] scenarioFolders = new string[] { "\\000\\structure", "\\000\\structure_design", "\\shared\\structure", "\\shared\\structure_design" };
+
+                switch (asset_type.SelectedIndex)
+                {
+                    case 0:
+                        foreach (var f in modelFolders)
+                            folder = Directory.CreateDirectory(fullPath + f);
+
+                        foreach (var f in animationFolders)
+                            folder = Directory.CreateDirectory(fullPath + f);
+
+                        break;
+                    case 1:
+                        foreach (var f in scenarioFolders)
+                            folder = Directory.CreateDirectory(fullPath + f);
+                        break;
+                    case 2:
+                        folder = Directory.CreateDirectory(fullPath + "\\render");
+                        break;
+                    case 3:
+                        folder = Directory.CreateDirectory(fullPath + "\\render");
+                        break;
+                    case 4:
+                        folder = Directory.CreateDirectory(fullPath + "\\cinematic");
+
+                        foreach (var f in animationFolders)
+                            folder = Directory.CreateDirectory(fullPath + f);
+                        break;
+                }
+
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        // Generate a Sidecar when the user has opted to create one for a model
+        private async Task GenerateModelSidecar()
+        {
+            XDocument srcTree = new XDocument(
+                new XElement("Metadata", WriteHeader(),
+                    new XElement("Asset", new XAttribute("Name", assetName), new XAttribute("Type", "model"), GetOutputObjectTypes()),
+                    WriteFolders(),
+                    WriteFaceCollections(true, true), // first bool is whether the asset type has regions, the second is if it has global materials
+                    new XElement("Contents", GetModelContentObjects()
+                        )
+                    )
+                );
+
+            srcTree.Save(fullPath + "\\" + assetName + ".sidecar.xml", SaveOptions.None);
+
+            if (import_all.IsChecked != true)
+                MessageBox.Show("Sidecar Generated Successfully!");
+        }
+
+        private async Task GenerateStructureSidecar()
+        {
+            XDocument srcTree = new XDocument(
+                new XElement("Metadata", WriteHeader(),
+                    new XElement("Asset", new XAttribute("Name", assetName), new XAttribute("Type", "scenario"),
+                        new XElement("OutputTagCollection",
+                            new XElement("OutputTag", new XAttribute("Type", "scenario_lightmap"), dataPath + "\\" + assetName + "_faux_lightmap"),
+                            new XElement("OutputTag", new XAttribute("Type", "structure_seams"), dataPath + "\\" + assetName),
+                            new XElement("OutputTag", new XAttribute("Type", "scenario"), dataPath + "\\" + assetName)
+                            )),
+                    WriteFolders(),
+                    WriteFaceCollections(false, true), // first bool is whether the asset type has regions, the second is if it has global materials
+                    GetStructureContentObjects()
+                    )
+                );
+
+            srcTree.Save(fullPath + "\\" + assetName + ".sidecar.xml", SaveOptions.None);
+
+            if (import_all.IsChecked != true)
+                MessageBox.Show("Sidecar Generated Successfully!");
+        }
+
+        private async Task GenerateDecoratorSidecar()
+        {
+            XDocument srcTree = new XDocument(
+                new XElement("Metadata", WriteHeader(),
+                    new XElement("Asset", new XAttribute("Name", assetName), new XAttribute("Type", "decorator_set"),
+                        new XElement("OutputTagCollection",
+                            new XElement("OutputTag", new XAttribute("Type", "decorator_set"), dataPath + "\\" + assetName)
+                            )),
+                    WriteFolders(),
+                    WriteFaceCollections(false, false), // first bool is whether the asset type has regions, the second is if it has global materials
+                    new XElement("Contents", GetDecoratorContentObjects())
+                    )
+                );
+
+            srcTree.Save(fullPath + "\\" + assetName + ".sidecar.xml", SaveOptions.None);
+
+            if (import_all.IsChecked != true)
+                MessageBox.Show("Sidecar Generated Successfully!");
+        }
+
+        private async Task GenerateParticleSidecar()
+        {
+            XDocument srcTree = new XDocument(
+                new XElement("Metadata", WriteHeader(),
+                    new XElement("Asset", new XAttribute("Name", assetName), new XAttribute("Type", "particle_model"),
+                        new XElement("OutputTagCollection",
+                            new XElement("OutputTag", new XAttribute("Type", "particle_model"), dataPath + "\\" + assetName)
+                            )),
+                    WriteFolders(),
+                    WriteFaceCollections(false, false), // first bool is whether the asset type has regions, the second is if it has global materials
+                    new XElement("Contents", GetParticleContentObjects())
+                    )
+                );
+
+            srcTree.Save(fullPath + "\\" + assetName + ".sidecar.xml", SaveOptions.None);
+
+            if (import_all.IsChecked != true)
+                MessageBox.Show("Sidecar Generated Successfully!");
+        }
+
+        private async Task GenerateCinematicSidecar()
+        {
+            XDocument srcTree = new XDocument(
+                new XElement("Metadata", WriteHeader(),
+                    new XElement("Asset", new XAttribute("Name", assetName), new XAttribute("Type", "cinematic"),
+                        new XElement("OutputTagCollection",
+                            new XElement("OutputTag", new XAttribute("Type", "cinematic"), dataPath + "\\" + assetName)
+                            )),
+                    WriteFolders(),
+                    WriteFaceCollections(false, false), // first bool is whether the asset type has regions, the second is if it has global materials
+                    new XElement("Contents", GetCinematicContentObjects())
+                    )
+                );
+
+            srcTree.Save(fullPath + "\\" + assetName + ".sidecar.xml", SaveOptions.None);
+
+            if (import_all.IsChecked != true)
+                MessageBox.Show("Sidecar Generated Successfully!");
+        }
+
+        private XElement GetCinematicContentObjects()
+        {
+            string[] cFiles = Directory.EnumerateFiles(fullPath + "\\cinematics", "*.gr2").ToArray();
+            List<XElement> temp = new List<XElement>();
+
+            foreach (var f in cFiles)
+            {
+                XElement c1 = new XElement("Content", new XAttribute("Name", assetName), new XAttribute("Type", "scene"),
+                    new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", "cinematic_audio"),
+                        new XElement("OutputTagCollection")),
+                    new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", "cinematic_scene"),
+                        new XElement("ContentNetwork", new XAttribute("Name", ""), new XAttribute("Type", ""),
+                            new XElement("InputFile", dataPath + "\\cinematics\\" + getFileNames(f)[1] + inputFileType),
+                            new XElement("IntermediateFile", dataPath + "\\cinematics\\" + getFileNames(f)[0])),
+                        new XElement("ContentNetwork", new XAttribute("Name", "environment"), new XAttribute("Type", ""),
+                            new XElement("InputFile", dataPath + "\\environment\\" + getFileNames(f)[1] + inputFileType)),
+                        new XElement("OutputTagCollection",
+                            new XElement("OutputTag", new XAttribute("Type", "cinematic_scene"), dataPath + "\\" + assetName))
+                    ));
+                XElement co = null;
+            }
+
+            return null;
+        }
+
+        private XElement GetParticleContentObjects()
+        {
+            if (IntermediateFileExists("render"))
+            {
+                string[] dFiles = Directory.EnumerateFiles(fullPath + "\\render", "*.gr2").ToArray();
+
+                XElement c1 = new XElement("Content", new XAttribute("Name", assetName), new XAttribute("Type", "particle_model"));
+
+                XElement co = new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", "particle_model"));
+                XElement ce = null;
+
+                foreach (var f in dFiles)
+                {
+                    ce = new XElement("ContentNetwork", new XAttribute("Name", assetName), new XAttribute("Type", ""),
+                        new XElement("InputFile", dataPath + "\\render\\" + getFileNames(f)[1] + inputFileType),
+                        new XElement("IntermediateFile", dataPath + "\\render\\" + getFileNames(f)[0]));
+                    co.Add(ce);
+                }
+                XElement ot = new XElement("OutputTagCollection");
+
+                co.Add(ot);
+                c1.Add(co);
+
+                return c1;
+            }
+            else
+                return null;
+        }
+
+        private XElement GetDecoratorContentObjects()
+        {
+            if (IntermediateFileExists("render"))
+            {
+                string[] dFiles = Directory.EnumerateFiles(fullPath + "\\render", "*.gr2").ToArray();
+
+                XElement c1 = new XElement("Content", new XAttribute("Name", assetName), new XAttribute("Type", "decorator_set"));
+
+                int count = 0;
+
+                while (count < 4) // Using a count of 4 here as Decorator Set sidecars support up to 4 LOD Content Networks. So this just lets us loop through the code below 4 times to support each LOD.
+                {
+                    XElement co = new XElement("ContentObject", new XAttribute("Name", count.ToString()), new XAttribute("Type", "render_model"), new XAttribute("LOD", count.ToString()));
+                    XElement ce = null;
+
+                    foreach (var f in dFiles)
+                    {
+                        ce = new XElement("ContentNetwork", new XAttribute("Name", "default"), new XAttribute("Type", ""),
+                            new XElement("InputFile", dataPath + "\\render\\" + getFileNames(f)[1] + inputFileType),
+                            new XElement("IntermediateFile", dataPath + "\\render\\" + getFileNames(f)[0]));
+                        co.Add(ce);
+                    }
+                    XElement ot = new XElement("OutputTagCollection",
+                        new XElement("OutputTag", new XAttribute("Type", "render_model"), dataPath + "\\" + assetName + "_lod" + count.ToString()));
+
+                    co.Add(ot);
+                    c1.Add(co);
+
+                    count++;
+                }
+
+                return c1;
+            }
+            else
+                return null;
+        }
+
+        private List<string> getFileNames(string file)
+        {
+            string[] t = file.Split("\\");
+            string filename = t.Last();
+            t = filename.Split(".");
+            string input = "";
+            for (int i = 0; i < t.Length - 1; i++)
+                input += t[i];
+
+            List<string> results = new List<string>();
+            results.Add(filename);
+            results.Add(input);
+            return results;
+        }
+
+        private XElement GetStructureContentObjects()
+        {
+            List<XElement> temp = new List<XElement>();
+            List<XElement> sharedStructure = new List<XElement>();
+            List<XElement> sharedDesign = new List<XElement>();
+
+            var directories = Directory.GetDirectories(fullPath);
+
+            if (IntermediateFileExists("\\shared\\structure"))
+                sharedStructure = GetSharedStructureList("\\shared\\structure");
+
+            if (IntermediateFileExists("\\shared\\structure_design"))
+                sharedDesign = GetSharedStructureList("\\shared\\structure_design");
+
+            foreach (string s in directories)
+            {
+                string[] path = s.Split("\\");
+                string folderName = path.Last();
+
+                if (folderName != "shared")
+                {
+                    List<XElement> sList = GenerateStructureContent("_bsp", "bsp", "\\structure", "scenario_structure_bsp", "scenario_structure_lighting_info", folderName, sharedStructure);
+                    sList.ForEach(item => temp.Add(item));
+
+                    sList = GenerateStructureContent("_structure_design", "design", "\\structure_design", "structure_design", "", folderName, sharedDesign);
+                    sList.ForEach(item => temp.Add(item));
+                }
+            }
+
+            XElement StructureObjects = new XElement("Contents");
+            foreach (XElement e in temp)
+                StructureObjects.Add(e);
+
+            return StructureObjects;
+        }
+
+        private List<XElement> GetSharedStructureList(string type)
+        {
+            List<XElement> temp = new List<XElement>();
+            string[] sharedFiles = Directory.EnumerateFiles(fullPath + type, "*.gr2").ToArray();
+            foreach (var sf in sharedFiles)
+            {
+                XElement sf1 = new XElement("ContentNetwork", new XAttribute("Name", getFileNames(sf)[1]), new XAttribute("Type", ""),
+                                new XElement("InputFile", dataPath + type + "\\" + getFileNames(sf)[1] + inputFileType),
+                                new XElement("IntermediateFile", dataPath + type + "\\" + getFileNames(sf)[0])
+                                );
+                temp.Add(sf1);
+            }
+            return temp;
+        }
+
+        private List<XElement> GenerateStructureContent(string type1, string type2, string type3, string type4, string type5, string folderName, List<XElement> sharedList)
+        {
+            List<XElement> temp = new List<XElement>();
+            XElement e1 = new XElement("Content", new XAttribute("Name", assetName + "_" + folderName + type1), new XAttribute("Type", type2));
+            XElement co = new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", type4));
+
+            if (IntermediateFileExists(folderName + type3))
+            {
+                string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName + type3, "*.gr2").ToArray();
+
+                foreach (var f in files)
+                {
+                    XElement e2 = new XElement("ContentNetwork", new XAttribute("Name", getFileNames(f)[1]), new XAttribute("Type", ""),
+                            new XElement("InputFile", dataPath + "\\" + folderName + type3 + "\\" + getFileNames(f)[1] + inputFileType),
+                            new XElement("IntermediateFile", dataPath + "\\" + folderName + type3 + "\\" + getFileNames(f)[0])
+                            );
+                    co.Add(e2);
+                }
+
+                foreach (var st in sharedList)
+                    co.Add(st);
+
+                if (type5 == "")
+                {
+                    XElement e3 = new XElement("OutputTagCollection",
+                        new XElement("OutputTag", new XAttribute("Type", type4), dataPath + "\\" + assetName + "_" + folderName + type1));
+                    co.Add(e3);
+                    e1.Add(co);
+                    temp.Add(e1);
+                }
+                else
+                {
+                    XElement e3 = new XElement("OutputTagCollection",
+                        new XElement("OutputTag", new XAttribute("Type", type4), dataPath + "\\" + assetName + "_" + folderName + type1),
+                        new XElement("OutputTag", new XAttribute("Type", type5), dataPath + "\\" + assetName + "_" + folderName + type1));
+                    co.Add(e3);
+                    e1.Add(co);
+                    temp.Add(e1);
+                }
+            }
+            return temp;
+        }
+
+        private XElement WriteHeader()
+        {
+            XElement header;
+
+            string version = Assembly.GetEntryAssembly()
+                .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+
+            header = new XElement("Header",
+                        new XElement("MainRev", "0"),
+                        new XElement("PointRev", "6"),
+                        new XElement("Description", $"Created By Osoyoos SideCar Gen v1.0 ({version})"),
+                        new XElement("Created", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")), // Long live ISO 8601!
+                        new XElement("By", Environment.UserName),
+                        new XElement("DirectoryType", "TAE.Shared.NWOAssetDirectory"),
+                        new XElement("Schema", "1"));
+
+            return header;
+        }
+
+        private XElement WriteFolders()
+        {
+            XElement folders;
+
+            folders = new XElement("Folders",
+                        new XElement("Reference", "\\reference"),
+                        new XElement("Temp", "\\temp"),
+                        new XElement("SourceModels", "\\work"),
+                        new XElement("GameModels", "\\render"),
+                        new XElement("GamePhysicsModels", "\\physics"),
+                        new XElement("GameCollisionModels", "\\collision"),
+                        new XElement("ExportModels", "\\render"),
+                        new XElement("ExportPhysicsModels", "\\physics"),
+                        new XElement("ExportCollisionModels", "\\collision"),
+                        new XElement("SourceAnimations", "\\animations\\work"),
+                        new XElement("AnimationRigs", "\\animations\\rigs"),
+                        new XElement("GameAnimations", "\\animations"),
+                        new XElement("ExportAnimations", "\\animations"),
+                        new XElement("SourceBitmaps", "\\bitmaps"),
+                        new XElement("GameBitmaps", "\\bitmaps"),
+                        new XElement("CinemaSource", "\\cinematics"),
+                        new XElement("CinemaExport", "\\cinematics"),
+                        new XElement("ExportBSPs", "\\"),
+                        new XElement("SourceBSPs", "\\"),
+                        new XElement("Scripts", "\\scripts"));
+
+            return folders;
+        }
+
+        private XElement WriteFaceCollections(bool regions, bool materials)
+        {
+            bool newfaceCollection = false;
+
+            if (File.Exists(fullPath + "\\" + assetName + ".sidecar.xml"))
+            {
+                try
+                {
+                    XDocument sidecar = XDocument.Load(fullPath + "\\" + assetName + ".sidecar.xml");
+                    XElement faceCollections = new XElement("FaceCollections");
+
+                    foreach (XElement fc in sidecar.Root.Descendants("FaceCollections").Descendants("FaceCollection"))
+                        faceCollections.Add(fc);
+
+                    return faceCollections;
+                }
+                catch (Exception)
+                {
+                    newfaceCollection = true;
+
+                    MessageBox.Show("Couldn't parse " + assetName + ".sidecar.xml. Rebuilding Sidecar and resetting FaceCollections");
+                }
+            }
+            else
+                newfaceCollection = true;
+
+            if (newfaceCollection)
+            {
+                if (regions || materials)
+                {
+                    XElement faceCollections = new XElement("FaceCollections");
+
+                    if (regions)
+                    {
+                        XElement f1 = new XElement("FaceCollection", new XAttribute("Name", "regions"), new XAttribute("StringTable", "connected_geometry_regions_table"), new XAttribute("Description", "Model regions"),
+                            new XElement("FaceCollectionEntries", new XElement("FaceCollectionEntry", new XAttribute("Index", "0"), new XAttribute("Name", "default"), new XAttribute("Active", "true"))));
+                        faceCollections.Add(f1);
+                    }
+
+                    if (materials)
+                    {
+                        XElement f2 = new XElement("FaceCollection", new XAttribute("Name", "global materials override"), new XAttribute("StringTable", "connected_geometry_global_material_table"), new XAttribute("Description", "Global material overrides"),
+                            new XElement("FaceCollectionEntries", new XElement("FaceCollectionEntry", new XAttribute("Index", "0"), new XAttribute("Name", "default"), new XAttribute("Active", "true"))));
+                        faceCollections.Add(f2);
+                    }
+
+                    return faceCollections;
+                }
+                else
+                    return null;
+            }
+            return null;
+        }
+
+        private XElement GetOutputObjectTypes()
+        {
+            List<XElement> temp = new List<XElement>();
+
+            foreach (CheckBox c in TagTypes)
+            {
+                if (c.IsChecked == true)
+                {
+                    XElement e = new XElement("OutputTag", new XAttribute("Type", c.Name), dataPath + "\\" + assetName);
+                    temp.Add(e);
+                }
+            }
+
+            XElement OutputTags = new XElement("OutputTagCollection");
+            OutputTags.Add(new XElement("OutputTag", new XAttribute("Type", "model"), dataPath + "\\" + assetName));
+            foreach (XElement e in temp)
+                OutputTags.Add(e);
+
+            return OutputTags;
+        }
+
+        // check if any files exist before we create a content object for each model type
+        private XElement GetModelContentObjects()
+        {
+            List<XElement> temp = new List<XElement>();
+
+            if (IntermediateFileExists("render"))
+                temp.Add(CreateContentObject("render"));
+
+            if (IntermediateFileExists("physics"))
+                temp.Add(CreateContentObject("physics"));
+
+            if (IntermediateFileExists("collision"))
+                temp.Add(CreateContentObject("collision"));
+
+            if (IntermediateFileExists("markers"))
+                temp.Add(CreateContentObject("markers"));
+
+            if (IntermediateFileExists("skeleton"))
+                temp.Add(CreateContentObject("skeleton"));
+
+            if (IntermediateFileExists("animations\\JMM") || IntermediateFileExists("animations\\JMA") || IntermediateFileExists("animations\\JMT") || IntermediateFileExists("animations\\JMZ") || IntermediateFileExists("animations\\JMV")
+                || IntermediateFileExists("animations\\JMO (Keyframe)") || IntermediateFileExists("animations\\JMO (Pose)") || IntermediateFileExists("animations\\JMR (Object)") || IntermediateFileExists("animations\\JMR (Local)"))
+            {
+                XElement animations = new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", "model_animation_graph"));
+
+                if (IntermediateFileExists("animations\\JMM"))
+                    animations.Add(CreateContentObject("animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", ""));
+
+                if (IntermediateFileExists("animations\\JMA"))
+                    animations.Add(CreateContentObject("animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", ""));
+
+                if (IntermediateFileExists("animations\\JMT"))
+                    animations.Add(CreateContentObject("animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", ""));
+
+                if (IntermediateFileExists("animations\\JMZ"))
+                    animations.Add(CreateContentObject("animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", ""));
+
+                if (IntermediateFileExists("animations\\JMV"))
+                    animations.Add(CreateContentObject("animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", ""));
+
+                if (IntermediateFileExists("animations\\JMO (Keyframe)"))
+                    animations.Add(CreateContentObject("animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive"));
+
+                if (IntermediateFileExists("animations\\JMO (Pose)"))
+                    animations.Add(CreateContentObject("animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive"));
+
+                if (IntermediateFileExists("animations\\JMR (Local)"))
+                    animations.Add(CreateContentObject("animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace"));
+
+                if (IntermediateFileExists("animations\\JMR (Object)"))
+                    animations.Add(CreateContentObject("animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace"));
+
+                XElement r2 = new XElement("OutputTagCollection",
+                        new XElement("OutputTag", new XAttribute("Type", "frame_event_list"), dataPath + "\\" + assetName),
+                        new XElement("OutputTag", new XAttribute("Type", "model_animation_graph"), dataPath + "\\" + assetName));
+                animations.Add(r2);
+                temp.Add(animations);
+            }
+
+            XElement ContentObjects = new XElement("Content", new XAttribute("Name", assetName), new XAttribute("Type", "model"));
+            foreach (XElement e in temp)
+                ContentObjects.Add(e);
+
+            return ContentObjects;
+        }
+
+        private XElement CreateContentObject(string type)
+        {
+            string[] files = Directory.EnumerateFiles(fullPath + "\\" + type, "*.gr2").ToArray();
+
+            XElement content;
+
+            if (type == "markers" || type == "skeleton")
+                content = new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", type));
+            else
+                content = new XElement("ContentObject", new XAttribute("Name", ""), new XAttribute("Type", type + "_model"));
+
+            foreach (var f in files)
+            {
+                XElement r1 = new XElement("ContentNetwork", new XAttribute("Name", getFileNames(f)[1]), new XAttribute("Type", ""),
+                    new XElement("InputFile", dataPath + "\\" + type + "\\" + getFileNames(f)[1] + inputFileType),
+                    new XElement("IntermediateFile", dataPath + "\\" + type + "\\" + getFileNames(f)[0])
+                );
+                content.Add(r1);
+            }
+
+            XElement r2;
+            if (type == "markers" || type == "skeleton")
+                r2 = new XElement("OutputTagCollection");
+            else
+                r2 = new XElement("OutputTagCollection",
+                    new XElement("OutputTag", new XAttribute("Type", type + "_model"), dataPath + "\\" + assetName));
+
+            content.Add(r2);
+            return content;
+        }
+
+        private List<XElement> CreateContentObject(string type1, string type2, string type3, string type4, string type5, string type6)
+        {
+            string[] files = Directory.EnumerateFiles(fullPath + "\\" + type1, "*.gr2").ToArray();
+
+            List<XElement> content = new List<XElement>();
+
+            XElement r1;
+            foreach (var f in files)
+            {
+                if (type5 == "" || type6 == "")
+                {
+                    r1 = new XElement("ContentNetwork", new XAttribute("Name", getFileNames(f)[1]), new XAttribute("Type", type2), new XAttribute(type3, type4),
+                    new XElement("InputFile", dataPath + "\\" + type1 + "\\" + getFileNames(f)[1] + inputFileType),
+                    new XElement("IntermediateFile", dataPath + "\\" + type1 + "\\" + getFileNames(f)[0]));
+                }
+                else
+                {
+                    r1 = new XElement("ContentNetwork", new XAttribute("Name", getFileNames(f)[1]), new XAttribute("Type", type2), new XAttribute(type3, type4), new XAttribute(type5, type6),
+                    new XElement("InputFile", dataPath + "\\" + type1 + "\\" + getFileNames(f)[1] + inputFileType),
+                    new XElement("IntermediateFile", dataPath + "\\" + type1 + "\\" + getFileNames(f)[0]));
+                }
+                content.Add(r1);
+            }
+
+            return content;
+        }
+
+        private bool IntermediateFileExists(string folderName)
+        {
+            try
+            {
+                return Directory.GetFiles(fullPath + "\\" + folderName, "*.gr2").Length > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        //private string get_default_path_sidecar(string textbox_string, bool tag_dir, bool is_file)
+        //{
+        //    string base_path = toolkit.GetDataDirectory();
+        //string local_path = "";
+
+        //fullPath = base_path;
+
+        //    if (tag_dir is true)
+        //        base_path = toolkit.GetTagDirectory();
+
+        //    if (!string.IsNullOrWhiteSpace(textbox_string))
+        //    {
+        //        if (is_file == true)
+        //            local_path = Path.GetDirectoryName(textbox_string);
+        //        else
+        //            local_path = textbox_string;
+        //    }
+
+        //    if (Directory.Exists(Path.Join(base_path, local_path)))
+        //        return Path.Join(base_path, local_path);
+        //    return base_path;
+        //}
+
+readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
+   "Select your folder with your sidecar files",
+   FilePicker.Options.PathRoot.Data
+);
+
+        private void browse_path_Click(object sender, RoutedEventArgs e)
+        {
+            xml_path.Text = "";
+            bool tag_dir = false;
+            bool is_file = false;
+            string default_path = get_default_path(xml_path.Text.ToLower(), tag_dir, is_file);
+            var picker = new FilePicker(xml_path, toolkit, xmlOptions, default_path);
+            picker.Prompt();
+
+            try
+            {
+                dataPath = xml_path.Text.ToLower();
+                string[] tmp = dataPath.Split('\\');
+                assetName = tmp.Last();
+                fullPath = "";
+                fullPath = default_path + "\\" + dataPath;
+                textBlock.Visibility = Visibility.Hidden;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void asset_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (asset_type.SelectedIndex > 0)
+            {
+                foreach (CheckBox c in TagTypes)
+                    c.IsEnabled = false;
+            }
+            else if (asset_type.SelectedIndex == 0)
+            {
+                try
+                {
+                    foreach (CheckBox c in TagTypes)
+                        c.IsEnabled = true;
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+        }
+
+        private void radioSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (import_sidecar.IsChecked == true || fbx_to_gr2.IsChecked == true)
+                {
+                    foreach (CheckBox c in TagTypes)
+                        c.IsEnabled = false;
+
+                    asset_type.IsEnabled = false;
+                    createDirectories.IsEnabled = false;
+                }
+                else
+                {
+                    try
+                    {
+                        foreach (CheckBox c in TagTypes)
+                            c.IsEnabled = true;
+
+                        asset_type.IsEnabled = true;
+                        createDirectories.IsEnabled = true;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void convert_model_from_fbx_to_gr2_Click(object sender, RoutedEventArgs e)
+        {
+            int count = 0;
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.FileName = ""; // Default file name
+            dialog.DefaultExt = ".fbx"; // Default file extension
+            dialog.Filter = "FBX files (.fbx)|*.fbx"; // Filter files by extension
+            dialog.Multiselect = true;
+
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                foreach (var filename in dialog.FileNames)
+                {
+                    HRToolkit tool = toolkit as HRToolkit;
+
+                    string[] t = filename.Split(".");
+                    string filepath = "";
+                    for (int i = 0; i < t.Length - 1; i++)
+                        filepath += t[i];
+
+                    if (count == Environment.ProcessorCount)
+                    {
+                        count = 0;
+                        Thread.Sleep(250);
+                    }
+
+                    if (!(bool)show_output.IsChecked)
+                        Thread.Sleep(250);
+
+                    tool.GR2FromFBX(filename, filepath + ".json", filepath + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                    count++;
+                }
+            }
+        }
+
+        private void xml_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            bool tag_dir = false;
+            bool is_file = false;
+            default_path = get_default_path("", tag_dir, is_file);
+
+            try
+            {
+                dataPath = xml_path.Text.ToLower();
+                fullPath = "";
+                fullPath = default_path + "\\" + dataPath;
+                textBlockImport.Visibility = Visibility.Hidden;
+                if (xml_path.Text == "" || xml_path.Text == " ")
+                    textBlockImport.Visibility = Visibility.Visible;
+                string[] tmp = dataPath.Split('\\');
+                if (tmp.Length > 1)
+                    assetName = tmp.Last().ToString();
+                else
+                    assetName = dataPath;
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }

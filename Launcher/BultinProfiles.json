@@ -263,5 +263,41 @@
                 "d03e27be51f15bb810e55a7acc86f73c"
             ]
         }
+    },
+    {
+        "ToolkitName": "HREK",
+        "Description": "The MCC Halo Reach Toolset.",
+        "GameGeneration": 4,
+        "IsMCCBuild": true,
+        "Tool": {
+            "TLSH": "7A87AD56B2A09CD5F07AC038D556921BF7B178314B2207DB62B4532E1F3FBE06ABA711",
+            "MD5": [
+                "39747687a564b7827730618167e21775"
+            ]
+        },
+        "ToolFast": {
+            "TLSH": "E1879D66B660ACD9F07AD038D556D207F7B278314B2107DB62A0636D1F3FBE06A7A311",
+            "MD5": [
+                "d23386aae8f1714fc4ec2d4a2db0046c"
+            ]
+        },
+        "Guerilla": {
+            "TLSH": "00A36AC432AAC112CAFE1FF524749F105A79AB86B831DF5D4649109A1EF2713CA20BF3",
+            "MD5": [
+                "66bd7153df10ebd9b5415ee04317647d"
+            ]
+        },
+        "Sapien": {
+            "TLSH": "15779D567261ACE8F07AD038D956920BF7B17C324B2247CB62A0625D1F3F7E0A97F611",
+            "MD5": [
+                "62d7ef3d080fedb70005d95a7af5ade5"
+            ]
+        },
+        "Standalone": {
+            "TLSH": "19879D9272646CE8F03BD1389956960BF7B178314B2207CB52B453AD2F3FBE05A7A711",
+            "MD5": [
+                "4469dfd8eca1fbf02b9d303fe8e5d324"
+            ]
+        }
     }
 ]

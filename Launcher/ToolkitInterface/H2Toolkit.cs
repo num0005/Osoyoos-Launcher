@@ -38,7 +38,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "new-strings", path });
         }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
             string command = is_ass_file ? "structure-new-from-ass" : "structure-from-jms";

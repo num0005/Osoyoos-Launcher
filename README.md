@@ -17,7 +17,8 @@ The following profiles are or will be supported by this launcher:
  * Halo 2 Vista - H2Codez 
  * Halo 2 Classic MCC
  * Halo 3 MCC
- * Halo 3 ODST MCC (Planned)
+ * Halo 3: ODST MCC
+ * Halo Reach
  * Halo 4 MCC (Planned)
  * Halo 2 Anniversary MCC (Planned)
 

@@ -12,7 +12,7 @@ namespace ToolkitLauncher.ToolkitInterface
     {
         public H1Toolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
 
-        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX)
+        override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
             var info = SplitStructureFilename(data_file);
             await RunTool(ToolType.Tool, new() { "structure", info.ScenarioPath, info.BspName });

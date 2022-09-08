@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using static ToolkitLauncher.ToolkitProfiles;
 
 #nullable enable
@@ -89,6 +90,20 @@ namespace ToolkitLauncher.ToolkitInterface
             int instanceCount,
             bool instanceOutput);
 
+        public record ImportArgs(
+            bool import_check,
+            bool import_force,
+            bool import_verbose,
+            bool import_repro,
+            bool import_draft,
+            bool import_seam_debug,
+            bool import_skip_instances,
+            bool import_local,
+            bool import_farm_seams,
+            bool import_farm_bsp,
+            bool import_decompose_instances,
+            bool import_supress_errors_to_vrml);
+
         /// <summary>
         /// Build a lightmap for a given scenario and BSP
         /// </summary>
@@ -150,8 +165,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="useFast">H2-H3: Run a play build of tool if the toolset has one</param>
         /// <param name="phantom_fix">CE: Whatever to apply the phantom fix</param>
         /// <param name="autoFBX"></param>
+        /// <param name="import_info">HR-H4-H2A: Settings for the import command</param>
         /// <returns></returns>
-        public abstract Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX);
+        public abstract Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_info);
 
         /// <summary>
         /// Import geometry to generate various types of model related tags
@@ -417,7 +433,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="data_file"></param>
         /// <returns>(scenario_path, bsp_name)</returns>
-        public static (string ScenarioPath, string ScenarioName, string BspName) SplitStructureFilename(string data_file, string bsp_data_file = "")
+        public static (string ScenarioPath, string ScenarioName, string BspName) SplitStructureFilename(string data_file, string bsp_data_file = "", string hrek_path = "")
         {
             string scenario_path = "";
             string scenario_name = "";
@@ -430,6 +446,34 @@ namespace ToolkitLauncher.ToolkitInterface
                 if (!string.IsNullOrEmpty(bsp_data_file))
                 {
                     bsp_name = Path.GetFileNameWithoutExtension(bsp_data_file).ToLower();
+                }
+            }
+            else if (data_file.EndsWith(".xml"))
+            {
+                string full_path = Path.Combine(hrek_path, "data", data_file);
+
+                XmlDocument sidecar = new XmlDocument();
+                sidecar.Load(full_path);
+                XmlNodeList elemList = sidecar.GetElementsByTagName("OutputTag");
+
+                foreach (XmlNode element in elemList)
+                {
+                    if (element.Attributes != null)
+                    {
+                        foreach (XmlAttribute attribute in element.Attributes)
+                        {
+                            switch (attribute.Value)
+                            {
+                                case "scenario":
+                                    scenario_path = Path.GetDirectoryName(element.InnerText.ToLower()) ?? "";
+                                    scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
+                                    break;
+                                case "scenario_structure_bsp":
+                                    bsp_name = Path.GetFileNameWithoutExtension(element.InnerText).ToLower();
+                                    break;
+                            }
+                        }
+                    }
                 }
             }
             else
