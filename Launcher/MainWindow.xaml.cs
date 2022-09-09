@@ -1698,6 +1698,8 @@ namespace ToolkitLauncher
 
             string[] folders = Directory.EnumerateDirectories(fullPath).ToArray();
 
+            int renderCount = 0;
+
             foreach (var folder in folders)
             {
                 string[] s = folder.Split("\\");
@@ -1743,6 +1745,7 @@ namespace ToolkitLauncher
                         try
                         {
                             string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName, "*.fbx").ToArray();
+                            string shaderPath = "";
 
                             foreach (var f in files)
                             {
@@ -1755,7 +1758,20 @@ namespace ToolkitLauncher
                                 if (!(bool)show_output.IsChecked)
                                     Thread.Sleep(250);
 
-                                tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                                if (folderName == "render")
+                                {
+                                    if (renderCount == 0)
+                                    {
+                                        shaderPath = JSONShaderPathGen.FolderSelector(getFilepath(f));
+                                        renderCount++;
+                                    }
+                                    tool.GR2FromFBXJSONShaders(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked, (bool)json_gen_shaderpaths.IsChecked, shaderPath);
+                                }
+                                else
+                                {
+                                    tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                                }
+                                
                                 count++;
                             }
                         }
@@ -2531,6 +2547,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
         private void convert_model_from_fbx_to_gr2_Click(object sender, RoutedEventArgs e)
         {
             int count = 0;
+            string shaderPath = "";
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.FileName = ""; // Default file name
             dialog.DefaultExt = ".fbx"; // Default file extension
@@ -2561,7 +2578,12 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
                     if (!(bool)show_output.IsChecked)
                         Thread.Sleep(250);
 
-                    tool.GR2FromFBX(filename, filepath + ".json", filepath + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                    if (count == 0)
+                    {
+                        shaderPath = JSONShaderPathGen.FolderSelector(filepath);
+                    }
+
+                    tool.GR2FromFBXJSONShaders(filename, filepath + ".json", filepath + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked, (bool)json_gen_shaderpaths.IsChecked, shaderPath);
                     count++;
                 }
             }

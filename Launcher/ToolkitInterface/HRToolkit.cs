@@ -262,6 +262,15 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild }, showOutput);
         }
 
+        public async Task GR2FromFBXJSONShaders(string fbxPath, string jsonPath, string gr2Path, string json_rebuild, bool showOutput, bool genJSONShaders, string shaderPath)
+        {
+            await RunTool(ToolType.Tool, new() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild }, showOutput);
+            if (genJSONShaders)
+            {
+                JSONShaderPathGen.GenerateShaderPathsJSON(jsonPath, shaderPath);
+            }
+        }
+
         public async Task ImportSidecar(string sidecarPath)
         {
             await RunTool(ToolType.Tool, new() { "import", sidecarPath });
