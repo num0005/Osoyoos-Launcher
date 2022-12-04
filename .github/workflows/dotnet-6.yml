@@ -40,7 +40,7 @@ jobs:
     if: |
       github.event.action != 'pull_request' &&
       github.ref == 'refs/heads/master' &&
-      github.repository == 'num0005/Osoyoos-Launcher'
+      github.repository == 'General-101/Osoyoos-Launcher'
     needs: build
     runs-on: ubuntu-latest
     steps:
