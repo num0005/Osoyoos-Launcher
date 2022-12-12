@@ -15,13 +15,12 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
             var info = SplitStructureFilename(data_file);
-            await RunTool(ToolType.Tool, new() { "structure", info.ScenarioPath, info.BspName });
+            await RunTool(ToolType.Tool, new List<string>() { "structure", info.ScenarioPath, info.BspName });
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing)
         {
-            string path = scenario.Replace(".scenario", "");
-            await RunTool(ToolType.Tool, new() { "build-cache-file", path });
+            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", scenario.Replace(".scenario", "") });
         }
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
@@ -31,14 +30,14 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.DisableCancellation();
                 progress.MaxValue += 1;
             }
-            await RunTool(ToolType.Tool, new() { "lightmaps", scenario, bsp, Convert.ToInt32(args.radiosity_quality).ToString(), args.Threshold.ToString() });
+            await RunTool(ToolType.Tool, new List<string>() { "lightmaps", scenario, bsp, Convert.ToInt32(args.radiosity_quality).ToString(), args.Threshold.ToString() });
             if (progress is not null)
                 progress.Report(1);
         }
 
         override public async Task ImportUnicodeStrings(string path)
         {
-            await RunTool(ToolType.Tool, new() { "unicode-strings", path });
+            await RunTool(ToolType.Tool, new List<string>() { "unicode-strings", path });
         }
 
         /// <summary>
@@ -60,13 +59,13 @@ namespace ToolkitLauncher.ToolkitInterface
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
             if (importType.HasFlag(ModelCompile.render))
-                await RunTool(ToolType.Tool, new() { "model", path });
+                await RunTool(ToolType.Tool, new List<string>() { "model", path });
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new() { "collision-geometry", path });
+                await RunTool(ToolType.Tool, new List<string>() { "collision-geometry", path });
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new() { "physics", path });
+                await RunTool(ToolType.Tool, new List<string>() { "physics", path });
             if (importType.HasFlag(ModelCompile.animations))
-                await RunTool(ToolType.Tool, new() { "animations", path });
+                await RunTool(ToolType.Tool, new List<string>() { "animations", path });
         }
 
         /// <summary>

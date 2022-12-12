@@ -48,8 +48,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing)
         {
-            string path = scenario.Replace(".scenario", "");
-            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path });
+            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", scenario.Replace(".scenario", "") });
         }
 
         private static string GetLightmapQuality(LightmapArgs lightmapArgs)
@@ -124,7 +123,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             if (Profile.BuildType == build_type.release_mcc)
             {
-                await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new()
+                await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>()
                 {
                     "lightmaps-farm-merge",
                     scenario,
@@ -134,7 +133,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else // todo: Remove this code
             {
-                await RunTool(ToolType.Tool, new()
+                await RunTool(ToolType.Tool, new List<string>()
                 {
                     "lightmaps-master", // beware legacy code
                     scenario,
@@ -153,7 +152,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 Profile.ElevatedToExpert = true;
                 try
                 {
-                    return await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new()
+                    return await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>()
                     {
                         "lightmaps-farm-worker",
                         scenario,
@@ -169,7 +168,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else // todo: Remove this code
             {
-                List<string> args = new()
+                List<string> args = new List<string>()
                 {
                     "lightmaps-slave", // the long legacy of h2codez
                     scenario,
@@ -191,18 +190,18 @@ namespace ToolkitLauncher.ToolkitInterface
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
             if (importType.HasFlag(ModelCompile.render))
-                await RunTool(ToolType.Tool, new() { "model-render", path });
+                await RunTool(ToolType.Tool, new List<string>() { "model-render", path });
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new() { "model-collision", path });
+                await RunTool(ToolType.Tool, new List<string>() { "model-collision", path });
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new() { "model-physics", path });
+                await RunTool(ToolType.Tool, new List<string>() { "model-physics", path });
             if (importType.HasFlag(ModelCompile.animations))
-                await RunTool(ToolType.Tool, new() { "append-animations", path });
+                await RunTool(ToolType.Tool, new List<string>() { "append-animations", path });
         }
 
         public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
         {
-            await RunTool(ToolType.Tool, new() { "import-lipsync", path, ltf_path });
+            await RunTool(ToolType.Tool, new List<string>() { "import-lipsync", path, ltf_path });
         }
 
         public override bool IsMutexLocked(ToolType tool)
