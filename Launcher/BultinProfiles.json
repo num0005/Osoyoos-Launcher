@@ -326,7 +326,7 @@
     },
     {
         "ToolkitName": "H4EK",
-        "Description": "The MCC Halo Reach Toolset.",
+        "Description": "The MCC Halo 4 Toolset.",
         "GameGeneration": 4,
         "IsMCCBuild": true,
         "Tool": {
@@ -361,38 +361,38 @@
         }
     },
     {
-        "ToolkitName": "H4EK",
-        "Description": "The MCC Halo Reach Toolset.",
+        "ToolkitName": "H2AMPEK",
+        "Description": "The MCC Halo 2 Anniversary Multiplayer Toolset.",
         "GameGeneration": 4,
         "IsMCCBuild": true,
         "Tool": {
-            "TLSH": "66A79D9577A0A8DBF07AD039C5A6950BF7B2B8344B304BCB51A0436D5F3F6E0993A721",
+            "TLSH": "AEA79C567BA4A8DBF06AD039C5A6950BF7B278344B3447CB51A0036E5F3F6E0993B321",
             "MD5": [
-                "d47b6621c622db8bdbf35db1d8256ee6"
+                "c0eb7d7eda7a854f17134ebfca56f4b8"
             ]
         },
         "ToolFast": {
-            "TLSH": "C9978CA536B09DDAF066C035D46AD617FBB278754B3147CB11A4026DAF3F6E04E3A322",
+            "TLSH": "0B978C593BB46CDAF06AD035D466C55BF7B278754B3043DB21A4026E6F3F6E04E3A222",
             "MD5": [
-                "531ca9ffd72be66bcc20a697340fb70b"
+                "29127e2c6fa62f16ef577876944afccf"
             ]
         },
         "Guerilla": {
-            "TLSH": "30A35977E6A08724D5F88B3EA06081301B769F074C66DF1E45B8B0BD2E1670D0AAD777",
+            "TLSH": "F1A34B8026504153F6AB0BFD6D238500DB725E56F422D69C4BCC6CBDFDD274A8A50BAF",
             "MD5": [
-                "283b48016e9a8bc513ba3b58e32faa67"
+                "9c4798479c866d6e79223f8814881c25"
             ]
         },
         "Sapien": {
-            "TLSH": "A8979D5576B0ACD6F066D03AC4A6951BF7B278348B3047CB51A0426E9F3F7E0AD7A321",
+            "TLSH": "7A979D5577B0ACD6F066D039C4A6851BF7B2B4358B3047CB51A042AE9F3F6E0AD7A321",
             "MD5": [
-                "0cec1621a023a67039ceb5b3d1694ecd"
+                "4e2e6d84fcc4e62eaa1f4a65ab815768"
             ]
         },
         "Standalone": {
-            "TLSH": "02979C913AB0ACDAF066D035D096961BF7B2B8364B3157CB55A0026D5F3F7E09E3A321",
+            "TLSH": "97979D5137B0ACDAF066D038D196951BFBB2B8358B3147CB51A0426D5F3F6E0AE3A721",
             "MD5": [
-                "da062c0ddbd64a73a95fed2906f55ba6"
+                "f08cb25deff2fba439a89f53afd2b013"
             ]
         }
     }
