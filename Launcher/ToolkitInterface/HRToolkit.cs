@@ -11,29 +11,10 @@ using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
-    public class HRToolkit : ToolkitBase, IToolkitFBX2GR2
+    public class HRToolkit : H3Toolkit, IToolkitFBX2GR2
     {
 
         public HRToolkit(ProfileSettingsLauncher profile, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profile, baseDirectory, toolPaths) { }
-
-        protected string sapienWindowClass
-        {
-            get => "Sapien";
-        }
-
-        override public async Task ImportBitmaps(string path, string type, bool debug_plate)
-        {
-            // todo(num0005): is this required? Might be able to just use bitmaps-with-type for both
-            if (type != "2d")
-                _ = await RunTool(ToolType.Tool, new() { "bitmaps-with-type", path, type });
-            else
-                _ = await RunTool(ToolType.Tool, new() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
-        }
-
-        override public async Task ImportUnicodeStrings(string path)
-        {
-            await RunTool(ToolType.Tool, new() { "strings", path });
-        }
 
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
@@ -70,46 +51,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(tool, args, true);
         }
 
-        public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharinge)
-        {
-            string path = scenario.Replace(".scenario", "");
-            string audio_configuration = "";
-            string target_language = "";
-            string dedicated_server = "";
-            string compression_type = "";
-            string use_fmod_data = "";
-
-            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path });
-        }
-
-        private static string GetLightmapQuality(LightmapArgs lightmapArgs)
-        {
-            return lightmapArgs.level_combobox.ToLower();
-        }
-
-        public async Task FauxSync(string scenario, string bsp, bool instanceOutput, bool useFast)
-        {
-            await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new() { "faux_data_sync", scenario, bsp }, instanceOutput);
-        }
-
-        private static int FauxCalculateJobID(string scenario, string bsp)
-        {
-            int hash = 0x117;
-            foreach (char @char in scenario)
-                hash ^= (hash << 11) ^ @char;
-            foreach (char @char in bsp)
-                hash ^= (hash << 7) ^ @char;
-            return Math.Abs(hash);
-        }
-
-        public enum StageResult
-        {
-            Sucesss,
-            ClientFail,
-            MergeFail
-        };
-
-        public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)
+        public new async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)
         {
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
@@ -180,26 +122,6 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunFastool(new() { "faux-build-vmf-textures-from-quadratic", scenario, bsp, "true", "true" }, instanceOutput);
         }
 
-        public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
-        {
-            Debug.Assert(progress is not null);
-            string quality = GetLightmapQuality(args);
-
-            // default to all
-            string lightmap_group = args.lightmapGroup;
-            if (string.IsNullOrWhiteSpace(args.lightmapGroup))
-                lightmap_group = "all";
-
-            try
-            {
-                await FauxLocalFarm(scenario, bsp, lightmap_group, quality, args.instanceCount, args.NoAssert, args.instanceOutput, progress);
-            }
-            catch (OperationCanceledException)
-            {
-            }
-
-        }
-
         /// <summary>
         /// Import a model
         /// </summary>
@@ -208,41 +130,69 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
-            string type = "";
-            if (verboseAnim)
-            {
-                type = "-verbose";
-            }
-            else if (uncompressedAnim)
-            {
-                type = "-uncompressed";
-            }
-            else if (resetCompression)
-            {
-                type = "-reset";
-            }
-
+            List<string> args = new List<string>();
             if (importType.HasFlag(ModelCompile.render))
+            {
+                // Generate shaders if requested
                 if (skyRender)
-                    await RunTool(ToolType.Tool, new() { "render-sky", path });
+                {
+                    args.Add("render-sky");
+                    args.Add(path);
+                }
                 else if (accurateRender)
-                    await RunTool(ToolType.Tool, new() { "render-accurate", path, renderPRT ? "final" : "draft" });
+                {
+                    args.Add("render-accurate");
+                    args.Add(path);
+                    args.Add(renderPRT ? "final" : "draft");
+                }
                 else
-                    await RunTool(ToolType.Tool, new() { "render", path, renderPRT ? "final" : "draft" });
+                {
+                    args.Add("render");
+                    args.Add(path);
+                    args.Add(renderPRT ? "final" : "draft");
+                }
+            }
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new() { "collision", path });
+            {
+                args.Add("collision");
+                args.Add(path);
+            }
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new() { "physics", path });
+            {
+                args.Add("physics");
+                args.Add(path);
+            }
             if (importType.HasFlag(ModelCompile.animations))
+            {
                 if (FPAnim)
-                    await RunTool(ToolType.Tool, new() { "fp-model-animations" + type, path, characterFPPath, weaponFPPath });
+                {
+                    if (verboseAnim)
+                        args.Add("fp-model-animations-verbose");
+                    else if (uncompressedAnim)
+                        args.Add("fp-model-animations-uncompressed");
+                    else if (resetCompression)
+                        args.Add("fp-model-animations-reset");
+                    else
+                        args.Add("fp-model-animations");
+                    args.Add(path);
+                    args.Add(characterFPPath);
+                    args.Add(weaponFPPath);
+                }
                 else
-                    await RunTool(ToolType.Tool, new() { "model-animations" + type, path });
-        }
+                {
+                    if (verboseAnim)
+                        args.Add("model-animations-verbose");
+                    else if (uncompressedAnim)
+                        args.Add("model-animations-uncompressed");
+                    else if (resetCompression)
+                        args.Add("model-animations-reset");
+                    else
+                        args.Add("model-animations");
+                    args.Add(path);
+                }
+            }
 
-        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
-        {
-            await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type });
+            await RunTool(ToolType.Tool, args, true);
         }
 
         /// <summary>
@@ -254,17 +204,17 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path });
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path });
         }
 
         public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, string json_rebuild, bool showOutput)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild }, showOutput);
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild }, showOutput);
         }
 
         public async Task ImportSidecar(string sidecarPath)
         {
-            await RunTool(ToolType.Tool, new() { "import", sidecarPath });
+            await RunTool(ToolType.Tool, new List<string>() { "import", sidecarPath });
         }
 
         public override bool IsMutexLocked(ToolType tool)
@@ -275,7 +225,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override string GetDocumentationName()
         {
-            return "H3";
+            return "HR";
         }
     }
 }

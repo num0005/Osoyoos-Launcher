@@ -188,6 +188,232 @@ namespace ToolkitLauncher
         special_weekend,
     }
 
+    public enum h2_sound_import_type
+    {
+        projectile_impact,
+        projectile_detonation,
+        projectile_flyby,
+        weapon_fire,
+        weapon_ready,
+        weapon_reload,
+        weapon_empty,
+        weapon_charge,
+        weapon_overheat,
+        weapon_idle,
+        weapon_melee,
+        weapon_animation,
+        object_impacts,
+        particle_impacts,
+        weapon_fire_lod,
+        weapon_fire_lod_far,
+        lfe,
+        unit_footsteps,
+        unit_dialog,
+        unit_animation,
+        vehicle_collision,
+        vehicle_engine,
+        vehicle_animation,
+        device_door,
+        device_machinery,
+        device_stationary,
+        music,
+        ambient_nature,
+        ambient_machinery,
+        huge_ass,
+        object_looping,
+        cinematic_music,
+        reflection,
+        reflection_lod,
+        reflection_lod_far,
+        cortana_mission,
+        cortana_cinematic,
+        mission_dialog,
+        cinematic_dialog,
+        scripted_cinematic_foley,
+        game_event,
+        ui,
+        test,
+        multilingual_test
+    }
+
+    public enum h3_sound_import_type
+    {
+        projectile_impact,
+        projectile_detonation,
+        projectile_flyby,
+        projectile_detonation_lod,
+        weapon_fire,
+        weapon_ready,
+        weapon_reload,
+        weapon_empty,
+        weapon_charge,
+        weapon_overheat,
+        weapon_idle,
+        weapon_melee,
+        weapon_animation,
+        object_impacts,
+        particle_impacts,
+        weapon_fire_lod,
+        unit_footsteps,
+        unit_dialog,
+        unit_animation,
+        vehicle_collision,
+        vehicle_engine,
+        vehicle_animation,
+        vehicle_engine_lod,
+        device_door,
+        device_machinery,
+        device_stationary,
+        music,
+        ambient_nature,
+        ambient_machinery,
+        ambient_stationary,
+        huge_ass,
+        object_looping,
+        cinematic_music,
+        ambient_flock,
+        no_pad,
+        no_pad_stationary,
+        cortana_mission,
+        cortana_gravemind_channel,
+        mission_dialog,
+        cinematic_dialog,
+        scripted_cinematic_foley,
+        game_event,
+        ui,
+        test,
+        multilingual_test
+    }
+
+    public enum odst_sound_import_type
+    {
+        projectile_impact,
+        projectile_detonation,
+        projectile_flyby,
+        projectile_detonation_lod,
+        weapon_fire,
+        weapon_ready,
+        weapon_reload,
+        weapon_empty,
+        weapon_charge,
+        weapon_overheat,
+        weapon_idle,
+        weapon_melee,
+        weapon_animation,
+        object_impacts,
+        particle_impacts,
+        weapon_fire_lod,
+        unit_footsteps,
+        unit_dialog,
+        unit_animation,
+        vehicle_collision,
+        vehicle_engine,
+        vehicle_animation,
+        vehicle_engine_lod,
+        device_door,
+        device_machinery,
+        device_stationary,
+        music,
+        ambient_nature,
+        ambient_machinery,
+        ambient_stationary,
+        huge_ass,
+        object_looping,
+        cinematic_music,
+        ambient_flock,
+        no_pad,
+        no_pad_stationary,
+        arg,
+        cortana_mission,
+        cortana_gravemind_channel,
+        mission_dialog,
+        cinematic_dialog,
+        scripted_cinematic_foley,
+        game_event,
+        ui,
+        test,
+        multilingual_test,
+        ambient_nature_details,
+        ambient_machinery_details,
+        inside_surround_tail,
+        outside_surround_tail,
+        vehicle_detonation,
+        ambient_detonation,
+        first_person_inside,
+        first_person_outside,
+        first_person_anywhere,
+        ui_pda,
+    }
+
+    public enum reach_sound_import_type
+    {
+        projectile_impact,
+        projectile_detonation,
+        projectile_flyby,
+        projectile_detonation_lod,
+        weapon_fire,
+        weapon_ready,
+        weapon_reload,
+        weapon_empty,
+        weapon_charge,
+        weapon_overheat,
+        weapon_idle,
+        weapon_melee,
+        weapon_animation,
+        object_impacts,
+        particle_impacts,
+        weapon_fire_lod,
+        water_transitions,
+        lowpass_effects,
+        unit_footsteps,
+        unit_dialog,
+        unit_animation,
+        vehicle_collision,
+        vehicle_engine,
+        vehicle_animation,
+        vehicle_engine_lod,
+        device_door,
+        device_machinery,
+        device_stationary,
+        music,
+        ambient_nature,
+        ambient_machinery,
+        ambient_stationary,
+        huge_ass,
+        object_looping,
+        cinematic_music,
+        ambient_flock,
+        no_pad,
+        no_pad_stationary,
+        equipment_effect,
+        mission_dialog,
+        cinematic_dialog,
+        scripted_cinematic_foley,
+        game_event,
+        ui,
+        test,
+        multilingual_test,
+        ambient_nature_details,
+        ambient_machinery_details,
+        inside_surround_tail,
+        outside_surround_tail,
+        vehicle_detonation,
+        ambient_detonation,
+        first_person_inside,
+        first_person_outside,
+        first_person_anywhere,
+        space_projectile_detonation,
+        space_projectile_flyby,
+        space_vehicle_engine,
+        space_weapon_fire,
+        player_voice_team,
+        player_voice_proxy,
+        projectile_impact_postpone,
+        unit_footsteps_postpone,
+        weapon_ready_third_person,
+        ui_music
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -250,49 +476,6 @@ namespace ToolkitLauncher
             xbox,
             wav,
             ogg
-        }
-
-        enum import_type
-        {
-            projectile_impact,
-            projectile_detonation,
-            projectile_flyby,
-            unused,
-            weapon_fire,
-            weapon_ready,
-            weapon_reload,
-            weapon_empty,
-            weapon_charge,
-            weapon_overheat,
-            weapon_idle,
-            weapon_melee,
-            weapon_animation,
-            object_impacts,
-            particle_impacts,
-            unit_footsteps,
-            unit_dialog,
-            unit_animation,
-            vehicle_collision,
-            vehicle_engine,
-            vehicle_animation,
-            device_door,
-            device_machinery,
-            device_stationary,
-            music,
-            ambient_nature,
-            ambient_machinery,
-            huge_ass,
-            object_looping,
-            cinematic_music,
-            cortana_mission,
-            cortana_cinematic,
-            mission_dialog,
-            cinematic_dialog,
-            scripted_cinematic_foley,
-            game_event,
-            ui,
-            test,
-            multilingual_test
         }
 
         // todo(num0005) this is ugly, rework it
@@ -470,7 +653,19 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 3;
+                    return toolkit_profile.GameGen == 3 && toolkit_profile.BuildType == build_type.release_standalone;
+                }
+                return false;
+            }
+        }
+
+        public static bool halo_4
+        {
+            get
+            {
+                if (profile_mapping.Count > 0 && profile_index >= 0)
+                {
+                    return toolkit_profile.GameGen == 3 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -625,7 +820,9 @@ namespace ToolkitLauncher
                     toolkit = new H3ODSTToolkit(profile, base_path, tool_paths);
                     break;
                 case 3:
-                    toolkit = new HRToolkit(profile, base_path, tool_paths);
+                    toolkit = profile.BuildType == build_type.release_standalone ?
+                    toolkit = new HRToolkit(profile, base_path, tool_paths) :
+                    toolkit = new H4Toolkit(profile, base_path, tool_paths);
                     break;
                 default:
                     Debug.Assert(false, "Profile has a game gen that isn't supported. Defaulting to Halo 1");
@@ -648,6 +845,7 @@ namespace ToolkitLauncher
         {
             int current_index = toolkit_selection.SelectedIndex;
             int light_quality_level_index = light_quality_level.SelectedIndex;
+            int class_dropdown_index = class_dropdown.SelectedIndex;
             toolkits.Clear(); // num0005: actually clear this, don't just think about it!
             toolkit_selection.Items.Clear();
             profile_mapping.Clear();
@@ -698,6 +896,18 @@ namespace ToolkitLauncher
                 else
                 {
                     light_quality_level.SelectedIndex = light_quality_level_index;
+                }
+            }
+
+            if (class_dropdown_index >= 0)
+            {
+                if (class_dropdown.Items.Count <= class_dropdown_index)
+                {
+                    class_dropdown.SelectedIndex = class_dropdown.Items.Count - 1;
+                }
+                else
+                {
+                    class_dropdown.SelectedIndex = class_dropdown_index;
                 }
             }
 
@@ -764,7 +974,7 @@ namespace ToolkitLauncher
             // tool doesn't support a value of 0 or 1, the bounds are [0, 1], so we adjust the value a bit to get something reasonable
             float light_level_slider = (float)Math.Max(Math.Min(light_quality_slider.ConvertedValue, 0.999999), 0.000001);
             int instance_count = 1;
-            if (!halo_ce && !halo_2_standalone_stock)
+            if (!halo_ce && !halo_2_standalone_stock && !halo_reach && !halo_4)
             {
                 if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
                 {
@@ -781,10 +991,10 @@ namespace ToolkitLauncher
                     MessageBox.Show("Invalid instance count!", "Error!");
                 }
             }
-            CompileLevel(compile_level_path.Text, bsp_path.Text, light_level, light_level_slider, Final.IsChecked is true, instance_count, phantom_hack.IsChecked is true, lightmap_group.Text);
+            CompileLevel(compile_level_path.Text, bsp_path.Text, light_level, light_level_slider, Final.IsChecked is true, instance_count, phantom_hack.IsChecked is true, lightmap_group.Text, lightmapper_globals_path.Text);
         }
 
-        private async void CompileLevel(string level_path, string bsp_path, string Level_Quality, float level_slider, bool radiosity_quality_toggle, int instance_count, bool phantom_fix, string lightmap_group)
+        private async void CompileLevel(string level_path, string bsp_path, string Level_Quality, float level_slider, bool radiosity_quality_toggle, int instance_count, bool phantom_fix, string lightmap_group, string lightmapper_globals)
         {
             if (levelCompileType.HasFlag(level_compile_type.compile))
             {
@@ -817,13 +1027,14 @@ namespace ToolkitLauncher
                     disable_asserts.IsChecked ?? false,
                     lightmap_group,
                     instance_count,
-                    instance_cmd.IsChecked ?? false
+                    instance_cmd.IsChecked ?? false,
+                    lightmapper_globals
                     );
 
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path, Path.GetDirectoryName(toolkit_profile.ToolPath));
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
-                if (!halo_ce && !halo_2_standalone_stock && lightmaps_args.instanceCount > 1 || !halo_ce && !halo_2)
+                if (!halo_ce && !halo_2_standalone_stock && !halo_reach && !halo_4 && lightmaps_args.instanceCount > 1 || !halo_ce && !halo_2 && !halo_reach && !halo_4)
                 {
                     progress = new CancelableProgressBarWindow<int>();
                     progress.Owner = this;
@@ -1008,13 +1219,13 @@ namespace ToolkitLauncher
         {
             sound_command_type sound_command = (sound_command_type)sound_import_type.SelectedIndex;
             codec_type platform = (codec_type)platform_type.SelectedIndex;
-            import_type class_name = (import_type)class_dropdown.SelectedIndex;
+            string class_name = class_dropdown.SelectedItem.ToString();
 
             string sound_path = import_sound_path.Text;
             string bitrate_value = bitrate_slider.Value.ToString();
             string ltf_path = "data\\" + import_ltf_path.Text;
 
-            await toolkit.ImportSound(sound_path, platform.ToString(), bitrate_value, ltf_path, sound_command.ToString(), class_name.ToString(), ((ComboBoxItem)sound_compression_type.SelectedItem).Content.ToString().ToLower());
+            await toolkit.ImportSound(sound_path, platform.ToString(), bitrate_value, ltf_path, sound_command.ToString(), class_name, ((ComboBoxItem)sound_compression_type.SelectedItem).Content.ToString().ToLower());
         }
 
         private void spaces_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -1265,9 +1476,23 @@ namespace ToolkitLauncher
             picker.Prompt();
         }
 
+        readonly FilePicker.Options lightmapperGlobalsOptions = FilePicker.Options.FileSelect(
+           "Select lightmapper globals",
+           "lightmapper globals tag|*.lightmapper_globals",
+           FilePicker.Options.PathRoot.Tag
+        );
+
+        private void browse_lightmapper_globals_Click(object sender, RoutedEventArgs e)
+        {
+            string default_path = get_default_path(compile_level_path.Text, tag_dir: true, is_file: true);
+            var picker = new FilePicker(lightmapper_globals_path, toolkit, lightmapperGlobalsOptions, default_path);
+            picker.Prompt();
+        }
+
         private void toolkit_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             light_quality_level.SelectedIndex = 0;
+            class_dropdown.SelectedIndex = 0;
         }
 
         private void string_SelectionChanged(object sender, SelectionChangedEventArgs e)

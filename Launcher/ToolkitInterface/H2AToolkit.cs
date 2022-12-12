@@ -88,9 +88,6 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
-#if !DEBUG
-            renderPRT = false; // broken right now
-#endif
             string flags = "";
             if (verboseAnim)
             {
@@ -107,21 +104,51 @@ namespace ToolkitLauncher.ToolkitInterface
 
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
+            List<string> args = new List<string>();
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
                 if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H2")) { return; }; }
-                await RunTool(ToolType.Tool, new() { "render", path, accurateRender.ToString(), renderPRT.ToString() });
+                args.Add("render");
+                args.Add(path);
+                if (accurateRender)
+                {
+                    args.Add("true");
+                }
+                if (renderPRT)
+                {
+                    args.Add("true");
+                }
             }
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new() { "collision", path });
+            {
+                args.Add("collision");
+                args.Add(path);
+            }
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new() { "physics", path });
+            {
+                args.Add("physics");
+                args.Add(path);
+            }
             if (importType.HasFlag(ModelCompile.animations))
+            {
                 if (FPAnim)
-                    await RunTool(ToolType.Tool, new() { "fp-model-animations", path, characterFPPath, weaponFPPath, flags });
+                {
+                    args.Add("fp-model-animations");
+                    args.Add(path);
+                    args.Add(characterFPPath);
+                    args.Add(weaponFPPath);
+                    args.Add(flags);
+                }
                 else
-                    await RunTool(ToolType.Tool, new() { "model-animations", path, flags });
+                {
+                    args.Add("model-animations");
+                    args.Add(path);
+                    args.Add(flags);
+                }
+            }
+
+            await RunTool(ToolType.Tool, args, true);
         }
 
         public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
@@ -131,7 +158,6 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing)
         {
-            string path = scenario.Replace(".scenario", "");
             string flags = "";
             if (cacheCompress)
             {
@@ -154,7 +180,14 @@ namespace ToolkitLauncher.ToolkitInterface
                 flags = set_flags(flags, "mp_tag_sharing");
             }
 
-            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path, cachePlatform, flags });
+            List<string> args = new List<string>();
+            args.Add("build-cache-file");
+            args.Add(scenario.Replace(".scenario", ""));
+            args.Add(cachePlatform);
+            if (flags != "")
+                args.Add(flags);
+
+            await RunTool(ToolType.Tool, args, true);
         }
 
         /// <summary>

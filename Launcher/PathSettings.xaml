@@ -338,26 +338,8 @@
             <Grid Grid.Row="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition>
-                        <ColumnDefinition.Width>
-                            <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                <Binding ElementName="is_mcc" Path="IsChecked" />
-                                <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                <Binding ElementName="community_tools" Path="IsChecked" />
-                                <Binding Source="7" />
-                            </MultiBinding>
-                        </ColumnDefinition.Width>
-                    </ColumnDefinition>
-                    <ColumnDefinition>
-                        <ColumnDefinition.Width>
-                            <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                <Binding ElementName="is_mcc" Path="IsChecked" />
-                                <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                <Binding ElementName="community_tools" Path="IsChecked" />
-                                <Binding Source="6" />
-                            </MultiBinding>
-                        </ColumnDefinition.Width>
-                    </ColumnDefinition>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <GroupBox Grid.Column="0" x:Name="gen_type_box" Header="Game Generation" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" ToolTip="Which generation of the blam engine is used?">
                     <Grid>
@@ -370,14 +352,6 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
-                    <GroupBox.Visibility>
-                        <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
-                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                            <Binding ElementName="community_tools" Path="IsChecked" />
-                            <Binding Source="6" />
-                        </MultiBinding>
-                    </GroupBox.Visibility>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5"/>

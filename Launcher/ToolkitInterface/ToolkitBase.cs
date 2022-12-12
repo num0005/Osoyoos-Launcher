@@ -88,7 +88,8 @@ namespace ToolkitLauncher.ToolkitInterface
             bool NoAssert,
             string lightmapGroup,
             int instanceCount,
-            bool instanceOutput);
+            bool instanceOutput,
+            string lightmapGlobals);
 
         public record ImportArgs(
             bool import_check,
@@ -440,12 +441,12 @@ namespace ToolkitLauncher.ToolkitInterface
             string bsp_name = "";
             if (data_file.EndsWith(".scenario"))
             {
-                scenario_path = Path.GetDirectoryName(data_file).ToLower() ?? "";
-                scenario_name = Path.GetFileNameWithoutExtension(data_file).ToLower();
+                scenario_path = Path.GetDirectoryName(data_file.ToLower()) ?? "";
+                scenario_name = Path.GetFileNameWithoutExtension(data_file.ToLower());
                 bsp_name = "all";
                 if (!string.IsNullOrEmpty(bsp_data_file))
                 {
-                    bsp_name = Path.GetFileNameWithoutExtension(bsp_data_file).ToLower();
+                    bsp_name = Path.GetFileNameWithoutExtension(bsp_data_file.ToLower());
                 }
             }
             else if (data_file.EndsWith(".xml"))
@@ -466,10 +467,10 @@ namespace ToolkitLauncher.ToolkitInterface
                             {
                                 case "scenario":
                                     scenario_path = Path.GetDirectoryName(element.InnerText.ToLower()) ?? "";
-                                    scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
+                                    scenario_name = Path.GetFileNameWithoutExtension(scenario_path.ToLower());
                                     break;
                                 case "scenario_structure_bsp":
-                                    bsp_name = Path.GetFileNameWithoutExtension(element.InnerText).ToLower();
+                                    bsp_name = Path.GetFileNameWithoutExtension(element.InnerText.ToLower());
                                     break;
                             }
                         }
@@ -478,9 +479,9 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else
             {
-                scenario_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file).ToLower()) ?? "";
-                scenario_name = Path.GetFileNameWithoutExtension(scenario_path).ToLower();
-                bsp_name = Path.GetFileNameWithoutExtension(data_file).ToLower();
+                scenario_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file.ToLower())) ?? "";
+                scenario_name = Path.GetFileNameWithoutExtension(scenario_path.ToLower());
+                bsp_name = Path.GetFileNameWithoutExtension(data_file.ToLower());
             }
             Debug.Assert(scenario_path is not null);
             Debug.Assert(scenario_name is not null);
