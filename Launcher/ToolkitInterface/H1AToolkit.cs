@@ -74,13 +74,13 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             if (importType.HasFlag(ModelCompile.render))
-                await RunTool(ToolType.Tool, new() { "model", path, h2SelectionLogic.ToString() }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "model", path, h2SelectionLogic.ToString() }, true);
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new() { "collision-geometry", path, phantomFix.ToString() }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "collision-geometry", path, phantomFix.ToString() }, true);
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new() { "physics", path }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "physics", path }, true);
             if (importType.HasFlag(ModelCompile.animations))
-                await RunTool(ToolType.Tool, new() { "animations", path }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "animations", path }, true);
         }
 
         public override async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
@@ -89,7 +89,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             var info = SplitStructureFilename(data_file);
-            await RunTool(ToolType.Tool, new () { "structure", info.ScenarioPath, info.BspName, phantom_fix.ToString() }, true);
+            await RunTool(ToolType.Tool, new List<string>() { "structure", info.ScenarioPath, info.BspName, phantom_fix.ToString() }, true);
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing)
@@ -102,7 +102,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 ResourceMapUsage.ReadWrite => "read_write",
                 _ => throw new InvalidDataException("Invalid ResourceMapUsage value!")
             };
-            await RunTool(ToolType.Tool, new() { "build-cache-file", path, cacheType.ToString(), resourceUsageString, logTags.ToString() });
+            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path, cacheType.ToString(), resourceUsageString, logTags.ToString() });
         }
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
@@ -148,9 +148,9 @@ namespace ToolkitLauncher.ToolkitInterface
         public async Task JMAFromFBX(string fbxPath, string jmaPath, int startIndex = 0, int? endIndex = null)
         {
             if (endIndex is not null)
-                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
+                await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
             else
-                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString() });
+                await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString() });
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task JMSFromFBX(string fbxPath, string jmsPath, string geo_class)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-jms", fbxPath, jmsPath });
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jms", fbxPath, jmsPath });
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
         {
-            await RunTool(ToolType.Tool, new() { "bitmaps", path, type, debug_plate.ToString() });
+            await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path, type, debug_plate.ToString() });
         }
 
         public override string GetDocumentationName()

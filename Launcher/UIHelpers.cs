@@ -205,7 +205,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
                         grid = new GridLength(8);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 13)
@@ -231,14 +231,14 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 16)
                 {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach)
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 17)
                 {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2 && !MainWindow.halo_reach)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2 && !MainWindow.halo_reach && !MainWindow.halo_4)
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
@@ -246,6 +246,34 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 18)
                 {
                     if (MainWindow.halo_reach)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 19)
+                {
+                    if (MainWindow.halo_ce)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 20)
+                {
+                    if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 21)
+                {
+                    if (MainWindow.halo_4)
+                        grid = new GridLength(1, GridUnitType.Star);
+                    else
+                        grid = new GridLength(1, (double)GridUnitType.Auto);
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 22)
+                {
+                    if (MainWindow.halo_reach || MainWindow.halo_4)
                         grid = new GridLength(1, GridUnitType.Star);
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
@@ -262,7 +290,11 @@ namespace ToolkitLauncher
                     || parameter is string && Int32.Parse(parameter as string) == 15
                     || parameter is string && Int32.Parse(parameter as string) == 16
                     || parameter is string && Int32.Parse(parameter as string) == 17
-                    || parameter is string && Int32.Parse(parameter as string) == 18)
+                    || parameter is string && Int32.Parse(parameter as string) == 18
+                    || parameter is string && Int32.Parse(parameter as string) == 19
+                    || parameter is string && Int32.Parse(parameter as string) == 20
+                    || parameter is string && Int32.Parse(parameter as string) == 21
+                    || parameter is string && Int32.Parse(parameter as string) == 22)
                 {
                     grid = new GridLength(1, GridUnitType.Star);
                 }
@@ -337,12 +369,12 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 7)
                 {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock)
+                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 8)
                 {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone_stock)
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_2_standalone_community)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 9)
@@ -408,12 +440,32 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 20)
                 {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach)
+                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
                         vis = Visibility.Visible;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 21)
                 {
                     if (MainWindow.halo_reach)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 22)
+                {
+                    if (MainWindow.halo_4)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 23)
+                {
+                    if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 24)
+                {
+                    if (MainWindow.halo_reach || MainWindow.halo_4)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 25)
+                {
+                    if (MainWindow.halo_3 || MainWindow.halo_3_odst)
                         vis = Visibility.Visible;
                 }
             }
@@ -505,7 +557,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 9)
                 {
-                    if (!MainWindow.halo_2_standalone_stock)
+                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
                         is_enabled = true;
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 10)
@@ -521,7 +573,7 @@ namespace ToolkitLauncher
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
-                    if (MainWindow.halo_reach)
+                    if (MainWindow.halo_reach || MainWindow.halo_4)
                         is_enabled = true;
                 }
             }
@@ -613,6 +665,10 @@ namespace ToolkitLauncher
                     {
                         enum_item = "Is ODST";
                     }
+                    if (selection_index >= 3)
+                    {
+                        enum_item = "Is Halo 4/H2AMP";
+                    }
                 }
                 else if (parameter is string && Int32.Parse(parameter as string) == 8)
                 {
@@ -641,7 +697,7 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 11)
                 {
                     enum_item = "Run Guerilla";
-                    if (MainWindow.halo_reach)
+                    if (MainWindow.halo_reach || MainWindow.halo_4)
                     {
                         enum_item = "Run Foundation";
                     }
@@ -649,7 +705,7 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 12)
                 {
                     enum_item = "Start Guerilla (the tag/content editor)";
-                    if (MainWindow.halo_reach)
+                    if (MainWindow.halo_reach || MainWindow.halo_4)
                     {
                         enum_item = "Start Foundation (the tag/content editor)";
                     }
@@ -668,6 +724,26 @@ namespace ToolkitLauncher
                     if (selection_index >= 3)
                     {
                         enum_item = "Path to Foundation.exe (content/tag editor).";
+                    }
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 15)
+                {
+                    enum_item = Enum.GetValues(typeof(h2_sound_import_type));
+                    if (MainWindow.halo_2)
+                    {
+                        enum_item = Enum.GetValues(typeof(h2_sound_import_type));
+                    }
+                    else if (MainWindow.halo_3)
+                    {
+                        enum_item = Enum.GetValues(typeof(h3_sound_import_type));
+                    }
+                    else if (MainWindow.halo_3_odst)
+                    {
+                        enum_item = Enum.GetValues(typeof(odst_sound_import_type));
+                    }
+                    else if (MainWindow.halo_reach)
+                    {
+                        enum_item = Enum.GetValues(typeof(reach_sound_import_type));
                     }
                 }
             }
@@ -733,6 +809,10 @@ namespace ToolkitLauncher
                 {
                     enum_item = "Path to Guerilla.exe (content/tag editor).";
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 15)
+                {
+                    enum_item = Enum.GetValues(typeof(h2_sound_import_type));
+                }
             }
 
             return enum_item;
@@ -785,12 +865,6 @@ namespace ToolkitLauncher
                 {
                     //Check if the build type is set to a MCC and gentype is not Halo CE or is Halo 3 and above
                     if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
-                {
-                    //Check if the gen type is not Reach
-                    if (gen_type_selection < 3)
                         vis = Visibility.Visible;
                 }
             }
@@ -852,30 +926,12 @@ namespace ToolkitLauncher
                     if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
-                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
-                {
-                    //Check if the gentype is not Reach
-                    if (gen_type_selection < 3)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 7)
-                {
-                    //Check if the gentype is not Reach
-                    if (gen_type_selection < 3)
-                        grid = new GridLength(8);
-                }
             }
             else
             {
                 if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 5)
                 {
                     grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
-                {
-                    grid = new GridLength(1, GridUnitType.Star);
                 }
                 else
                 {

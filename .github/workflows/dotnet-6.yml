@@ -1,0 +1,59 @@
+name: .NET 6
+
+on:
+  push:
+    paths-ignore:
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - '*.md'
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT : true
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    - name: Publish
+      run: dotnet publish -c Release -r win-x64 -P:PublishSingleFile=true -p:PublishTrimmed=false --self-contained false
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: launcher
+        path: Launcher\bin\Release\net6.0-windows\win-x64\publish\
+        
+  release:
+    if: |
+      github.event.action != 'pull_request' &&
+      github.ref == 'refs/heads/master' &&
+      github.repository == 'num0005/Osoyoos-Launcher'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: actions/download-artifact@v2
+      with:
+        name: launcher
+        path: Launcher_win64
+    - uses: ncipollo/release-action@v1
+      with:
+        prerelease: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: Launcher_win64/*
+        tag: ${{ github.run_id }}
+        

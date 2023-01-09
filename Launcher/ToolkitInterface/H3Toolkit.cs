@@ -22,16 +22,12 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportBitmaps(string path, string type, bool debug_plate)
         {
-            // todo(num0005): is this required? Might be able to just use bitmaps-with-type for both
-            if (type != "2d")
-                _ = await RunTool(ToolType.Tool, new() { "bitmaps-with-type", path, type });
-            else
-                _ = await RunTool(ToolType.Tool, new() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
+            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
         }
 
         override public async Task ImportUnicodeStrings(string path)
         {
-            await RunTool(ToolType.Tool, new() { "strings", path });
+            await RunTool(ToolType.Tool, new List<string>() { "strings", path });
         }
 
         override public async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
@@ -44,32 +40,25 @@ namespace ToolkitLauncher.ToolkitInterface
             if (structure_command == StructureType.structure_seams)
                 data_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file));
 
-            await RunTool(tool, new() { tool_command, data_path }, true);
+            await RunTool(tool, new List<string>() { tool_command, data_path }, true);
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharinge)
         {
-            string path = scenario.Replace(".scenario", "");
-            string audio_configuration = "";
-            string target_language = "";
-            string dedicated_server = "";
-            string compression_type = "";
-            string use_fmod_data = "";
-
-            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", path, cachePlatform, audio_configuration, target_language, dedicated_server, compression_type, use_fmod_data });
+            await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", scenario.Replace(".scenario", "") });
         }
 
-        private static string GetLightmapQuality(LightmapArgs lightmapArgs)
+        public static string GetLightmapQuality(LightmapArgs lightmapArgs)
         {
             return lightmapArgs.level_combobox.ToLower();
         }
 
         public async Task FauxSync(string scenario, string bsp, bool instanceOutput, bool useFast)
         {
-            await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new() { "faux_data_sync", scenario, bsp }, instanceOutput);
+            await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>() { "faux_data_sync", scenario, bsp }, instanceOutput);
         }
 
-        private static int FauxCalculateJobID(string scenario, string bsp)
+        public static int FauxCalculateJobID(string scenario, string bsp)
         {
             int hash = 0x117;
             foreach (char @char in scenario)
@@ -131,14 +120,14 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Status = $"Merging results from stage: \"{stage}\"";
                 // todo(num005): handle workers crashing in a better way than just aborting
                 // merge results from workers
-                await RunFastool(new() { $"faux_farm_{stage}_merge", blobDirectory, clientCountStr }, instanceOutput);
+                await RunFastool(new List<string>() { $"faux_farm_{stage}_merge", blobDirectory, clientCountStr }, instanceOutput);
                 return StageResult.Sucesss;
 
             }
 
             // start farm
             progress.Status = "Initializing lightmap farm...";
-            await RunFastool(new() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString() }, instanceOutput);
+            await RunFastool(new List<string>() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString() }, instanceOutput);
 
             // run farm
 
@@ -150,13 +139,13 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // end farm
             progress.Status = "Ending lightmap farm...";
-            await RunFastool(new() { "faux_farm_finish", blobDirectory }, instanceOutput);
+            await RunFastool(new List<string>() { "faux_farm_finish", blobDirectory }, instanceOutput);
 
             // todo(num0005): are all these strictly required?
             progress.Status = "A few final steps...";
-            await RunFastool(new() { "faux-build-linear-textures-with-intensity-from-quadratic", scenario, bsp }, instanceOutput);
-            await RunFastool(new() { "faux-compress-scenario-bitmaps-dxt5", scenario, bsp }, instanceOutput);
-            await RunFastool(new() { "faux-farm-compression-merge", scenario, bsp }, instanceOutput);
+            await RunFastool(new List<string>() { "faux-build-linear-textures-with-intensity-from-quadratic", scenario, bsp }, instanceOutput);
+            await RunFastool(new List<string>() { "faux-compress-scenario-bitmaps-dxt5", scenario, bsp }, instanceOutput);
+            await RunFastool(new List<string>() { "faux-farm-compression-merge", scenario, bsp }, instanceOutput);
         }
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
@@ -187,42 +176,72 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
-            string type = "";
-            if (verboseAnim)
-            {
-                type = "-verbose";
-            }
-            else if (uncompressedAnim)
-            {
-                type = "-uncompressed";
-            }
-            else if (resetCompression)
-            {
-                type = "-reset";
-            }
-
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
+            List<string> args = new List<string>();
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
                 if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { return; }; }
                 if (skyRender)
-                    await RunTool(ToolType.Tool, new() { "render-sky", path });
+                {
+                    args.Add("render-sky");
+                    args.Add(path);
+                }
                 else if (accurateRender)
-                    await RunTool(ToolType.Tool, new() { "render-accurate", path, renderPRT ? "final" : "draft" });
+                {
+                    args.Add("render-accurate");
+                    args.Add(path);
+                    args.Add(renderPRT ? "final" : "draft");
+                }
                 else
-                    await RunTool(ToolType.Tool, new() { "render", path, renderPRT ? "final" : "draft" });
+                {
+                    args.Add("render");
+                    args.Add(path);
+                    args.Add(renderPRT ? "final" : "draft");
+                }
             }
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new() { "collision", path });
+            {
+                args.Add("collision");
+                args.Add(path);
+            }
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new() { "physics", path });
+            {
+                args.Add("physics");
+                args.Add(path);
+            }
             if (importType.HasFlag(ModelCompile.animations))
+            {
                 if (FPAnim)
-                    await RunTool(ToolType.Tool, new() { "fp-model-animations" + type, path, characterFPPath, weaponFPPath });
+                {
+                    if (verboseAnim)
+                        args.Add("fp-model-animations-verbose");
+                    else if (uncompressedAnim)
+                        args.Add("fp-model-animations-uncompressed");
+                    else if (resetCompression)
+                        args.Add("fp-model-animations-reset");
+                    else
+                        args.Add("fp-model-animations");
+                    args.Add(path);
+                    args.Add(characterFPPath);
+                    args.Add(weaponFPPath);
+                }
                 else
-                    await RunTool(ToolType.Tool, new() { "model-animations" + type, path });
+                {
+                    if (verboseAnim)
+                        args.Add("model-animations-verbose");
+                    else if (uncompressedAnim)
+                        args.Add("model-animations-uncompressed");
+                    else if (resetCompression)
+                        args.Add("model-animations-reset");
+                    else
+                        args.Add("model-animations");
+                    args.Add(path);
+                }
+            }
+
+            await RunTool(ToolType.Tool, args, true);
         }
 
         public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
@@ -241,9 +260,9 @@ namespace ToolkitLauncher.ToolkitInterface
         public async Task JMAFromFBX(string fbxPath, string jmaPath, int startIndex = 0, int? endIndex = null)
         {
             if (endIndex is not null)
-                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
+                await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString(), endIndex.ToString() });
             else
-                await RunTool(ToolType.Tool, new() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString() });
+                await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jma", fbxPath, jmaPath, startIndex.ToString() });
         }
 
         /// <summary>
@@ -255,7 +274,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task JMSFromFBX(string fbxPath, string jmsPath, string geoClass)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-jms", geoClass, fbxPath, jmsPath });
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jms", geoClass, fbxPath, jmsPath });
         }
 
         /// <summary>
@@ -266,7 +285,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task JMIFromFBX(string fbxPath, string jmiPath)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-jmi", fbxPath, jmiPath });
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-jmi", fbxPath, jmiPath });
         }
 
         /// <summary>
@@ -277,7 +296,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task ASSFromFBX(string fbxPath, string assPath)
         {
-            await RunTool(ToolType.Tool, new() { "fbx-to-ass", fbxPath, assPath });
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-ass", fbxPath, assPath });
         }
 
         public override bool IsMutexLocked(ToolType tool)

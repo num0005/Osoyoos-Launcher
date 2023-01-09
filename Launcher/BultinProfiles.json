@@ -56,8 +56,9 @@
         "GameGeneration": 1,
         "IsMCCBuild": true,
         "Tool": {
-            "TLSH": "2456AE62BA72C1F2CC136070B05FB77B597463AC47182DE3A3F459ACD6A05D069FB18A",
+            "TLSH": "91769D63BA6291F2DC4321B1B06FBB7B5935631807186ED3E3E4191CD8E05D069FF29A",
             "MD5": [
+                "21abf89742399ab2f5839feb69f6af94",
                 "39daaf08cd76f93d9c98f89c136ec9c6",
                 "CAFBEC6B05CB0A659F97B0084C29FA64",
                 "439e5452b85e622b16c5bd9c5bee3f0a"
@@ -65,24 +66,27 @@
         },
         "ToolFast": null,
         "Guerilla": {
-            "TLSH": "7A068CA17BB281B3CD133171745EB77B5D35A21C47187EC7A3E129ACC1A48D09AFB18A",
+            "TLSH": "9636AD92BBF281B1D9532572385E7B7B4831B72C4B15BEC3A3E1156DC0B09D059FB28A",
             "MD5": [
+                "344679513151e6840a0785f9f177045b",
                 "438f0279e87c4ecae44a36220dbb8c99",
                 "7C2857864AF87FA6F32EEC7EC74CC7B8",
                 "65322213b6fc9b1d20ece46299d65fe4"
             ]
         },
         "Sapien": {
-            "TLSH": "EC56AC51BB7681B0DD432172B89BBB3B9834A31C6B142EE7A3F41D9C85F09D118F719A",
+            "TLSH": "05769D92B7B3D2B2DC4221B0701BB7BB6D31B20C47255DD3E7E1295CD5A09D06AFB18A",
             "MD5": [
+                "e7eca0ab6655441fce8f78e91766b675",
                 "172d956a08c93c8af94c02532388a497",
                 "81767AB17058F3802C9CB97CF996F307",
                 "0acb623c9ecc4761826906bcffb2e65b"
             ]
         },
         "Standalone": {
-            "TLSH": "D6769E81BD2381B1D88161B5745BBB7FDC3B32445B2E09C7E3E8165EC0A15E22AFF199",
+            "TLSH": "DF96BF81FE6381B1D88651B874ABB73FE83722149B2E19C3E7F4155EC4A11F229BF194",
             "MD5": [
+                "00e69729807dfcb8bb0787b2c4f118f9",
                 "4f778f4cb3a0050cf44b6b5513e6d3aa",
                 "4D66960A5D5AD18CD4424477B432BCEE",
                 "dd42c8ff0a9132918c78da7379a6e074"
@@ -152,36 +156,41 @@
         "GameGeneration": 2,
         "IsMCCBuild": true,
         "Tool": {
-            "TLSH": "64C67D227C7290A6E7551133767A2AAB54369270832FD0CFD394055C92B89D32BB73FB",
+            "TLSH": "70D68E127C62C361E65A04B3727E265F56367264832DC1CBD2D0055C96B88E32BBFB7B",
             "MD5": [
+                "c87653164366248921744f2aa9cdc82d",
                 "bf4caaa7a084fbc36119cd214a719f30",
                 "c31f8a48a0c342c24407a3ef2627f3ba"
             ]
         },
         "ToolFast": {
-            "TLSH": "CC96BD40BAA3C0F1D9463071B46DB66FE93075148F0C5AD3E3E48A2DE6F0AE15AF7685",
+            "TLSH": "CAA6BE40BAA3C0F2D586217170AEBB6FE93439144F1946D3E3E09A2CE9F06E119F76D5",
             "MD5": [
+                "8df7d90caacd84347d2315520a4ea40b",
                 "0b7ca8fc3742180baa7b5e0a317d942a",
                 "0d283f6a3c269dfe4bafb6595a41369c"
             ]
         },
         "Guerilla": {
-            "TLSH": "B1B68D227C32817DE754503376BA3A2F68B6D2504B2EA2C7D2D0455C59B88D36BB63F3",
+            "TLSH": "B7C67D127EA290A1EB55103376FE2A7F58366250872DA1C7D2D0054C96B89D3FBB63F3",
             "MD5": [
+                "4832cd61527aa5efe193cd4a3c4d8cfa",
                 "b2594881f6b5c332737adc8f2a7e6bb0",
                 "f7d6c94552c98b6a6a2766541767e3ff"
             ]
         },
         "Sapien": {
-            "TLSH": "F8C68D227C368071E6541237B67E6B2F24269274632EE0CBD2D045EC55B89D32BB63F7",
+            "TLSH": "3DC68D3278A29061E765013372BA663F64B65224472ED0C7D2F4456CA5B88D33BBF3B7",
             "MD5": [
+                "cf14fb0a2a4cf7cb98cbf50c325b73aa",
                 "f284e3ecceb395bab088c24ae6cb0e64",
                 "1982ee8d314fa17bea0f41c03181f53b"
             ]
         },
         "Standalone": {
-            "TLSH": "57D67D22BC32C271EB5504737A7A262F142A5254473ED0DBD2D4094E96B89E32BB73F7",
+            "TLSH": "16E68D12FC72C3E1E655127376BA2E1F25367624433ED2C792D0456C86B8AD22BB6373",
             "MD5": [
+                "b93694b6732cc3776b5666d2e54d1940",
                 "dab10437f06a2a7365255efa3a1b2abe",
                 "820d41db2c4f8b04a21fae58e08c6a4a"
             ]
@@ -193,36 +202,41 @@
         "GameGeneration": 3,
         "IsMCCBuild": false,
         "Tool": {
-            "TLSH": "FC478B6672B05CE8F066C0349657A91BFBB17C758B210BDB52A0266D1F3FBE06D7A310",
+            "TLSH": "3D579C5272B05CE8F066D0389657A51BEBB07C764B314BDB22A0226D5F3FBE06D7A710",
             "MD5": [
+                "87a525aaed6284d1bc0449f38e60ce0d",
                 "41ff9e13afea3a86a2c4f498e5853848",
                 "9fd954fe98f8bc335154a3be7b27efbf"
             ]
         },
         "ToolFast": {
-            "TLSH": "A7479C56B6B09CD8F036C0388997951BEBB07C758B214BDB62A0665D1F3FBE06D7A310",
+            "TLSH": "5B579C52B6B06CD8F036C0388697951BEBB17C758B214BDB62A0635D1F3FBE0697A311",
             "MD5": [
+                "05aadb7c32df3a129ccb2e1dcf24290e",
                 "51b79fd39c3a7d62f7b473b009fafeab",
                 "ff6f84c70df8dc92efcf57816a264b97"
             ]
         },
         "Guerilla": {
-            "TLSH": "8527AD4632A094E8D066D038D567DA0BFBB17C548B314BCB96A033AE5F37BD16E7B610",
+            "TLSH": "73379D9172B090E8D066D038D557961BFBB17C614B224BCB96A073AE1F3BBE06C7B711",
             "MD5": [
+                "2d4d018a2dda13c97ccc8fed1c049918",
                 "3e11fc80d78a8a9b46a095c5dac52e10",
                 "903e2e582b2a1472cf8c3be782b3b1a8"
             ]
         },
         "Sapien": {
-            "TLSH": "F237AD5576B090E8D066C038D957992BEBB17C658B224BCB62E0235E5F37BE03C7B721",
+            "TLSH": "2837AE4572B098E8E066D038D997990BEBB17C754B324BCB22A0235D5F3BBE06D7B711",
             "MD5": [
+                "16366406e92535724895178c1d87749a",
                 "a39d94bfbae3c54b76d01722abefa824",
                 "17ae798c46e944ce67605bae98cad354"
             ]
         },
         "Standalone": {
-            "TLSH": "32479C457260A8D8F027D038D957AA0BFBB17C764B214BCB12A4279D5F3FBE06D7A211",
+            "TLSH": "AC579C4672605CD8F07AD038D597AA0BEBB17C354B2247CB22A462AD5F3FBD06D7A311",
             "MD5": [
+                "c5a7cf26f6e347151a8a5263a05bfc2b",
                 "9c70d0f85a79f696d025badf69ed0f71",
                 "6ed7bf3a552176b92a381d542f0bb186"
             ]
@@ -234,32 +248,37 @@
         "GameGeneration": 3,
         "IsMCCBuild": true,
         "Tool": {
-            "TLSH": "0F47AD5572B0ACE8F066C0349656A51BEBB07C758B314BDB62A0226D1F3FBE06D7B710",
+            "TLSH": "D8579C5272B05CE8F02AC0389657951BEBB17C758B3147DB62A0226D5F3FBE0697B720",
             "MD5": [
+                "eb37d3f3c6364b20e18b301f03162cb2",
                 "71c98eb867e6bbeb5bab48595d52b8a6"
             ]
         },
         "ToolFast": {
-            "TLSH": "69479C52B6B06CD8F036D0349697951BEBB03C768B214BDB62A0665D1F3FBE0697B310",
+            "TLSH": "3957AD5676B06CD8F036C0388996951BEBB17C764B214BDB62A0636D1F3FBE0697B310",
             "MD5": [
+                "47769f5b6c2fe1a56c2799f93939b7d9",
                 "e3c29062fd107e3a954158b7fa136d6f"
             ]
         },
         "Guerilla": {
-            "TLSH": "DA279C8532B090D8D06AD039D9579A0BEBB17C548F3147CB56A033AE6F37BE12E7B611",
+            "TLSH": "62379D8572B094D4D0AAC0789957D90BEBB07C614B324BCB92A0336E5F7BBE46C7B711",
             "MD5": [
+                "ab96b04f0d5050762ffd60ea00955439",
                 "39b2e2f7296781255dac8e8769322ad1"
             ]
         },
         "Sapien": {
-            "TLSH": "8F379D86327094E8E066D039D556D90BEBB07C658B710BCB62B0279E5F3BBE06C7B711",
+            "TLSH": "B147AD56327098D8F06AD038D556991BFBB07C718B314BCB22A0269E5F3FBE06D7B611",
             "MD5": [
+                "d0b9c8a8a6374be4f305ed506a777104",
                 "632403c5e60fd5068147db362cb65df8"
             ]
         },
         "Standalone": {
-            "TLSH": "9B579D463260ACD8F06AD039D557990BFBB178758B2157CB22A0639E1F3FBD06D7B221",
+            "TLSH": "5F578C8636609CD8F077D039D957990BEBB1B8754B2157CB22A022AD1F3FBE06D7A311",
             "MD5": [
+                "1974d4ade7b73379eec9211c2fd8c60b",
                 "d03e27be51f15bb810e55a7acc86f73c"
             ]
         }
@@ -268,35 +287,112 @@
         "ToolkitName": "HREK",
         "Description": "The MCC Halo Reach Toolset.",
         "GameGeneration": 4,
-        "IsMCCBuild": true,
+        "IsMCCBuild": false,
         "Tool": {
-            "TLSH": "7A87AD56B2A09CD5F07AC038D556921BF7B178314B2207DB62B4532E1F3FBE06ABA711",
+            "TLSH": "CA879C56B2609CD8F07AC034D996920BF7B178324B3147DB62A4536E2F7FBE0697A311",
             "MD5": [
+                "6bf23f163a442e69a8906958f9830c6d",
                 "39747687a564b7827730618167e21775"
             ]
         },
         "ToolFast": {
-            "TLSH": "E1879D66B660ACD9F07AD038D556D207F7B278314B2107DB62A0636D1F3FBE06A7A311",
+            "TLSH": "3E879D66B660ACD8F03BD038955AD217F7B178324B2147CB62A0535E1F3FBE46A7A311",
             "MD5": [
+                "48390f02ec3ba72bd8a45373eb5b0265",
                 "d23386aae8f1714fc4ec2d4a2db0046c"
             ]
         },
         "Guerilla": {
-            "TLSH": "00A36AC432AAC112CAFE1FF524749F105A79AB86B831DF5D4649109A1EF2713CA20BF3",
+            "TLSH": "38A339C1B2A1CD21C7B92B3225B09F530B7556D6B9A3C73C41E460ABED32731CA217E6",
             "MD5": [
+                "8f7cfbaa2e671063d0bf4079673a7146",
                 "66bd7153df10ebd9b5415ee04317647d"
             ]
         },
         "Sapien": {
-            "TLSH": "15779D567261ACE8F07AD038D956920BF7B17C324B2247CB62A0625D1F3F7E0A97F611",
+            "TLSH": "2377AD5576619CE8F03AD0389966911BF7B1B8314B3207CB62A0639E5F3FAE06D7E311",
             "MD5": [
+                "d116ff90d4bbf08488fd6a18ca679c85",
                 "62d7ef3d080fedb70005d95a7af5ade5"
             ]
         },
         "Standalone": {
-            "TLSH": "19879D9272646CE8F03BD1389956960BF7B178314B2207CB52B453AD2F3FBE05A7A711",
+            "TLSH": "77879D567260ACD8F03BD038D996960BF7B1B8364B2247CB52A453AD1F3FBD05A7A311",
             "MD5": [
+                "4c38cb1186d7b9d6070593202560db8a",
                 "4469dfd8eca1fbf02b9d303fe8e5d324"
+            ]
+        }
+    },
+    {
+        "ToolkitName": "H4EK",
+        "Description": "The MCC Halo 4 Toolset.",
+        "GameGeneration": 4,
+        "IsMCCBuild": true,
+        "Tool": {
+            "TLSH": "66A79D9577A0A8DBF07AD039C5A6950BF7B2B8344B304BCB51A0436D5F3F6E0993A721",
+            "MD5": [
+                "d47b6621c622db8bdbf35db1d8256ee6"
+            ]
+        },
+        "ToolFast": {
+            "TLSH": "C9978CA536B09DDAF066C035D46AD617FBB278754B3147CB11A4026DAF3F6E04E3A322",
+            "MD5": [
+                "531ca9ffd72be66bcc20a697340fb70b"
+            ]
+        },
+        "Guerilla": {
+            "TLSH": "30A35977E6A08724D5F88B3EA06081301B769F074C66DF1E45B8B0BD2E1670D0AAD777",
+            "MD5": [
+                "283b48016e9a8bc513ba3b58e32faa67"
+            ]
+        },
+        "Sapien": {
+            "TLSH": "A8979D5576B0ACD6F066D03AC4A6951BF7B278348B3047CB51A0426E9F3F7E0AD7A321",
+            "MD5": [
+                "0cec1621a023a67039ceb5b3d1694ecd"
+            ]
+        },
+        "Standalone": {
+            "TLSH": "02979C913AB0ACDAF066D035D096961BF7B2B8364B3157CB55A0026D5F3F7E09E3A321",
+            "MD5": [
+                "da062c0ddbd64a73a95fed2906f55ba6"
+            ]
+        }
+    },
+    {
+        "ToolkitName": "H2AMPEK",
+        "Description": "The MCC Halo 2 Anniversary Multiplayer Toolset.",
+        "GameGeneration": 4,
+        "IsMCCBuild": true,
+        "Tool": {
+            "TLSH": "AEA79C567BA4A8DBF06AD039C5A6950BF7B278344B3447CB51A0036E5F3F6E0993B321",
+            "MD5": [
+                "c0eb7d7eda7a854f17134ebfca56f4b8"
+            ]
+        },
+        "ToolFast": {
+            "TLSH": "0B978C593BB46CDAF06AD035D466C55BF7B278754B3043DB21A4026E6F3F6E04E3A222",
+            "MD5": [
+                "29127e2c6fa62f16ef577876944afccf"
+            ]
+        },
+        "Guerilla": {
+            "TLSH": "F1A34B8026504153F6AB0BFD6D238500DB725E56F422D69C4BCC6CBDFDD274A8A50BAF",
+            "MD5": [
+                "9c4798479c866d6e79223f8814881c25"
+            ]
+        },
+        "Sapien": {
+            "TLSH": "7A979D5577B0ACD6F066D039C4A6851BF7B2B4358B3047CB51A042AE9F3F6E0AD7A321",
+            "MD5": [
+                "4e2e6d84fcc4e62eaa1f4a65ab815768"
+            ]
+        },
+        "Standalone": {
+            "TLSH": "97979D5137B0ACDAF066D038D196951BFBB2B8358B3147CB51A0426D5F3F6E0AE3A721",
+            "MD5": [
+                "f08cb25deff2fba439a89f53afd2b013"
             ]
         }
     }
