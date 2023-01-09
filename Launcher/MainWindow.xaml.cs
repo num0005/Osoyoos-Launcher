@@ -974,7 +974,7 @@ namespace ToolkitLauncher
             // tool doesn't support a value of 0 or 1, the bounds are [0, 1], so we adjust the value a bit to get something reasonable
             float light_level_slider = (float)Math.Max(Math.Min(light_quality_slider.ConvertedValue, 0.999999), 0.000001);
             int instance_count = 1;
-            if (!halo_ce && !halo_2_standalone_stock && !halo_reach && !halo_4)
+            if (!halo_ce && !halo_2_standalone_stock && !halo_4)
             {
                 if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
                 {
@@ -1034,7 +1034,7 @@ namespace ToolkitLauncher
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path, Path.GetDirectoryName(toolkit_profile.ToolPath));
                 var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
-                if (!halo_ce && !halo_2_standalone_stock && !halo_reach && !halo_4 && lightmaps_args.instanceCount > 1 || !halo_ce && !halo_2 && !halo_reach && !halo_4)
+                if (lightmaps_args.instanceCount > 1 || halo_3 || halo_reach)
                 {
                     progress = new CancelableProgressBarWindow<int>();
                     progress.Owner = this;
