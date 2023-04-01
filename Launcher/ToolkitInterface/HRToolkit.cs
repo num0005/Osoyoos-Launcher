@@ -51,7 +51,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(tool, args, true);
         }
 
-        public new async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)
+        override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)
         {
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 

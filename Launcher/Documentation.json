@@ -37,6 +37,16 @@
     "H3": {
       "Packaging": "h3/tools/h3-ek/h3-tool/#build-cache-file",
       "Lighting": "h3/tools/h3-ek/h3-tool/#baking-lightmaps-faux"
+    },
+    "HR": {
+      "Packaging": "hr/hr-ek/hr-tool/#build-cache-file-cache",
+      "Lighting": "hr/hr-ek/hr-tool/#baking-lightmaps-faux"
+    },
+    "H4": {
+
+    },
+    "H2A": {
+      "Base": "H4"
     }
   }
 }
