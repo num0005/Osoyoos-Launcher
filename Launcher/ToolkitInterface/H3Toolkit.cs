@@ -184,8 +184,8 @@ namespace ToolkitLauncher.ToolkitInterface
             if (importType.HasFlag(ModelCompile.all))
             {
                 await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
-                await RunTool(ToolType.Tool, ImportCollision(path), true);
-                await RunTool(ToolType.Tool, ImportPhysics(path), true);
+                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
+                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
                 await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
                 return;
             }
@@ -195,11 +195,11 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else if (importType.HasFlag(ModelCompile.collision))
             {
-                await RunTool(ToolType.Tool, ImportCollision(path), true);
+                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
             }
             else if (importType.HasFlag(ModelCompile.physics))
             {
-                await RunTool(ToolType.Tool, ImportPhysics(path), true);
+                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
             }
             else if (importType.HasFlag(ModelCompile.animations))
             {
@@ -230,26 +230,6 @@ namespace ToolkitLauncher.ToolkitInterface
                 args.Add(path);
                 args.Add(renderPRT ? "final" : "draft");
             }
-
-            return args;
-        }
-
-        public static List<string> ImportCollision(string path)
-        {
-            List<string> args = new List<string>();
-
-            args.Add("collision");
-            args.Add(path);
-
-            return args;
-        }
-
-        public static List<string> ImportPhysics(string path)
-        {
-            List<string> args = new List<string>();
-
-            args.Add("physics");
-            args.Add(path);
 
             return args;
         }
