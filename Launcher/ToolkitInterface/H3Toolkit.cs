@@ -189,20 +189,19 @@ namespace ToolkitLauncher.ToolkitInterface
                 await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
                 return;
             }
-
-            if (importType.HasFlag(ModelCompile.render))
+            else if (importType.HasFlag(ModelCompile.render))
             {
                 await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
             }
-            if (importType.HasFlag(ModelCompile.collision))
+            else if (importType.HasFlag(ModelCompile.collision))
             {
                 await RunTool(ToolType.Tool, ImportCollision(path), true);
             }
-            if (importType.HasFlag(ModelCompile.physics))
+            else if (importType.HasFlag(ModelCompile.physics))
             {
                 await RunTool(ToolType.Tool, ImportPhysics(path), true);
             }
-            if (importType.HasFlag(ModelCompile.animations))
+            else if (importType.HasFlag(ModelCompile.animations))
             {
                 await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
             }
