@@ -181,44 +181,31 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
-            List<string> args = new List<string>();
-
-            // Check if import type is "all"
-            if (importType.HasFlag(ModelCompile.render) && importType.HasFlag(ModelCompile.collision) && importType.HasFlag(ModelCompile.physics) && importType.HasFlag(ModelCompile.animations))
+            if (importType.HasFlag(ModelCompile.all))
             {
-                args = ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT);
-                await RunTool(ToolType.Tool, args, true);
-                args.Clear();
-                args = ImportCollision(path);
-                await RunTool(ToolType.Tool, args, true);
-                args.Clear();
-                args = ImportPhysics(path);
-                await RunTool(ToolType.Tool, args, true);
-                args.Clear();
-                args = ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath);
-                await RunTool(ToolType.Tool, args, true);
-
+                await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
+                await RunTool(ToolType.Tool, ImportCollision(path), true);
+                await RunTool(ToolType.Tool, ImportPhysics(path), true);
+                await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
                 return;
             }
 
             if (importType.HasFlag(ModelCompile.render))
             {
-                args = ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT);
+                await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
             }
             if (importType.HasFlag(ModelCompile.collision))
             {
-                args = ImportCollision(path);
+                await RunTool(ToolType.Tool, ImportCollision(path), true);
             }
             if (importType.HasFlag(ModelCompile.physics))
             {
-                args = ImportPhysics(path);
+                await RunTool(ToolType.Tool, ImportPhysics(path), true);
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
-                args = ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath);
+                await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
             }
-
-            await RunTool(ToolType.Tool, args, true);
         }
 
         public static List<string> ImportRender(bool genShaders, bool skyRender, string BaseDirectory, string path, bool accurateRender, bool renderPRT)
