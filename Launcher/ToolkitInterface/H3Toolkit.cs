@@ -181,27 +181,19 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
-            if (importType.HasFlag(ModelCompile.all))
-            {
-                await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
-                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
-                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
-                await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
-                return;
-            }
-            else if (importType.HasFlag(ModelCompile.render))
+            if (importType.HasFlag(ModelCompile.render))
             {
                 await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
             }
-            else if (importType.HasFlag(ModelCompile.collision))
+            if (importType.HasFlag(ModelCompile.collision))
             {
                 await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
             }
-            else if (importType.HasFlag(ModelCompile.physics))
+            if (importType.HasFlag(ModelCompile.physics))
             {
                 await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
             }
-            else if (importType.HasFlag(ModelCompile.animations))
+            if (importType.HasFlag(ModelCompile.animations))
             {
                 await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
             }
