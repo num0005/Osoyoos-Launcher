@@ -191,7 +191,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             if (importType.HasFlag(ModelCompile.physics))
             {
-                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
+                await RunTool(ToolType.Tool, new List<string> { "physics", path }, true);
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
