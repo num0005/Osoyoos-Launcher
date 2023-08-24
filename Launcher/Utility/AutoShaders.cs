@@ -152,125 +152,115 @@ internal class JMSMaterialReader
         foreach (string file in files)
         {
             counter = 0;
-            if (file[^4..] is ".JMS" or ".jms")
+            
+            if (Path.GetExtension(file).ToLower() is ".jms")
             {
                 full_jms_path = file;
 
-                StreamReader sr = new(full_jms_path);
-
-                // Find Materials definition header in JMS file
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Contains(";### MATERIALS ###"))
-                    {
-                        break;
-                    }
-                    counter++;
-                }
-
-                //Grab number of materials from file
-                int numMats = int.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
-                // Line number of first shader name
-                int currentLine = counter + 7;
-
                 // Open shader_collections.txt
                 List<string> collections = new();
+
+                string collection_path = BaseDirectory + @"\tags\scenarios\shaders\shader_collections.shader_collections";
                 if (gameType == "H3" || gameType == "H3ODST")
                 {
-                    try
-                    {
-                        sr = new(BaseDirectory + @"\tags\levels\shader_collections.txt");
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show("Could not find shader_collections.txt!\nMake sure you have shader_collections.txt in\n\"H3EK/tags/levels\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    collection_path = BaseDirectory + @"\tags\levels\shader_collections.txt";
                 }
-                else
+                if (File.Exists(collection_path))
                 {
-                    try
+                    using (StreamReader sr = new StreamReader(collection_path))
                     {
-                        sr = new(BaseDirectory + @"\tags\scenarios\shaders\shader_collections.shader_collections");
-                    }
-                    catch (DirectoryNotFoundException)
-                    {
-                        MessageBox.Show("Could not find shader_collections file!\nMake sure you have shader_collections.shader_collections in\n\"H2EK/tags/scenarios/shaders\"", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-
-
-                // Grab every shader collection prefix
-                if (gameType == "H3" || gameType == "H3ODST")
-                {
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if ((line.Contains("levels") || line.Contains("scenarios") || line.Contains("objects")) && !line.Contains("shader_collections.txt"))
+                        // Grab every shader collection prefix
+                        if (gameType == "H3" || gameType == "H3ODST")
                         {
-                            if (line.Contains('\t'))
+                            while ((line = sr.ReadLine()) != null)
                             {
-                                collections.Add(line.Substring(0, line.IndexOf('\t')));
-                            }
-                            else
-                            {
-                                collections.Add(line.Substring(0, line.IndexOf(' ')));
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if ((line.Contains("scenarios") || line.Contains("objects") || line.Contains("test")) && !line.Contains('='))
-                        {
-                            if (line.Contains('\t'))
-                            {
-                                collections.Add(line.Substring(0, line.IndexOf('\t')));
-                            }
-                            else
-                            {
-                                collections.Add(line.Substring(0, line.IndexOf(' ')));
-                            }
-                        }
-                    }
-                }
-
-                // Take each material name, strip symbols, add to list
-                // Typically the most "complex" materials come in the format: prefix name extra1 extra2 extra3...
-                // So if a prefix exists, check that it is a valid collection, if so ignore it as shader will be grabbed from collection,
-                // but if it isn't, it should be treated as part of the full shader name
-                string[] extras = { "lm:", "lp:", "hl:", "ds:", "pf:", "lt:", "to:", "at:", "ro:" };
-                string shaderNameStripped;
-                for (int i = 0; i < numMats; i++)
-                {
-                    string[] shaderNameSections = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First().Split(' ');
-                    if (shaderNameSections.Length < 2)
-                    {
-                        shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", string.Empty);
-                        shaders.Add(shaderNameStripped);
-                    }
-                    else // Shader name has spaces in it
-                    {
-                        // Check if section before first space is a valid shader collection prefix
-                        if (!collections.Contains(shaderNameSections[0]))
-                        {
-                            // Shader is not in a collection, so probably just has a space in the name
-                            string shaderPrefixAndName = "";
-                            // Check if any section is an "extra" material property, if so don't include it
-                            foreach (string part in shaderNameSections)
-                            {
-                                if (!extras.Any(part.Contains))
+                                if ((line.Contains("levels") || line.Contains("scenarios") || line.Contains("objects")) && !line.Contains("shader_collections.txt"))
                                 {
-                                    shaderPrefixAndName += part + ' ';
+                                    if (line.Contains('\t'))
+                                    {
+                                        collections.Add(line.Substring(0, line.IndexOf('\t')));
+                                    }
+                                    else
+                                    {
+                                        collections.Add(line.Substring(0, line.IndexOf(' ')));
+                                    }
                                 }
                             }
-                            shaderNameStripped = Regex.Replace(shaderPrefixAndName, "[^0-9a-zA-Z_. ]", string.Empty).Trim();
+                        }
+                        else
+                        {
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                if ((line.Contains("scenarios") || line.Contains("objects") || line.Contains("test")) && !line.Contains('='))
+                                {
+                                    if (line.Contains('\t'))
+                                    {
+                                        collections.Add(line.Substring(0, line.IndexOf('\t')));
+                                    }
+                                    else
+                                    {
+                                        collections.Add(line.Substring(0, line.IndexOf(' ')));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                using (StreamReader sr = new StreamReader(full_jms_path))
+                {
+                    // Find Materials definition header in JMS file
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains(";### MATERIALS ###"))
+                        {
+                            break;
+                        }
+                        counter++;
+                    }
+
+                    //Grab number of materials from file
+                    int numMats = int.Parse(File.ReadLines(full_jms_path).Skip(counter + 1).Take(1).First());
+                    // Line number of first shader name
+                    int currentLine = counter + 7;
+
+                    // Take each material name, strip symbols, add to list
+                    // Typically the most "complex" materials come in the format: prefix name extra1 extra2 extra3...
+                    // So if a prefix exists, check that it is a valid collection, if so ignore it as shader will be grabbed from collection,
+                    // but if it isn't, it should be treated as part of the full shader name
+                    string[] extras = { "lm:", "lp:", "hl:", "ds:", "pf:", "lt:", "to:", "at:", "ro:" };
+                    string shaderNameStripped;
+                    for (int i = 0; i < numMats; i++)
+                    {
+                        string[] shaderNameSections = File.ReadLines(full_jms_path).Skip(currentLine - 1).Take(1).First().Split(' ');
+                        if (shaderNameSections.Length < 2)
+                        {
+                            shaderNameStripped = Regex.Replace(shaderNameSections[0], "[^0-9a-zA-Z_.]", string.Empty);
                             shaders.Add(shaderNameStripped);
                         }
-                        // Otherwise shader is part of an existing collection, so no need to create a new tag for it
+                        else // Shader name has spaces in it
+                        {
+                            // Check if section before first space is a valid shader collection prefix
+                            if (!collections.Contains(shaderNameSections[0]))
+                            {
+                                // Shader is not in a collection, so probably just has a space in the name
+                                string shaderPrefixAndName = "";
+                                // Check if any section is an "extra" material property, if so don't include it
+                                foreach (string part in shaderNameSections)
+                                {
+                                    if (!extras.Any(part.Contains))
+                                    {
+                                        shaderPrefixAndName += part + ' ';
+                                    }
+                                }
+                                shaderNameStripped = Regex.Replace(shaderPrefixAndName, "[^0-9a-zA-Z_. ]", string.Empty).Trim();
+                                shaders.Add(shaderNameStripped);
+                            }
+                            // Otherwise shader is part of an existing collection, so no need to create a new tag for it
+                        }
+                        // Skip to next shader name
+                        currentLine += 4;
                     }
-                    // Skip to next shader name
-                    currentLine += 4;
                 }
             }
         }
