@@ -1646,7 +1646,7 @@ namespace ToolkitLauncher
                     FBXArgs = PromptForFBXPaths("Select GR2 save location", "Granny3D 2|*.GR2");
                     if (FBXArgs is not null)
                     {
-                        string jsonPath = Path.GetFileNameWithoutExtension(FBXArgs.Value.fbxFileName) + ".json";
+                        string jsonPath = Path.Combine(System.IO.Path.GetDirectoryName(FBXArgs.Value.fbxFileName), Path.GetFileNameWithoutExtension(FBXArgs.Value.fbxFileName) + ".json");
                         await FBX2GR2.GR2FromFBX(FBXArgs.Value.fbxFileName, jsonPath, FBXArgs.Value.outputFileName);
                     }
                     break;
