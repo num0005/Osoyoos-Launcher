@@ -5,8 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
+using System.Windows.Shapes;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
+using Path = System.IO.Path;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -178,70 +181,82 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
-            List<string> args = new List<string>();
             if (importType.HasFlag(ModelCompile.render))
             {
-                // Generate shaders if requested
-                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { return; }; }
-                if (skyRender)
-                {
-                    args.Add("render-sky");
-                    args.Add(path);
-                }
-                else if (accurateRender)
-                {
-                    args.Add("render-accurate");
-                    args.Add(path);
-                    args.Add(renderPRT ? "final" : "draft");
-                }
-                else
-                {
-                    args.Add("render");
-                    args.Add(path);
-                    args.Add(renderPRT ? "final" : "draft");
-                }
+                await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
             }
             if (importType.HasFlag(ModelCompile.collision))
             {
-                args.Add("collision");
-                args.Add(path);
+                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
             }
             if (importType.HasFlag(ModelCompile.physics))
             {
-                args.Add("physics");
-                args.Add(path);
+                await RunTool(ToolType.Tool, new List<string> { "physics", path }, true);
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
-                if (FPAnim)
-                {
-                    if (verboseAnim)
-                        args.Add("fp-model-animations-verbose");
-                    else if (uncompressedAnim)
-                        args.Add("fp-model-animations-uncompressed");
-                    else if (resetCompression)
-                        args.Add("fp-model-animations-reset");
-                    else
-                        args.Add("fp-model-animations");
-                    args.Add(path);
-                    args.Add(characterFPPath);
-                    args.Add(weaponFPPath);
-                }
-                else
-                {
-                    if (verboseAnim)
-                        args.Add("model-animations-verbose");
-                    else if (uncompressedAnim)
-                        args.Add("model-animations-uncompressed");
-                    else if (resetCompression)
-                        args.Add("model-animations-reset");
-                    else
-                        args.Add("model-animations");
-                    args.Add(path);
-                }
+                await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
+            }
+        }
+
+        public static List<string> ImportRender(bool genShaders, bool skyRender, string BaseDirectory, string path, bool accurateRender, bool renderPRT)
+        {
+            List<string> args = new List<string>();
+
+            // Generate shaders if requested
+            if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { }; }
+            if (skyRender)
+            {
+                args.Add("render-sky");
+                args.Add(path);
+            }
+            else if (accurateRender)
+            {
+                args.Add("render-accurate");
+                args.Add(path);
+                args.Add(renderPRT ? "final" : "draft");
+            }
+            else
+            {
+                args.Add("render");
+                args.Add(path);
+                args.Add(renderPRT ? "final" : "draft");
             }
 
-            await RunTool(ToolType.Tool, args, true);
+            return args;
+        }
+
+        public static List<string> ImportAnimations(bool FPAnim, bool verboseAnim, bool uncompressedAnim, bool resetCompression, string path, string characterFPPath, string weaponFPPath)
+        {
+            List<string> args = new List<string>();
+
+            if (FPAnim)
+            {
+                if (verboseAnim)
+                    args.Add("fp-model-animations-verbose");
+                else if (uncompressedAnim)
+                    args.Add("fp-model-animations-uncompressed");
+                else if (resetCompression)
+                    args.Add("fp-model-animations-reset");
+                else
+                    args.Add("fp-model-animations");
+                args.Add(path);
+                args.Add(characterFPPath);
+                args.Add(weaponFPPath);
+            }
+            else
+            {
+                if (verboseAnim)
+                    args.Add("model-animations-verbose");
+                else if (uncompressedAnim)
+                    args.Add("model-animations-uncompressed");
+                else if (resetCompression)
+                    args.Add("model-animations-reset");
+                else
+                    args.Add("model-animations");
+                args.Add(path);
+            }
+            return args;
         }
 
         public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
