@@ -2,9 +2,10 @@
   "UrlBase": "https://c20.reclaimers.net/",
   "Tookits": {
     "_base": {
-      "RunPrograms": "general/tools/osoyoos/#run-programs-group",
-      "Settings": "general/tools/osoyoos/#settings-group",
-      "General": "general/tools/osoyoos/"
+      "RunPrograms": "general/community-tools/osoyoos/#run-programs-group",
+      "Tasks": "general/community-tools/osoyoos/#tasks-group",
+      "Settings": "general/community-tools/osoyoos/#settings-group",
+      "General": "general/community-tools/osoyoos/"
     },
     "H1": {
 
