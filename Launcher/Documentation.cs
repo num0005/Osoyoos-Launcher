@@ -25,6 +25,7 @@ namespace ToolkitLauncher
                 public Toolkit Base { get; internal set; }
 
                 public string RunPrograms { get; set; }
+                public string Tasks { get; set; }
                 public string Settings {get; set; }
                 public string General { get; set; }
                 public string Packaging { get; set; }
@@ -40,7 +41,7 @@ namespace ToolkitLauncher
                         case HelpURL.programs:
                             return RunPrograms;
                         case HelpURL.tasks:
-                            return RunPrograms;
+                            return Tasks;
                         case HelpURL.settings:
                             return Settings;
                         case HelpURL.lighting:

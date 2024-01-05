@@ -42,7 +42,14 @@
                     <TextBlock Grid.Row="4" Grid.Column="1" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Written by Num0005."/></TextBlock>
                     <TextBlock Grid.Row="5" Grid.Column="1" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Misc features and QoL fixes added by General_101"/></TextBlock>
                     <TextBlock Grid.Row="6" Grid.Column="1" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Sidecar feature developed by Crisp and Generalkidd"/></TextBlock>
-                    <TextBlock x:Name="license_intro" Grid.Row="7" Grid.Column="1"  Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15" Height="24" Margin="-1,2,0,5" LineHeight="7"><Run Text="This program is mainly licensed under the terms of the MIT license,"/><Button x:Name="license_info_open" Content="Click here for more info" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="{Binding Height, ElementName=license_intro}" Click="license_info_open_Click"/></TextBlock>
+                    <Grid Grid.Row="7" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="license_intro" Grid.Row="0" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• This program is mainly licensed under the terms of the MIT license"/></TextBlock>
+                        <Button x:Name="license_info_open" Grid.Row="1" Content="Click here for more info" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="{Binding Height, ElementName=license_intro}" Click="license_info_open_Click"/>
+                    </Grid>
                     <TextBlock Grid.Row="8" Grid.ColumnSpan="2" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="Special thanks to :"/></TextBlock>
                     <TextBlock Grid.Row="9" Grid.Column="1" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• 343 Industries"/></TextBlock>
                     <TextBlock Grid.Row="10" Grid.Column="1" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="15"><Run Text="• Bungie"/></TextBlock>
