@@ -812,7 +812,7 @@
                                                     <ComboBoxItem Content="Multi Layer"/>
                                                 </ComboBox>
                                             </GroupBox>
-                                            <GroupBox Grid.Column="4" x:Name="compression_box" Header="Compression Type"  Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=6, ElementName=toolkit_selection}">
+                                            <GroupBox Grid.Column="4" x:Name="compression_box" Header="Compression Type" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=6, ElementName=toolkit_selection}">
                                                 <ComboBox x:Name="sound_compression_type" VerticalAlignment="Center" SelectedIndex="2" ToolTip="Select the compression type to use for the sound.">
                                                     <ComboBoxItem Content="Uncompressed"/>
                                                     <ComboBoxItem Content="ADPCM"/>
