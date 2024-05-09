@@ -259,9 +259,16 @@ namespace ToolkitLauncher.ToolkitInterface
             return args;
         }
 
-        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
+        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type, string custom_extension)
         {
-            await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type });
+            if (custom_extension == "")
+            {
+                await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type });
+            }
+            else
+            {
+                await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type, "-bank:" + custom_extension });
+            }
         }
 
         /// <summary>
