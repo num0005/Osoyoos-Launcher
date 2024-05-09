@@ -199,7 +199,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 await RunTool(ToolType.Tool, new List<string>() { "append-animations", path });
         }
 
-        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
+        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type, string custom_extension)
         {
             await RunTool(ToolType.Tool, new List<string>() { "import-lipsync", path, ltf_path });
         }

@@ -1220,12 +1220,13 @@ namespace ToolkitLauncher
             sound_command_type sound_command = (sound_command_type)sound_import_type.SelectedIndex;
             codec_type platform = (codec_type)platform_type.SelectedIndex;
             string class_name = class_dropdown.SelectedItem.ToString();
+            string custom_extension = bank_extension.Text.ToString();
 
             string sound_path = import_sound_path.Text;
             string bitrate_value = bitrate_slider.Value.ToString();
             string ltf_path = "data\\" + import_ltf_path.Text;
 
-            await toolkit.ImportSound(sound_path, platform.ToString(), bitrate_value, ltf_path, sound_command.ToString(), class_name, ((ComboBoxItem)sound_compression_type.SelectedItem).Content.ToString().ToLower());
+            await toolkit.ImportSound(sound_path, platform.ToString(), bitrate_value, ltf_path, sound_command.ToString(), class_name, ((ComboBoxItem)sound_compression_type.SelectedItem).Content.ToString().ToLower(), custom_extension);
         }
 
         private void spaces_PreviewKeyDown(object sender, KeyEventArgs e)
