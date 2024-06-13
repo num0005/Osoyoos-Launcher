@@ -117,6 +117,10 @@ namespace ToolkitLauncher.ToolkitInterface
                 }
                 if (renderPRT)
                 {
+                    if (!accurateRender)
+                    {
+                        args.Add("false");
+                    }
                     args.Add("true");
                 }
             }
