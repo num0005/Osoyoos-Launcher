@@ -278,6 +278,11 @@ namespace ToolkitLauncher
                     else
                         grid = new GridLength(1, (double)GridUnitType.Auto);
                 }
+                else if (parameter is string && Int32.Parse(parameter as string) == 23)
+                {
+                    if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
+                        grid = new GridLength(8);
+                }
             }
             else
             {
@@ -294,7 +299,8 @@ namespace ToolkitLauncher
                     || parameter is string && Int32.Parse(parameter as string) == 19
                     || parameter is string && Int32.Parse(parameter as string) == 20
                     || parameter is string && Int32.Parse(parameter as string) == 21
-                    || parameter is string && Int32.Parse(parameter as string) == 22)
+                    || parameter is string && Int32.Parse(parameter as string) == 22
+                    || parameter is string && Int32.Parse(parameter as string) == 23)
                 {
                     grid = new GridLength(1, GridUnitType.Star);
                 }
@@ -466,6 +472,11 @@ namespace ToolkitLauncher
                 else if (parameter is string && Int32.Parse(parameter as string) == 25)
                 {
                     if (MainWindow.halo_3 || MainWindow.halo_3_odst)
+                        vis = Visibility.Visible;
+                }
+                else if (parameter is string && Int32.Parse(parameter as string) == 26)
+                {
+                    if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
                         vis = Visibility.Visible;
                 }
             }

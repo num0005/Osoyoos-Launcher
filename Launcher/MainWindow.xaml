@@ -799,8 +799,8 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=7, ElementName=toolkit_selection}"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=9, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <GroupBox Grid.Column="0" x:Name="class_type" Header="Class" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=12, ElementName=toolkit_selection}">
                                                 <ComboBox x:Name="class_dropdown" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=15, ElementName=toolkit_selection}" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Select the class to set for the sound on first import."/>
@@ -812,12 +812,15 @@
                                                     <ComboBoxItem Content="Multi Layer"/>
                                                 </ComboBox>
                                             </GroupBox>
-                                            <GroupBox Grid.Column="4" x:Name="compression_box" Header="Compression Type" VerticalAlignment="Stretch"  Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=6, ElementName=toolkit_selection}">
+                                            <GroupBox Grid.Column="4" x:Name="compression_box" Header="Compression Type" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=6, ElementName=toolkit_selection}">
                                                 <ComboBox x:Name="sound_compression_type" VerticalAlignment="Center" SelectedIndex="2" ToolTip="Select the compression type to use for the sound.">
                                                     <ComboBoxItem Content="Uncompressed"/>
                                                     <ComboBoxItem Content="ADPCM"/>
                                                     <ComboBoxItem Content="Opus"/>
                                                 </ComboBox>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="4" x:Name="custom_bank_box" Header="Custom Bank Extension" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=26, ElementName=toolkit_selection}">
+                                                <TextBox x:Name="bank_extension" VerticalAlignment="Center" ToolTip="Enter a custom FMOD bank extension. Will be created if it does not exist. Leave blank to use default SFX/Language FMODs." BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" CaretBrush="{DynamicResource TextColor}" MinHeight="22" MaxHeight="22"></TextBox>
                                             </GroupBox>
                                         </Grid>
                                         <Grid Grid.Row="6">

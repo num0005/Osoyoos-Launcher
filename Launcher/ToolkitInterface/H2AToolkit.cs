@@ -155,7 +155,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, args, true);
         }
 
-        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type)
+        public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type, string custom_extension)
         {
             await RunTool(ToolType.Tool, new List<string>() { sound_command.Replace("_", "-"), path, class_type, compression_type });
         }
