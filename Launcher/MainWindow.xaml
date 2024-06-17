@@ -521,6 +521,24 @@
                                                         <ComboBoxItem Content="Sprites"/>
                                                         <ComboBoxItem Content="Interface"/>
                                                     </ComboBox>
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." Margin="0,0,208,8" Grid.RowSpan="2" SelectionChanged="bitmap_compression_type_SelectionChanged">
+                                                        <ComboBoxItem Content="Default"/>
+                                                        <ComboBoxItem Content="DXT5"/>
+                                                        <ComboBoxItem Content="DXT1"/>
+                                                        <ComboBoxItem Content="24-bit Color + 8-bit Alpha"/>
+                                                        <ComboBoxItem Content="Best Compressed Color"/>
+                                                        <ComboBoxItem Content="Uncompressed"/>
+                                                    </ComboBox>
+                                                    <Label Grid.Column="1" x:Name="compression_type_label" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" Content="Compression Type" Margin="195,0,89,0" RenderTransformOrigin="0.5,0.5">
+                                                        <Label.RenderTransform>
+                                                            <TransformGroup>
+                                                                <ScaleTransform ScaleX="1"/>
+                                                                <SkewTransform/>
+                                                                <RotateTransform/>
+                                                                <TranslateTransform/>
+                                                            </TransformGroup>
+                                                        </Label.RenderTransform>
+                                                    </Label>
                                                     <CheckBox Grid.Row="2" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=1, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
                                                 </Grid>
                                             </GroupBox>
