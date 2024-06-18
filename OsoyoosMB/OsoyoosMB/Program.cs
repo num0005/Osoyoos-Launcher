@@ -9,7 +9,7 @@ namespace OsoyoosMB
 {
     internal class MBHandler
     {
-
+        
         public static void Main(String[] args)
         {
             if (args.Length == 0)
@@ -28,7 +28,7 @@ namespace OsoyoosMB
                 }
             }
         }
-
+        
         /* //Use this if you need to debug this code, can't debug when run from the main Osoyoos solution
         public static void Main()
         {
@@ -222,7 +222,7 @@ namespace OsoyoosMB
                 using (var tagFile = new TagFile(tag_path))
                 {
                     // Set usage to zbump
-                    var usage = (TagFieldEnum)tagFile.SelectField("LongEnum:usage");
+                    var usage = (TagFieldEnum)tagFile.SelectField("LongEnum:Usage");
                     usage.Value = 17;
 
                     // Set curve mode to pretty
@@ -286,7 +286,7 @@ namespace OsoyoosMB
                 using (var tagFile = new TagFile(tag_path))
                 {
                     // Set usage to bump
-                    var usage = (TagFieldEnum)tagFile.SelectField("LongEnum:usage");
+                    var usage = (TagFieldEnum)tagFile.SelectField("LongEnum:Usage");
                     usage.Value = 2;
 
                     // Set curve mode to pretty

@@ -2,44 +2,51 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ToolkitLauncher.Utility
 {
     public class ManagedBlam
     {
-        public static void RunMB(string ek_path, string tag_path, string compression_type)
+        public static bool RunMB(string ek_path, string tag_path, string compression_type)
         {
-            string exe_path = @"I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Release\OsoyoosMB.exe";
+            string exe_path = Path.Combine(ek_path, @"bin\OsoyoosMB.exe");
 
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            if (File.Exists(exe_path))
             {
-                FileName = exe_path,
-                Arguments = $"getbitmapdata \"{ek_path}\" \"{tag_path.TrimEnd('\\')}\" \"{compression_type}\"",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            try
-            {
-                // Start the process
-                using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(startInfo))
+                ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-                    Console.WriteLine("Output:");
-                    Console.WriteLine(output);
-                    Console.WriteLine("Errors:");
-                    Console.WriteLine(error);
+                    FileName = exe_path,
+                    Arguments = $"getbitmapdata \"{ek_path}\" \"{tag_path.TrimEnd('\\')}\" \"{compression_type}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                try
+                {
+                    // Start the process
+                    using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(startInfo))
+                    {
+                        process.WaitForExit();
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // Handle any errors that might occur
+                    MessageBox.Show("Unspecified ManagedBlam error.\nBitmaps have still been imported, but settings will not be applied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                // Handle any errors that might occur
-                Console.WriteLine("An error occurred: " + ex.Message);
+                // User likely hasnt put the second exe in the right place
+                MessageBox.Show($"Error: Cannot find \"{exe_path}\".\nMake sure the OsoyoosMB.exe is in your editing kit's \"bin\" folder.\nBitmaps have still been imported, but settings will not be applied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
+            
         }
     }
 }

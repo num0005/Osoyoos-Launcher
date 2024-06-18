@@ -32,10 +32,13 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // Call managedblam
             string ek_path = data_path.Split("H3EK")[0] + "H3EK";
-            ManagedBlam.RunMB(ek_path, path, compression);
+            bool MB_success = ManagedBlam.RunMB(ek_path, path, compression);
 
-            // Reimport bitmaps
-            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
+            if (MB_success)
+            {
+                // Reimport bitmaps
+                await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
+            }
         }
 
         override public async Task ImportUnicodeStrings(string path)
