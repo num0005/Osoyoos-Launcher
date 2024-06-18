@@ -9,7 +9,7 @@ namespace OsoyoosMB
 {
     internal class MBHandler
     {
-       
+
         public static void Main(String[] args)
         {
             if (args.Length == 0)
@@ -28,9 +28,8 @@ namespace OsoyoosMB
                 }
             }
         }
-        
 
-        /* Use this if you need to debug this code, can't debug when run from the main Osoyoos solution
+        /* //Use this if you need to debug this code, can't debug when run from the main Osoyoos solution
         public static void Main()
         {
             GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", "Uncompressed");
@@ -56,10 +55,41 @@ namespace OsoyoosMB
             string tag_folder_full = Path.Combine(ek_path, "tags", tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
 
+            // Ignore bitmaps that aren't diffuse textures
+            string[] non_diffuse_suffixes = {
+                "_3d.bitmap",
+                "_blend.bitmap",
+                "_bump.bitmap",
+                "_cube.bitmap",
+                "_detailbump.bitmap",
+                "_dsprite.bitmap",
+                "_float.bitmap",
+                "_height.bitmap",
+                "_lactxl.bitmap",
+                "_ladxn.bitmap",
+                "_msprite.bitmap",
+                "_sprite.bitmap",
+                "_ui.bitmap",
+                "_vec.bitmap",
+                "_warp.bitmap",
+                "_zbump.bitmap"
+            };
+
+            List<string> diffuse_bitmaps = new List<string>();
+
+            foreach (string bitmap in all_bitmaps)
+            {
+                if (!non_diffuse_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+                {
+                    // Bitmap file is likely diffuse
+                    diffuse_bitmaps.Add(bitmap);
+                }
+            }
+
             // Initialize ManagedBlam
             ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
 
-            foreach (string bitmap_full in all_bitmaps)
+            foreach (string bitmap_full in diffuse_bitmaps)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
                 int startIndex = bitmap_full.IndexOf("tags\\");
