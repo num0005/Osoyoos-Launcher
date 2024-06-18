@@ -79,6 +79,11 @@
     <PackageReference Include="TlshSharp" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="OsoyoosMB">
+      <HintPath>..\OsoyoosMB\OsoyoosMB\bin\x64\Release\OsoyoosMB.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Update="Credits.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

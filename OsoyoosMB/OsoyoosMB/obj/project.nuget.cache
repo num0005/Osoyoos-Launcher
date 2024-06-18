@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "on28VpDP6/2ETwo3XyIhajHmbbqcwmj0Yv7orLK8h41dDSxOGs4q36w8ybDN6Ltfv54Si/KNUQDlM0GwotXI2Q==",
+  "success": true,
+  "projectFilePath": "I:\\Osoyoos\\Osoyoos-Launcher\\OsoyoosMB\\OsoyoosMB\\OsoyoosMB.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jakeb\\.nuget\\packages\\nerdbank.gitversioning\\3.5.119\\nerdbank.gitversioning.3.5.119.nupkg.sha512"
+  ],
+  "logs": []
+}

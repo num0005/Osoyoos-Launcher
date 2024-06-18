@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
@@ -26,32 +27,41 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportBitmaps(string path, string type, string compression, string data_path, bool debug_plate)
         {
-            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
-            string ek_path = data_path.Split("H3EK")[0] + "H3EK";
+            //await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
+            //string ek_path = data_path.Split("H3EK")[0] + "H3EK";
 
-            // Initialize ManagedBlam and relevant methods
-            string mb_dll_path = ek_path + "\\bin\\ManagedBlam.dll";
+            // Call managedblam
+            string exe_path = @"I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Release\OsoyoosMB.exe";
 
-            Assembly assembly = Assembly.LoadFrom(mb_dll_path);
-            Type ManagedBlamSystem = assembly.GetType("Bungie.ManagedBlamSystem");
-            object instance = Activator.CreateInstance(ManagedBlamSystem);
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = exe_path,
+                Arguments = "getbitmapdata path",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
 
-            Type initializationTypeEnum = assembly.GetType("Bungie.InitializationType");
-            object tagsOnlyValue = Enum.Parse(initializationTypeEnum, "TagsOnly");
-
-            MethodInfo InitializeProject = ManagedBlamSystem.GetMethod("InitializeProject");
-            object[] parameters = new object[] { tagsOnlyValue, ek_path };
-            object result = InitializeProject.Invoke(instance, parameters);
-            Console.WriteLine($"Result of InitializeProject: {result}");
-
-            // Lets try to access a tag then
-            // General tagpath type
-            Type tagPathType = assembly.GetType("Bungie.Tags.TagPath");
-
-            object[] tag_parameters = new object[] { @"objects\scenery\minecraft_door\bitmaps\diffuse", "bitm*" };
-            MethodInfo FromPathAndTypeInfo = tagPathType.GetMethod("FromPathAndType", new[] { typeof(string), typeof(string) });
-            object tagPathInstance = FromPathAndTypeInfo.Invoke(null, parameters);
-            dynamic tag_path = tagPathInstance;
+            try
+            {
+                // Start the process
+                using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(startInfo))
+                {
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+                    Console.WriteLine("Output:");
+                    Console.WriteLine(output);
+                    Console.WriteLine("Errors:");
+                    Console.WriteLine(error);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that might occur
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
         }
 
         override public async Task ImportUnicodeStrings(string path)

@@ -1,0 +1,12 @@
+file                                                           bytes    heap size blocks nonheap size blocks          min          max         avg
+tag_files\string_ids.cpp                                    30349312     30349312      2            0      0      4186112     26163200  15174656.0
+tag_files\tag_groups.cpp                                    17320701     17320701   1599            0      0           24      8355681     10832.2
+memory\constant_pool.cpp                                     2883584      2883584      1            0      0      2883584      2883584   2883584.0
+tag_files\tag_group_stream_runtime.cpp                       1847456      1847456      2            0      0       266328      1581128    923728.0
+tag_files\tag_resource_runtime.cpp                             69726        69726      1            0      0        69726        69726     69726.0
+tag_files\single_tag_file_backend.cpp                          32559        32559      1            0      0        32559        32559     32559.0
+
+largest sizes: heap 100011024 bytes, nonheap 0 bytes
+current sizes: 52503338 bytes (heap 52503338 in 1606 blocks, nonheap 0 in 0 blocks)
+physical usage: 536870912 bytes (536870912 bytes free, 1073741824 bytes total)
+
