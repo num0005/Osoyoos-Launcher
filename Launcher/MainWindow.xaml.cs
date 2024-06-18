@@ -1081,7 +1081,7 @@ namespace ToolkitLauncher
         private async void CompileImage(object sender, RoutedEventArgs e)
         {
             string listEntry = BitmapCompile.bitmapType[bitmap_compile_type.SelectedIndex];
-            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, bitmap_compression_type.SelectedValue.ToString(), toolkit.GetDataDirectory(), debug_plate.IsChecked is true);
+            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, bitmap_compression_type.SelectedItem.ToString().Split(new string[] { ": " }, StringSplitOptions.None)[1], toolkit.GetDataDirectory(), debug_plate.IsChecked is true);
         }
 
         private async void PackageLevel(object sender, RoutedEventArgs e)

@@ -27,41 +27,15 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportBitmaps(string path, string type, string compression, string data_path, bool debug_plate)
         {
-            //await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
-            //string ek_path = data_path.Split("H3EK")[0] + "H3EK";
+            // First import
+            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
 
             // Call managedblam
-            string exe_path = @"I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Release\OsoyoosMB.exe";
+            string ek_path = data_path.Split("H3EK")[0] + "H3EK";
+            ManagedBlam.RunMB(ek_path, path, compression);
 
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                FileName = exe_path,
-                Arguments = "getbitmapdata path",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            try
-            {
-                // Start the process
-                using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(startInfo))
-                {
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-                    Console.WriteLine("Output:");
-                    Console.WriteLine(output);
-                    Console.WriteLine("Errors:");
-                    Console.WriteLine(error);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors that might occur
-                Console.WriteLine("An error occurred: " + ex.Message);
-            }
+            // Reimport bitmaps
+            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
         }
 
         override public async Task ImportUnicodeStrings(string path)
