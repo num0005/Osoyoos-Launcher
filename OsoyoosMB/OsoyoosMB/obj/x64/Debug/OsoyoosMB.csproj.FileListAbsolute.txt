@@ -1,9 +1,0 @@
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\obj\x64\Debug\OsoyoosMB.csproj.AssemblyReference.cache
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\obj\x64\Debug\OsoyoosMB.csproj.CoreCompileInputs.cache
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Debug\OsoyoosMB.exe.config
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Debug\OsoyoosMB.exe
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Debug\OsoyoosMB.pdb
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\bin\x64\Debug\ManagedBlam.dll
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\obj\x64\Debug\OsoyoosMB.csproj.CopyComplete
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\obj\x64\Debug\OsoyoosMB.exe
-I:\Osoyoos\Osoyoos-Launcher\OsoyoosMB\OsoyoosMB\obj\x64\Debug\OsoyoosMB.pdb
