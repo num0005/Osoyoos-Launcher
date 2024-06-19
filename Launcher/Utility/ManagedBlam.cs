@@ -84,11 +84,13 @@ namespace ToolkitLauncher.Utility
                     using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(startInfo))
                     {
                         process.WaitForExit();
+                        Debug.WriteLine("MB ran successfully, reimporting bitmaps");
                         return true;
                     }
                 }
                 catch
                 {
+                    Debug.WriteLine("Unspecified ManagedBlam error");
                     MessageBox.Show("Unspecified ManagedBlam error.\nShader tags have not been generated.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
@@ -96,6 +98,7 @@ namespace ToolkitLauncher.Utility
             else
             {
                 // User likely hasnt put the second exe in the right place
+                Debug.WriteLine("Failed to find OsoyoosMB.exe");
                 MessageBox.Show($"Error: Cannot find \"{exe_path}\".\nMake sure the OsoyoosMB.exe is in your editing kit's \"bin\" folder.\nShader tags have not been generated.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
