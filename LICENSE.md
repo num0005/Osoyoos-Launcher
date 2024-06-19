@@ -1,4 +1,4 @@
-Copyright (c) 2017 num0005
+Copyright (c) 2017 num0005  
 Copyright (c) 2022 Osoyoos Launcher Contributors
 
 # MIT License
