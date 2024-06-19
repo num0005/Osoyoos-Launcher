@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Bungie;
@@ -20,7 +21,13 @@ namespace OsoyoosMB
             {
                 if (args[0] == "getbitmapdata" && args.Length >= 4)
                 {
+                    Console.WriteLine("Running GetBitmapData");
                     GetBitmapData(args[1], args[2], args[3]);
+                }
+                else if (args[0] == "generateshaders" && args.Length >= 3)
+                {
+                    Console.WriteLine("Running ShaderGenerator");
+                    ShaderGenerator(args[1], args[2]);
                 }
                 else
                 {
@@ -29,10 +36,21 @@ namespace OsoyoosMB
             }
         }
         
-        /* //Use this if you need to debug this code, can't debug when run from the main Osoyoos solution
+
+        /* 
+        //Use this if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
         public static void Main()
         {
             GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", "Uncompressed");
+        }
+        */
+
+        /*
+        //Use this if you need to debug this GenerateShaders, can't debug when run from the main Osoyoos solution
+        public static void Main()
+        {
+            string[] shaders = { "diffuse", "minecraft_stone" };
+            ShaderHandler(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"C:\Program Files (x86)\Steam\steamapps\common\H3EK\tags\objects\scenery\minecraft_door\shaders");
         }
         */
 
@@ -364,6 +382,30 @@ namespace OsoyoosMB
                     var override_compression = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap format");
                     override_compression.Value = compress_value;
 
+                    tagFile.Save();
+                }
+            }
+        }
+    
+        public static void ShaderGenerator(string ek_path, string shaders_folder)
+        {
+            // Create shader directory
+            Directory.CreateDirectory(shaders_folder);
+
+            string[] shader_names = File.ReadAllLines(Path.Combine(ek_path, @"bin\shader_names.txt"));
+
+            foreach (string shader in shader_names)
+            {
+                string shader_name = shaders_folder.Split(new string[] { "\\H3EK\\tags\\" }, StringSplitOptions.None)[1] + "\\" + shader;
+
+                if (!File.Exists(Path.Combine(shaders_folder, shader_name)))
+                {
+                    // Initialize ManagedBlam
+                    ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
+
+                    TagPath tagPath = TagPath.FromPathAndType(shader_name, "rmsh*");
+                    TagFile tagFile = new TagFile();
+                    tagFile.New(tagPath);
                     tagFile.Save();
                 }
             }

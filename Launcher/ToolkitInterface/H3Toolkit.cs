@@ -40,7 +40,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
 
             // Call managedblam
-            bool MB_success = ManagedBlam.RunMB(ek_path, path, compression);
+            bool MB_success = ManagedBlam.RunMBBitmaps(ek_path, path, compression);
 
             if (MB_success)
             {
