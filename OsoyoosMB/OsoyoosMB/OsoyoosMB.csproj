@@ -59,8 +59,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ManagedBlam">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\H3EK\bin\ManagedBlam.dll</HintPath>
+    <Reference Include="ManagedBlam, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Bungie\bin\Release\net4.8\ManagedBlam.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

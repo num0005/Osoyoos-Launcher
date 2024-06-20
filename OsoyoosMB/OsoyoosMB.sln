@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsoyoosMB", "OsoyoosMB\OsoyoosMB.csproj", "{A037E578-342F-4836-84C0-08A6394E94C2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bungie", "..\Bungie\Bungie.csproj", "{0B848332-9F77-4DB4-9394-938250668580}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{A037E578-342F-4836-84C0-08A6394E94C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A037E578-342F-4836-84C0-08A6394E94C2}.Release|x64.ActiveCfg = Release|x64
 		{A037E578-342F-4836-84C0-08A6394E94C2}.Release|x64.Build.0 = Release|x64
+		{0B848332-9F77-4DB4-9394-938250668580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Debug|x64.Build.0 = Debug|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Release|x64.ActiveCfg = Release|Any CPU
+		{0B848332-9F77-4DB4-9394-938250668580}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
