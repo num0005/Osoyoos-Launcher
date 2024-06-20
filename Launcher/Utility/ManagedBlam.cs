@@ -72,10 +72,10 @@ namespace ToolkitLauncher.Utility
                 {
                     FileName = exe_path,
                     Arguments = $"generateshaders \"{ek_path}\" \"{full_shaders_folder.TrimEnd('\\')}\"",
-                    UseShellExecute = true,
-                    RedirectStandardOutput = false,
-                    RedirectStandardError = false,
-                    CreateNoWindow = false
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
                 };
 
                 try

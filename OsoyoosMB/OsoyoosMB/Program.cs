@@ -1,4 +1,17 @@
-﻿using System;
+﻿/*
+BUILD INFORMATION
+
+This project uses ManagedBlam.dll, but that can't be added to the GitHub repo.
+In order to still be built, the project uses a Reference Assembly version
+of the ManagedBlam DLL. This is generated using the NetBrains tool Refasmer.
+
+In theory it already contains all namespaces/methods etc present in the full DLL.
+In case it needs to be regenerated in future howerver:
+
+Refasmer can be installed from the terminal with "dotnet tool install -g JetBrains.Refasmer.CliTool"
+Once installed, run with "refasmer -v -O ref -c ManagedBlam.dll"
+*/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

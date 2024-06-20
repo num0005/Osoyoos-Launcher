@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using ToolkitLauncher.Utility;
 
-internal class AutoShaders
+internal class AutoShadersMB
 {
-    public static bool CreateEmptyShaders(string BaseDirectory, string path, string gameType)
+    public static bool CreateEmptyShadersMB(string BaseDirectory, string path, string gameType)
     {
         // Variables
         string full_jms_path = "";
