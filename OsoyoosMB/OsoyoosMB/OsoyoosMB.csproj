@@ -59,9 +59,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ManagedBlam, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ManagedBlam, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Bungie\bin\Release\net4.8\ManagedBlam.dll</HintPath>
+      <HintPath>..\ref\ManagedBlam.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -15,7 +15,9 @@ namespace OsoyoosMB
         {
             if (args.Length == 0)
             {
-                Console.WriteLine("Do not run this manually, it is a helper executable for Osoyoos. This is not a standalone application");
+                Console.WriteLine("Do not run this manually, it is a helper executable for Osoyoos. This is not a standalone application.\nPress Enter to exit.");
+                Console.ReadLine();
+
             }
             else
             {
@@ -37,7 +39,7 @@ namespace OsoyoosMB
         }
         
 
-        /* 
+        /*
         //Use this if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
         public static void Main()
         {
