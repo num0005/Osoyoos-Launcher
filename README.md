@@ -42,6 +42,9 @@ Launcher can do the following:
 1. Download and run the launcher executable [from Github releases](https://github.com/num0005/Osoyoos-Launcher/releases).
 2. Use the setup dialog and/or profile wizard to setup the paths for all toolkits you wish to use.
 
+## Non-free content warning
+The reference managedblam assembly is not covered by the MIT license and is instead covered by the MCC EULA and/or the fair dealing/fair use exemption. This reference assembly is automatically generated from the public interface of a closed source binary and contains no executable code and is only used for the purpose of interoperability.
+
 ## Credits
 
  * Discord user num0005#8646 (https://github.com/num0005)
