@@ -10,6 +10,10 @@ In case it needs to be regenerated in future howerver:
 
 Refasmer can be installed from the terminal with "dotnet tool install -g JetBrains.Refasmer.CliTool"
 Once installed, run with "refasmer -v -O ref -c ManagedBlam.dll"
+
+When you need to debug this code, you need to switch the project reference to the "full" .dll or it
+will crash at runtime. Don't forget to revert the reference back to version in the "ref" folder
+before committing or release.
 */
 using System;
 
@@ -38,7 +42,7 @@ namespace OsoyoosMB
                 }
             }
         }
-
+        
         /*
         //Use this instead if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
         public static void Main()

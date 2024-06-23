@@ -94,14 +94,16 @@ namespace OsoyoosMB
 
         public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)
         {
+            // EK "tags" folder location
+            string base_path = Path.Combine(ek_path, "tags");
+
             // Initialize ManagedBlam
             ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
 
             foreach (string bitmap_full in diffuses)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                int startIndex = bitmap_full.IndexOf("tags\\");
-                string bitmap_path = bitmap_full.Substring(startIndex + 5).Replace(".bitmap", "");
+                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -156,8 +158,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in normals)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                int startIndex = bitmap_full.IndexOf("tags\\");
-                string bitmap_path = bitmap_full.Substring(startIndex + 5).Replace(".bitmap", "");
+                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -220,8 +221,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in bumps)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                int startIndex = bitmap_full.IndexOf("tags\\");
-                string bitmap_path = bitmap_full.Substring(startIndex + 5).Replace(".bitmap", "");
+                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -257,8 +257,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in materials)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                int startIndex = bitmap_full.IndexOf("tags\\");
-                string bitmap_path = bitmap_full.Substring(startIndex + 5).Replace(".bitmap", "");
+                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
