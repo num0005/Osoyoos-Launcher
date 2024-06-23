@@ -41,13 +41,14 @@
     <None Remove="BultinProfiles.json" />
     <None Remove="Documentation.json" />
     <None Remove="Images\gear.png" />
-	<None Remove="Resources\LicenseInfoFull.txt" />
+    <None Remove="Resources\LicenseInfoFull.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
     <Resource Include="Images\gear.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="Resources\LicenseInfoFull.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -87,11 +88,22 @@
     <Compile Update="GeoClassPrompt.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Utility\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Utility\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">
