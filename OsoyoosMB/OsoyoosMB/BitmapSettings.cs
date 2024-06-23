@@ -9,21 +9,8 @@ namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void GetBitmapData(string ek_path, string tag_folder, string compression_type)
+        public static void GetBitmapData(string ek_path, string tag_folder, string compress_value)
         {
-            // Convert compression type string to correct Enum setting
-            Dictionary<string, int> comp_mapping = new Dictionary<string, int>
-            {
-                { "Default", 0 },
-                { "Uncompressed", 2 },
-                { "Best Compressed Color", 3 },
-                { "DXT1", 13 },
-                { "DXT5", 15 },
-                { "24-bit Color + 8-bit Alpha", 16 }
-            };
-
-            int compress_value = comp_mapping[compression_type];
-
             // Get all bitmaps
             string tag_folder_full = Path.Combine(ek_path, "tags", tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
@@ -89,7 +76,7 @@ namespace OsoyoosMB
                 }
             }
 
-            ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, compress_value);
+            ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, int.Parse(compress_value));
         }
 
         public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)

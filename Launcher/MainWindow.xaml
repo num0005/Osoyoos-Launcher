@@ -30,6 +30,11 @@
                 <x:Type TypeName="local:ThemeType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <ObjectDataProvider x:Key="BitmapCompressionTypeValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:BitmapCompressionType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </Window.Resources>
     <Grid Background="{DynamicResource WindowPrimaryColor}">
         <Grid.ColumnDefinitions>
@@ -521,14 +526,7 @@
                                                         <ComboBoxItem Content="Sprites"/>
                                                         <ComboBoxItem Content="Interface"/>
                                                     </ComboBox>
-                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." Margin="0,0,208,8" Grid.RowSpan="2">
-                                                        <ComboBoxItem Content="Default"/>
-                                                        <ComboBoxItem Content="DXT5"/>
-                                                        <ComboBoxItem Content="DXT1"/>
-                                                        <ComboBoxItem Content="24-bit Color + 8-bit Alpha"/>
-                                                        <ComboBoxItem Content="Best Compressed Color"/>
-                                                        <ComboBoxItem Content="Uncompressed"/>
-                                                    </ComboBox>
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." Margin="0,0,208,8" Grid.RowSpan="2" ItemsSource="{Binding Source={StaticResource BitmapCompressionTypeValues}}"></ComboBox>
                                                     <Label Grid.Column="1" x:Name="compression_type_label" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" Content="Compression Type" Margin="195,0,89,0" RenderTransformOrigin="0.5,0.5">
                                                         <Label.RenderTransform>
                                                             <TransformGroup>
