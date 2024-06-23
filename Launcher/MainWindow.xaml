@@ -521,7 +521,7 @@
                                                         <ComboBoxItem Content="Sprites"/>
                                                         <ComboBoxItem Content="Interface"/>
                                                     </ComboBox>
-                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." Margin="0,0,208,8" Grid.RowSpan="2" SelectionChanged="bitmap_compression_type_SelectionChanged">
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=25, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." Margin="0,0,208,8" Grid.RowSpan="2">
                                                         <ComboBoxItem Content="Default"/>
                                                         <ComboBoxItem Content="DXT5"/>
                                                         <ComboBoxItem Content="DXT1"/>

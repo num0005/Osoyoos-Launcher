@@ -1,7 +1,8 @@
 Copyright (c) 2017 num0005  
 Copyright (c) 2022 Osoyoos Launcher Contributors
 
-Unless otherwise noted files in this repository are licensed under the terms of the MIT license (reproduced below). Placeholder shader file ("defaultH2.shader") is licensed under the terms of the CC0 1.0 Universal license (also reproduced below)
+Unless otherwise noted files in this repository are licensed under the terms of the MIT license (reproduced below).
+Placeholder shader files ("default.shader", "default_odst.shader" and "defaultH2.shader") are licensed under the terms of the CC0 1.0 Universal license (also reproduced below)
 
 You can find plain language summaries of your rights and obligations at https://choosealicense.com/licenses/mit/ and https://creativecommons.org/publicdomain/zero/1.0/
 

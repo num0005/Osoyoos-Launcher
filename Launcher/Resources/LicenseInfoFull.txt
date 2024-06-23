@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 # Osoyoos Content Copyright
-Blank shader file ("defaultH2.shader") included with the launcher is licensed under the CC0 license for a non legal summary see https://creativecommons.org/publicdomain/zero/1.0/
+Blank shader files ("default.shader", "default_odst.shader", "defaultH2.shader") included with the launcher are licensed under the CC0 license for a non legal summary see https://creativecommons.org/publicdomain/zero/1.0/
 
 ## CC0
 Creative Commons Legal Code

@@ -108,7 +108,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
-                if (genShaders) { if (!AutoShadersH2.CreateEmptyShadersH2(BaseDirectory, path, "H2")) { return; }; }
+                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H2")) { return; }; }
                 args.Add("render");
                 args.Add(path);
                 if (accurateRender)

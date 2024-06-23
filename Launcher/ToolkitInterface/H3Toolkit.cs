@@ -225,7 +225,7 @@ namespace ToolkitLauncher.ToolkitInterface
             List<string> args = new List<string>();
 
             // Generate shaders if requested
-            if (genShaders) { if (!AutoShadersMB.CreateEmptyShadersMB(BaseDirectory, path, "H3")) { }; }
+            if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { }; }
             if (skyRender)
             {
                 args.Add("render-sky");

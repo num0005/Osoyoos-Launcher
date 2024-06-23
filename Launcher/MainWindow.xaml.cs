@@ -2783,15 +2783,5 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
 
             }
         }
-
-        private void bitmap_compression_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void bitmap_compile_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }
