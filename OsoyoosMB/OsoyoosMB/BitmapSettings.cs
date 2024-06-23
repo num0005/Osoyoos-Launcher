@@ -1,74 +1,14 @@
-﻿/*
-BUILD INFORMATION
-
-This project uses ManagedBlam.dll, but that can't be added to the GitHub repo.
-In order to still be built, the project uses a Reference Assembly version
-of the ManagedBlam DLL. This is generated using the NetBrains tool Refasmer.
-
-In theory it already contains all namespaces/methods etc present in the full DLL.
-In case it needs to be regenerated in future howerver:
-
-Refasmer can be installed from the terminal with "dotnet tool install -g JetBrains.Refasmer.CliTool"
-Once installed, run with "refasmer -v -O ref -c ManagedBlam.dll"
-*/
+﻿using Bungie;
+using Bungie.Tags;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Bungie;
-using Bungie.Tags;
 
 namespace OsoyoosMB
 {
-    internal class MBHandler
+    internal class BitmapSettings
     {
-        
-        public static void Main(String[] args)
-        {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Do not run this manually, it is a helper executable for Osoyoos. This is not a standalone application.\nPress Enter to exit.");
-                Console.ReadLine();
-
-            }
-            else
-            {
-                if (args[0] == "getbitmapdata" && args.Length >= 4)
-                {
-                    Console.WriteLine("Running GetBitmapData");
-                    GetBitmapData(args[1], args[2], args[3]);
-                }
-                else if (args[0] == "generateshaders" && args.Length >= 3)
-                {
-                    Console.WriteLine("Running ShaderGenerator");
-                    ShaderGenerator(args[1], args[2]);
-                }
-                else
-                {
-                    Console.WriteLine("Insufficient arguments");
-                }
-            }
-        }
-        
-
-        /*
-        //Use this if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
-        public static void Main()
-        {
-            GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", "Uncompressed");
-        }
-        */
-
-        /*
-        //Use this if you need to debug this GenerateShaders, can't debug when run from the main Osoyoos solution
-        public static void Main()
-        {
-            string[] shaders = { "diffuse", "minecraft_stone" };
-            ShaderHandler(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"C:\Program Files (x86)\Steam\steamapps\common\H3EK\tags\objects\scenery\minecraft_door\shaders");
-        }
-        */
-
         public static void GetBitmapData(string ek_path, string tag_folder, string compression_type)
         {
             // Convert compression type string to correct Enum setting
@@ -185,10 +125,15 @@ namespace OsoyoosMB
                 }
             }
 
+            ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, compress_value);
+        }
+
+        public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)
+        {
             // Initialize ManagedBlam
             ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
 
-            foreach (string bitmap_full in diffuse_bitmaps)
+            foreach (string bitmap_full in diffuses)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
                 int startIndex = bitmap_full.IndexOf("tags\\");
@@ -244,7 +189,7 @@ namespace OsoyoosMB
                 }
             }
 
-            foreach (string bitmap_full in normal_bitmaps)
+            foreach (string bitmap_full in normals)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
                 int startIndex = bitmap_full.IndexOf("tags\\");
@@ -308,7 +253,7 @@ namespace OsoyoosMB
                 }
             }
 
-            foreach (string bitmap_full in bump_bitmaps)
+            foreach (string bitmap_full in bumps)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
                 int startIndex = bitmap_full.IndexOf("tags\\");
@@ -345,7 +290,7 @@ namespace OsoyoosMB
                 }
             }
 
-            foreach (string bitmap_full in material_bitmaps)
+            foreach (string bitmap_full in materials)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
                 int startIndex = bitmap_full.IndexOf("tags\\");
@@ -397,30 +342,6 @@ namespace OsoyoosMB
                     var override_compression = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap format");
                     override_compression.Value = compress_value;
 
-                    tagFile.Save();
-                }
-            }
-        }
-    
-        public static void ShaderGenerator(string ek_path, string shaders_folder)
-        {
-            // Create shader directory
-            Directory.CreateDirectory(shaders_folder);
-
-            string[] shader_names = File.ReadAllLines(Path.Combine(ek_path, @"bin\shader_names.txt"));
-
-            foreach (string shader in shader_names)
-            {
-                string shader_name = shaders_folder.Split(new string[] { "\\H3EK\\tags\\" }, StringSplitOptions.None)[1] + "\\" + shader;
-
-                if (!File.Exists(Path.Combine(shaders_folder, shader_name)))
-                {
-                    // Initialize ManagedBlam
-                    ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
-
-                    TagPath tagPath = TagPath.FromPathAndType(shader_name, "rmsh*");
-                    TagFile tagFile = new TagFile();
-                    tagFile.New(tagPath);
                     tagFile.Save();
                 }
             }
