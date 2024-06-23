@@ -41,6 +41,7 @@
     <None Remove="BultinProfiles.json" />
     <None Remove="Documentation.json" />
     <None Remove="Images\gear.png" />
+	<None Remove="Resources\LicenseInfoFull.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />

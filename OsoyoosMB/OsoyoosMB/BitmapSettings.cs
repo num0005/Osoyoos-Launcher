@@ -1,5 +1,6 @@
 ﻿using Bungie;
 using Bungie.Tags;
+using OsoyoosMB.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -90,7 +91,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in diffuses)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -145,7 +146,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in normals)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -208,7 +209,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in bumps)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -244,7 +245,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in materials)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, bitmap_full), null);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 

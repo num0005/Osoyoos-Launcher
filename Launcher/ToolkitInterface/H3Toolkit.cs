@@ -28,19 +28,8 @@ namespace ToolkitLauncher.ToolkitInterface
             // First import
             await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
 
-            // Determine ek path
-            string ek_path;
-            if (data_path.Contains("H3ODSTEK"))
-            {
-                ek_path = data_path.Split("H3ODSTEK")[0] + "H3ODSTEK";
-            }
-            else
-            {
-                ek_path = data_path.Split("H3EK")[0] + "H3EK";
-            }
-
             // Call managedblam
-            bool MB_success = ManagedBlam.RunMBBitmaps(ek_path, path, compression);
+            bool MB_success = ManagedBlam.RunMBBitmaps(BaseDirectory, path, compression);
 
             if (MB_success)
             {

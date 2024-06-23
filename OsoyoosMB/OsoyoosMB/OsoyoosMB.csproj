@@ -77,6 +77,7 @@
   <ItemGroup>
     <Compile Include="BitmapSettings.cs" />
     <Compile Include="MBHandler.cs" />
+    <Compile Include="Utils\MBHelpers.cs" />
     <Compile Include="Utils\PathNetCore.cs" />
   </ItemGroup>
   <ItemGroup>
