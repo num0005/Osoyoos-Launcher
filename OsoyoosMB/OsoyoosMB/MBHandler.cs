@@ -24,7 +24,6 @@ namespace OsoyoosMB
             {
                 Console.WriteLine("Do not run this manually, it is a helper executable for Osoyoos. This is not a standalone application.\nPress Enter to exit.");
                 Console.ReadLine();
-
             }
             else
             {

@@ -28,43 +28,7 @@ namespace OsoyoosMB
             string tag_folder_full = Path.Combine(ek_path, "tags", tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
 
-            // Ignore bitmaps that aren't diffuse textures
-            string[] non_diffuse_suffixes = {
-                "_3d.bitmap",
-                "_blend.bitmap",
-                "_bump.bitmap",
-                "_bmp.bitmap",
-                "_bp.bitmap",
-                "_b.bitmap",
-                "_cube.bitmap",
-                "_detailbump.bitmap",
-                "_dsprite.bitmap",
-                "_float.bitmap",
-                "_height.bitmap",
-                "_lactxl.bitmap",
-                "_ladxn.bitmap",
-                "_material.bitmap",
-                "_materialmap.bitmap",
-                "_mat.bitmap",
-                "_m.bitmap",
-                "_orm.bitmap",
-                "_ormh.bitmap",
-                "_rmo.bitmap",
-                "_rmoh.bitmap",
-                "_mro.bitmap",
-                "_mroh.bitmap",
-                "_msprite.bitmap",
-                "_normal.bitmap",
-                "_normalmap.bitmap",
-                "_nm.bitmap",
-                "_n.bitmap",
-                "_sprite.bitmap",
-                "_ui.bitmap",
-                "_vec.bitmap",
-                "_warp.bitmap",
-                "_zbump.bitmap"
-            };
-
+            // Define bitmap name suffixes for anything non-diffuse
             string[] normal_suffixes =
             {
                 "_normal.bitmap",
