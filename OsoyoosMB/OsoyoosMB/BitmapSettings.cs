@@ -80,6 +80,23 @@ namespace OsoyoosMB
             ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, int.Parse(compress_value));
         }
 
+        // These are the block/field names within the tag file
+        public static class TagFieldConstants
+        {
+            public const string Usage = "LongEnum:Usage";
+            public const string CurveMode = "CharEnum:curve mode";
+            public const string BitmapFormat = "ShortEnum:force bitmap format";
+            public const string MipMapLevel = "CharInteger:max mipmap level";
+            public const string UsageOverride = "Block:usage override";
+            public const string Gamma = "Block:usage override[0]/Real:source gamma";
+            public const string BitmapCurve = "Block:usage override[0]/LongEnum:bitmap curve";
+            public const string Flags = "Block:usage override[0]/ByteFlags:flags";
+            public const string MipLimit = "Block:usage override[0]/ShortInteger:mipmap limit";
+            public const string UsageFormat = "Block:usage override[0]/LongEnum:bitmap format";
+            public const string DicerFlags = "Block:usage override[0]/WordFlags:dicer flags";
+            public const string Slicer = "Block:usage override[0]/CharEnum:slicer";
+        }
+
         public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)
         {
             // EK "tags" folder location
@@ -98,45 +115,45 @@ namespace OsoyoosMB
                 using (var tagFile = new TagFile(tag_path))
                 {
                     // Set curve mode to pretty
-                    var curve = (TagFieldEnum)tagFile.SelectField("CharEnum:curve mode");
+                    var curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.CurveMode);
                     curve.Value = 2;
 
                     // Set compression to UI-selected value
-                    var compression = (TagFieldEnum)tagFile.SelectField("ShortEnum:force bitmap format");
+                    var compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapFormat);
                     compression.Value = compress_value;
 
                     // Set max mipmap to -1
-                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField("CharInteger:max mipmap level");
+                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipMapLevel);
                     mip_limit.Data = -1;
 
                     // Check if bitmap already has overrides entry, if so remove it
-                    int override_count = ((TagFieldBlock)tagFile.SelectField("Block:usage override")).Elements.Count();
+                    int override_count = ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).Elements.Count();
                     if (override_count > 0)
                     {
-                        ((TagFieldBlock)tagFile.SelectField("Block:usage override")).RemoveAllElements();
+                        ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).RemoveAllElements();
                     }
 
                     // Add override entry
-                    ((TagFieldBlock)tagFile.SelectField("Block:usage override")).AddElement();
+                    ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).AddElement();
 
                     // Set gamma
-                    var gamma = (TagFieldElementSingle)tagFile.SelectField("Block:usage override[0]/Real:source gamma");
+                    var gamma = (TagFieldElementSingle)tagFile.SelectField(TagFieldConstants.Gamma);
                     gamma.Data = 2.2f;
 
                     // Set bitmap curve to sRGB
-                    var bitmap_curve = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap curve");
+                    var bitmap_curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapCurve);
                     bitmap_curve.Value = 5;
 
                     // Set ignore curve override flag
-                    var flags = (TagFieldFlags)tagFile.SelectField("Block:usage override[0]/ByteFlags:flags");
+                    var flags = (TagFieldFlags)tagFile.SelectField(TagFieldConstants.Flags);
                     flags.RawValue = 1;
 
                     // Set mipmap limit
-                    var mip_limit_override = (TagFieldElementInteger)tagFile.SelectField("Block:usage override[0]/ShortInteger:mipmap limit");
+                    var mip_limit_override = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipLimit);
                     mip_limit_override.Data = -1;
 
                     // Set compression to UI-selected value
-                    var override_compression = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap format");
+                    var override_compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.UsageFormat);
                     override_compression.Value = compress_value;
 
                     tagFile.Save();
@@ -153,53 +170,53 @@ namespace OsoyoosMB
                 using (var tagFile = new TagFile(tag_path))
                 {
                     // Set usage to zbump
-                    var usage = (TagFieldEnum)tagFile.SelectField("LongEnum:Usage");
+                    var usage = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.Usage);
                     usage.Value = 17;
 
                     // Set curve mode to pretty
-                    var curve = (TagFieldEnum)tagFile.SelectField("CharEnum:curve mode");
+                    var curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.CurveMode);
                     curve.Value = 2;
 
                     // Set compression to DXN
-                    var compression = (TagFieldEnum)tagFile.SelectField("ShortEnum:force bitmap format");
+                    var compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapFormat);
                     compression.Value = 49;
 
                     // Set max mipmap to -1
-                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField("CharInteger:max mipmap level");
+                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipMapLevel);
                     mip_limit.Data = -1;
 
                     // Check if bitmap already has overrides entry, if so remove it
-                    int override_count = ((TagFieldBlock)tagFile.SelectField("Block:usage override")).Elements.Count();
+                    int override_count = ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).Elements.Count();
                     if (override_count > 0)
                     {
-                        ((TagFieldBlock)tagFile.SelectField("Block:usage override")).RemoveAllElements();
+                        ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).RemoveAllElements();
                     }
 
                     // Add override entry
-                    ((TagFieldBlock)tagFile.SelectField("Block:usage override")).AddElement();
+                    ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).AddElement();
 
                     // Set gamma
-                    var gamma = (TagFieldElementSingle)tagFile.SelectField("Block:usage override[0]/Real:source gamma");
+                    var gamma = (TagFieldElementSingle)tagFile.SelectField(TagFieldConstants.Gamma);
                     gamma.Data = 1.0f;
 
                     // Set bitmap curve to linear
-                    var bitmap_curve = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap curve");
+                    var bitmap_curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapCurve);
                     bitmap_curve.Value = 3;
 
                     // Set ignore curve override flag
-                    var flags = (TagFieldFlags)tagFile.SelectField("Block:usage override[0]/ByteFlags:flags");
+                    var flags = (TagFieldFlags)tagFile.SelectField(TagFieldConstants.Flags);
                     flags.RawValue = 1;
 
                     // Set Unsigned flag
-                    var dicer_flags = (TagFieldFlags)tagFile.SelectField("Block:usage override[0]/WordFlags:dicer flags");
+                    var dicer_flags = (TagFieldFlags)tagFile.SelectField(TagFieldConstants.DicerFlags);
                     dicer_flags.RawValue = 16;
 
                     // Set mipmap limit
-                    var mip_limit_override = (TagFieldElementInteger)tagFile.SelectField("Block:usage override[0]/ShortInteger:mipmap limit");
+                    var mip_limit_override = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipLimit);
                     mip_limit_override.Data = -1;
 
                     // Set compression to DXN
-                    var override_compression = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap format");
+                    var override_compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.UsageFormat);
                     override_compression.Value = 49;
 
                     tagFile.Save();
@@ -216,26 +233,26 @@ namespace OsoyoosMB
                 using (var tagFile = new TagFile(tag_path))
                 {
                     // Set usage to bump
-                    var usage = (TagFieldEnum)tagFile.SelectField("LongEnum:Usage");
+                    var usage = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.Usage);
                     usage.Value = 2;
 
                     // Set curve mode to pretty
-                    var curve = (TagFieldEnum)tagFile.SelectField("CharEnum:curve mode");
+                    var curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.CurveMode);
                     curve.Value = 2;
 
                     // Set compression to best compressed bump
-                    var compression = (TagFieldEnum)tagFile.SelectField("ShortEnum:force bitmap format");
+                    var compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapFormat);
                     compression.Value = 3;
 
                     // Set max mipmap to -1
-                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField("CharInteger:max mipmap level");
+                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipMapLevel);
                     mip_limit.Data = -1;
 
                     // Check if bitmap already has overrides entry, if so remove it
-                    int override_count = ((TagFieldBlock)tagFile.SelectField("Block:usage override")).Elements.Count();
+                    int override_count = ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).Elements.Count();
                     if (override_count > 0)
                     {
-                        ((TagFieldBlock)tagFile.SelectField("Block:usage override")).RemoveAllElements();
+                        ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).RemoveAllElements();
                     }
 
                     tagFile.Save();
@@ -252,45 +269,45 @@ namespace OsoyoosMB
                 using (var tagFile = new TagFile(tag_path))
                 {
                     // Set curve mode to pretty
-                    var curve = (TagFieldEnum)tagFile.SelectField("CharEnum:curve mode");
+                    var curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.CurveMode);
                     curve.Value = 2;
 
                     // Set compression to UI-selected value
-                    var compression = (TagFieldEnum)tagFile.SelectField("ShortEnum:force bitmap format");
+                    var compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapFormat);
                     compression.Value = compress_value;
 
                     // Set max mipmap to -1
-                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField("CharInteger:max mipmap level");
+                    var mip_limit = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipMapLevel);
                     mip_limit.Data = -1;
 
                     // Check if bitmap already has overrides entry, if so remove it
-                    int override_count = ((TagFieldBlock)tagFile.SelectField("Block:usage override")).Elements.Count();
+                    int override_count = ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).Elements.Count();
                     if (override_count > 0)
                     {
-                        ((TagFieldBlock)tagFile.SelectField("Block:usage override")).RemoveAllElements();
+                        ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).RemoveAllElements();
                     }
 
                     // Add override entry
-                    ((TagFieldBlock)tagFile.SelectField("Block:usage override")).AddElement();
+                    ((TagFieldBlock)tagFile.SelectField(TagFieldConstants.UsageOverride)).AddElement();
 
                     // Set gamma
-                    var gamma = (TagFieldElementSingle)tagFile.SelectField("Block:usage override[0]/Real:source gamma");
+                    var gamma = (TagFieldElementSingle)tagFile.SelectField(TagFieldConstants.Gamma);
                     gamma.Data = 1.0f;
 
                     // Set bitmap curve to linear
-                    var bitmap_curve = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap curve");
+                    var bitmap_curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.BitmapCurve);
                     bitmap_curve.Value = 3;
 
                     // Set slicer to no slicing
-                    var slicer = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/CharEnum:slicer");
+                    var slicer = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.Slicer);
                     slicer.Value = 1;
 
                     // Set mipmap limit
-                    var mip_limit_override = (TagFieldElementInteger)tagFile.SelectField("Block:usage override[0]/ShortInteger:mipmap limit");
+                    var mip_limit_override = (TagFieldElementInteger)tagFile.SelectField(TagFieldConstants.MipLimit);
                     mip_limit_override.Data = -1;
 
                     // Set compression to UI-selected value
-                    var override_compression = (TagFieldEnum)tagFile.SelectField("Block:usage override[0]/LongEnum:bitmap format");
+                    var override_compression = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.UsageFormat);
                     override_compression.Value = compress_value;
 
                     tagFile.Save();
