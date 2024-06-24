@@ -18,6 +18,7 @@
   <PropertyGroup>
     <StartupObject>OsoyoosMB.MBHandler</StartupObject>
     <NoWin32Manifest>true</NoWin32Manifest>
+    <IsPublishable>False</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ManagedBlam, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
