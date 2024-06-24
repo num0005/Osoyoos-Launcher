@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix: # https://stackoverflow.com/a/68940067/16608030 hopefully this still works
-        dotnet: [ {version: '5.0.x', path: net5.0-windows}, {version: '6.0.x', path: net6.0-windows} ]
+        dotnet: [ {version: '6.0.x', path: net6.0-windows}, {version: '8.0.x', path: net8.0-windows}, {version: '9.0.x', path: net9.0-windows} ]
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT : true
     steps:
