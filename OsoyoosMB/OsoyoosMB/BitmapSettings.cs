@@ -12,7 +12,13 @@ namespace OsoyoosMB
     {
         public static void GetBitmapData(string ek_path, string tag_folder, string compress_value)
         {
-            // Get all bitmaps
+            // Initialize ManagedBlam
+            ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
+
+            // Makes "empty" bitmap tags
+            MBHelpers.CreateDummyBitmaps(ek_path, tag_folder);
+
+            // Get all bitmap tags
             string tag_folder_full = Path.Combine(ek_path, "tags", tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
 
@@ -95,15 +101,13 @@ namespace OsoyoosMB
             public const string UsageFormat = "Block:usage override[0]/LongEnum:bitmap format";
             public const string DicerFlags = "Block:usage override[0]/WordFlags:dicer flags";
             public const string Slicer = "Block:usage override[0]/CharEnum:slicer";
+            public const string BumpHeight = "Real:bump map height";
         }
 
         public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)
         {
             // EK "tags" folder location
             string base_path = Path.Combine(ek_path, "tags");
-
-            // Initialize ManagedBlam
-            ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
 
             foreach (string bitmap_full in diffuses)
             {
@@ -173,6 +177,10 @@ namespace OsoyoosMB
                     var usage = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.Usage);
                     usage.Value = 17;
 
+                    // Set bump height to default of 5
+                    var bump_height = (TagFieldElementSingle)tagFile.SelectField(TagFieldConstants.BumpHeight);
+                    bump_height.Data = 5;
+
                     // Set curve mode to pretty
                     var curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.CurveMode);
                     curve.Value = 2;
@@ -235,6 +243,10 @@ namespace OsoyoosMB
                     // Set usage to bump
                     var usage = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.Usage);
                     usage.Value = 2;
+
+                    // Set bump height to default of 5
+                    var bump_height = (TagFieldElementSingle)tagFile.SelectField(TagFieldConstants.BumpHeight);
+                    bump_height.Data = 5;
 
                     // Set curve mode to pretty
                     var curve = (TagFieldEnum)tagFile.SelectField(TagFieldConstants.CurveMode);

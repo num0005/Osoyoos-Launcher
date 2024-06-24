@@ -21,7 +21,7 @@ namespace OsoyoosMB
 {
     internal class MBHandler
     {
-        
+
         public static void Main(String[] args)
         {
             if (args.Length == 0)
@@ -42,12 +42,12 @@ namespace OsoyoosMB
                 }
             }
         }
-        
+
         /*
         //Use this instead if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
         public static void Main()
         {
-            BitmapSettings.GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", "Uncompressed");
+            BitmapSettings.GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", "2");
         }
         */
     }

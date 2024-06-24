@@ -25,17 +25,11 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportBitmaps(string path, string type, string compression, string data_path, bool debug_plate)
         {
-            // First import
-            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
-
             // Call managedblam
-            bool MB_success = ManagedBlam.RunMBBitmaps(BaseDirectory, path, compression);
+            ManagedBlam.RunMBBitmaps(BaseDirectory, path, compression);
 
-            if (MB_success)
-            {
-                // Reimport bitmaps
-                await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
-            }
+            // Import bitmaps - run this regardless of managedblam success
+            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
         }
 
         override public async Task ImportUnicodeStrings(string path)
