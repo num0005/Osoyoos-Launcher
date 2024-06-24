@@ -37,6 +37,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: launcher
-        path: Launcher\bin\Release\${{ matrix.dotnet.path}}\win-x64\publish\
+        path: Launcher\bin\x64\Release\${{ matrix.dotnet.path}}\win-x64\publish\
         
         
