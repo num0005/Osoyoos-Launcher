@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: launcher
-        path: Launcher\bin\Release\x64\net6.0-windows\win-x64\publish\
+        path: Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\
         
   release:
     if: |
