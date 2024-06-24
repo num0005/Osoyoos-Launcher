@@ -1,4 +1,4 @@
-Copyright (c) 2017 num0005
+Copyright (c) 2017 num0005  
 Copyright (c) 2022 Osoyoos Launcher Contributors
 
 Unless otherwise noted files in this repository are licensed under the terms of the MIT license (reproduced below).

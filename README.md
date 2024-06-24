@@ -37,10 +37,13 @@ Launcher can do the following:
 
 ## Usage
 
-0. Download and install the [.NET 5 Desktop Runtime x64](https://dotnet.microsoft.com/download/dotnet/5.0/runtime). It is *very* important that you download the **64-bit** **Desktop** runtime, otherwise the launcher won't start correctly. For convenience you can use the [direct download link]( https://download.visualstudio.microsoft.com/download/pr/2bfb80f2-b8f2-44b0-90c1-d3c8c1c8eac8/409dd3d3367feeeda048f4ff34b32e82/windowsdesktop-runtime-5.0.13-win-x64.exe) but it might point to an older version as this readme is not regularly revised.
+0. Download and install the [.NET 6 Desktop Runtime x64](https://dotnet.microsoft.com/download/dotnet/6.0/runtime). It is *very* important that you download the **64-bit** **Desktop** runtime, otherwise the launcher won't start correctly. For convenience you can use the [direct download link]( https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.31-windows-x64-installer) but it might point to an older version as this readme is not regularly revised.
 
 1. Download and run the launcher executable [from Github releases](https://github.com/num0005/Osoyoos-Launcher/releases).
 2. Use the setup dialog and/or profile wizard to setup the paths for all toolkits you wish to use.
+
+## Non-free content warning
+The reference managedblam assembly is not covered by the MIT license and is instead covered by the MCC EULA and/or the fair dealing/fair use exemption. This reference assembly is automatically generated from the public interface of a closed source binary and contains no executable code and is only used for the purpose of interoperability.
 
 ## Credits
 

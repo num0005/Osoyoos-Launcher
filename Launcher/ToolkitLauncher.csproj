@@ -21,6 +21,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
+	<Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>

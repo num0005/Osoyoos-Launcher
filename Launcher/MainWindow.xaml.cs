@@ -16,6 +16,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Threading;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace ToolkitLauncher
 {
@@ -412,6 +413,41 @@ namespace ToolkitLauncher
         unit_footsteps_postpone,
         weapon_ready_third_person,
         ui_music
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum BitmapCompressionType
+    {
+        [Description("Default")]
+        [EnumMember(Value = "0")]
+        Default,
+        [Description("DXT5")]
+        [EnumMember(Value = "15")]
+        DXT5,
+        [Description("DXT1")]
+        [EnumMember(Value = "13")]
+        DXT1,
+        [Description("24-bit Color + 8-bit Alpha")]
+        [EnumMember(Value = "16")]
+        Color24BitAlpha8Bit,
+        [Description("Best Compressed Color")]
+        [EnumMember(Value = "1")]
+        BestCompressedColor,
+        [Description("Uncompressed")]
+        [EnumMember(Value = "2")]
+        Uncompressed
+    }
+
+    // Return the associated EnumMember string value given the selected value of the compression type above
+    public static class EnumExtensions
+    {
+        public static string GetEnumMemberValue(this Enum enumValue)
+        {
+            var fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+            var attribute = (EnumMemberAttribute)fieldInfo.GetCustomAttributes(typeof(EnumMemberAttribute), false)[0];
+
+            return attribute.Value;
+        }
     }
 
     /// <summary>
@@ -1081,7 +1117,8 @@ namespace ToolkitLauncher
         private async void CompileImage(object sender, RoutedEventArgs e)
         {
             string listEntry = BitmapCompile.bitmapType[bitmap_compile_type.SelectedIndex];
-            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, debug_plate.IsChecked is true);
+            BitmapCompressionType selectedComp = (BitmapCompressionType)bitmap_compression_type.SelectedItem; // Convert selected compression string to enum value
+            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, selectedComp.GetEnumMemberValue(), toolkit.GetDataDirectory(), debug_plate.IsChecked is true);
         }
 
         private async void PackageLevel(object sender, RoutedEventArgs e)

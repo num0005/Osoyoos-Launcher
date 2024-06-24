@@ -19,7 +19,7 @@ namespace ToolkitLauncher.ToolkitInterface
             get => "Sapien";
         }
 
-        override public async Task ImportBitmaps(string path, string type, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, string data_path, bool debug_plate)
         {
             string bitmaps_command = "bitmaps";
             if (Profile.CommunityTools || Profile.BuildType == build_type.release_mcc)

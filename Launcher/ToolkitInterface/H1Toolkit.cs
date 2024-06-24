@@ -78,7 +78,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "sounds", path, platform, bitrate });
         }
 
-        override public async Task ImportBitmaps(string path, string type, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, string data_path, bool debug_plate)
         {
             await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
         }
