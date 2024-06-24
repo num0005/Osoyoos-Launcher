@@ -33,11 +33,11 @@ namespace ToolkitLauncher.Utility
         /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <param name="lowPriority">Lower priority if possible</param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public Task<Result> StartProcess(string directory, string executable, List<string> args, CancellationToken cancellationToken = default, bool lowPriority = false)
+        static public Task<Result> StartProcess(string directory, string executable, List<string> args, CancellationToken cancellationToken = default, bool lowPriority = false, bool admin = false)
         {
-            Debug.Print($"starting(): directory: {directory}, executable:{executable}, args:{args}");
+            Debug.Print($"starting(): directory: {directory}, executable:{executable}, args:{args}, admin: {admin}, low priority {lowPriority}");
             if (OperatingSystem.IsWindows())
-                return Windows.StartProcess(directory, executable, args, cancellationToken, lowPriority);
+                return Windows.StartProcess(directory, executable, args, cancellationToken, lowPriority, admin);
             throw new PlatformNotSupportedException();
         }
 

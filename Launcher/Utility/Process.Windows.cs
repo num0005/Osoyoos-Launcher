@@ -33,17 +33,23 @@ namespace ToolkitLauncher.Utility
                         return ProcessPriorityClass.Idle;
                 }
             }
-            static public async Task<Result> StartProcess(string directory, string executable, List<string> args, CancellationToken cancellationToken, bool lowPriority)
+            static public async Task<Result> StartProcess(string directory, string executable, List<string> args, CancellationToken cancellationToken, bool lowPriority, bool admin)
             {
                 try
                 {
                     string executable_path = Path.Combine(directory, executable);
                     ProcessStartInfo info = new(executable_path);
                     info.WorkingDirectory = directory;
-                   // info.RedirectStandardError = true;
-                   // info.RedirectStandardOutput = true;
+                    // info.RedirectStandardError = true;
+                    // info.RedirectStandardOutput = true;
                     foreach (string arg in args)
                         info.ArgumentList.Add(arg);
+
+                    if (admin)
+                    {
+                        info.Verb = "runas";
+                        info.UseShellExecute = true;
+                    }
 
                     System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
                     if (lowPriority)
@@ -92,6 +98,11 @@ namespace ToolkitLauncher.Utility
                     {
                         // todo(num0005) refactor this and move the exception into the Process
                         throw new ToolkitInterface.ToolkitBase.MissingFile(executable);
+                    }
+                    else if (ErrorCode == 1223)
+                    {
+                        // todo(num0005) refactor result type, for now use a magic value to indicate UAC prompt was rejected
+                        return new Result("", "", -451);
                     }
                     else
                     {
