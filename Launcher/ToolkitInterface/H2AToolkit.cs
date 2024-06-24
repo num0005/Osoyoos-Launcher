@@ -75,7 +75,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(tool, new List<string>() { command, data_file }, true);
         }
 
-        private string set_flags(string flag_string, string flag_name)
+        static private string SetFlag(string flag_string, string flag_name)
         {
             if (!String.IsNullOrEmpty(flag_string))
             {
@@ -91,68 +91,61 @@ namespace ToolkitLauncher.ToolkitInterface
             string flags = "";
             if (verboseAnim)
             {
-                flags = set_flags(flags, "verbose");
+                flags = SetFlag(flags, "verbose");
             }
             if (uncompressedAnim)
             {
-                flags = set_flags(flags, "uncompressed");
+                flags = SetFlag(flags, "uncompressed");
             }
             if (resetCompression)
             {
-                flags = set_flags(flags, "reset_compression");
+                flags = SetFlag(flags, "reset_compression");
             }
 
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
-            List<string> args = new List<string>();
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
                 if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H2")) { return; }; }
-                args.Add("render");
-                args.Add(path);
-                if (accurateRender)
-                {
-                    args.Add("true");
-                }
+
+                // check PRT tool is setup before we use it
                 if (renderPRT)
                 {
-                    if (!accurateRender)
-                    {
-                        args.Add("false");
-                    }
-                    args.Add("true");
+                    await CheckPRTToolDeployment();
                 }
+
+                List<string> args = new() {
+                    "render",
+                    path,
+                    accurateRender ? "true" : "false",
+                    renderPRT ? "true" : "false" };
+                await RunTool(ToolType.Tool, args, true);
+
             }
             if (importType.HasFlag(ModelCompile.collision))
             {
-                args.Add("collision");
-                args.Add(path);
+                await RunTool(ToolType.Tool, new() { "collision", path });
             }
             if (importType.HasFlag(ModelCompile.physics))
             {
-                args.Add("physics");
-                args.Add(path);
+                await RunTool(ToolType.Tool, new() { "physics", path });
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
                 if (FPAnim)
-                {
-                    args.Add("fp-model-animations");
-                    args.Add(path);
-                    args.Add(characterFPPath);
-                    args.Add(weaponFPPath);
-                    args.Add(flags);
-                }
+                    await RunTool(ToolType.Tool, new() { 
+                        "fp-model-animations", 
+                        path, 
+                        characterFPPath, 
+                        weaponFPPath, 
+                        flags });
                 else
-                {
-                    args.Add("model-animations");
-                    args.Add(path);
-                    args.Add(flags);
-                }
+                    await RunTool(ToolType.Tool, new() { 
+                        "model-animations", 
+                        path, 
+                        flags });
             }
-
-            await RunTool(ToolType.Tool, args, true);
         }
 
         public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type, string custom_extension)
@@ -165,23 +158,23 @@ namespace ToolkitLauncher.ToolkitInterface
             string flags = "";
             if (cacheCompress)
             {
-                flags = set_flags(flags, "compress");
+                flags = SetFlag(flags, "compress");
             }
             if (cacheResourceSharing)
             {
-                flags = set_flags(flags, "resource_sharing");
+                flags = SetFlag(flags, "resource_sharing");
             }
             if (cacheMultilingualSounds)
             {
-                flags = set_flags(flags, "multilingual_sounds");
+                flags = SetFlag(flags, "multilingual_sounds");
             }
             if (cacheRemasteredSupport)
             {
-                flags = set_flags(flags, "remastered_support");
+                flags = SetFlag(flags, "remastered_support");
             }
             if (cacheMPTagSharing)
             {
-                flags = set_flags(flags, "mp_tag_sharing");
+                flags = SetFlag(flags, "mp_tag_sharing");
             }
 
             List<string> args = new List<string>();
