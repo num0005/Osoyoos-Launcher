@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using ToolkitLauncher.Utility;
-using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
     public class H2AToolkit : H2Toolkit, IToolkitFBX2Jointed, IToolkitFBX2ASS, IToolkitFBX2JMI
     {
 
-        public H2AToolkit(ProfileSettingsLauncher profle, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profle, baseDirectory, toolPaths) { }
+        public H2AToolkit(ToolkitProfiles.ProfileSettingsLauncher profle, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profle, baseDirectory, toolPaths) { }
 
         private string tagPath
         {
@@ -84,6 +84,68 @@ namespace ToolkitLauncher.ToolkitInterface
             flag_string += flag_name;
 
             return flag_string;
+        }
+
+        private string _get_prt_tool_path()
+        {
+            return Path.Join(BaseDirectory, @"prt_sim.exe");
+        }
+
+        private async Task CheckPRTToolDeployment()
+        {
+            string prt_tool_path = _get_prt_tool_path();
+
+            bool should_update_prt = false;
+            if (!File.Exists(prt_tool_path))
+            {
+                // no tool, clear the version data as it's inaccurate
+                Profile.LatestPRTToolVersion = null;
+                ToolkitProfiles.Save();
+
+                var result = MessageBox.Show(
+                    "PRT related operations will fail until it is installed, do you want to do that now?", 
+                    "PRT Simulation Tool not installed!",
+                    MessageBoxButtons.YesNo);
+                should_update_prt = result == DialogResult.Yes;
+            }
+            else if (!PRTSimInstaller.IsRedistInstalled())
+            {
+                var result = MessageBox.Show(
+                    "PRT installation is incomplete (missing redist), do you want to reinstall it now?",
+                    "D3DX Redist Package Missing!",
+                    MessageBoxButtons.YesNo);
+                should_update_prt = result == DialogResult.Yes;
+            }
+            else
+            {
+
+                if (Profile.LatestPRTToolVersion is not null)
+                {
+                    // todo(num0005) put prt tool update logic here
+                }
+                else
+                {
+                    // untracked PRT tool version, there's nothing we can do now
+                }
+            }
+
+            if (should_update_prt)
+            {
+                int? installed_version = await PRTSimInstaller.Install(prt_tool_path);
+                if (installed_version is null)
+                {
+                    MessageBox.Show(
+                    "Failed to install PRT simulation tool!",
+                    "Error",
+                    MessageBoxButtons.OK);
+                }
+                else
+                {
+                    Profile.LatestPRTToolVersion = installed_version;
+                    ToolkitProfiles.Save();
+                }
+            }
+
         }
 
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)

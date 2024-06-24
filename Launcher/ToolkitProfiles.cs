@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -79,6 +80,9 @@ namespace ToolkitLauncher
 
             [JsonPropertyName("batch")]
             public bool Batch { get; set; }
+
+            [JsonPropertyName("prt_tool_version")]
+            public int? LatestPRTToolVersion { get; set; }
 
             /// <summary>
             /// Whatever we should temporarily be experts
