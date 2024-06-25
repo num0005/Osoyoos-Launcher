@@ -201,9 +201,9 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path });
         }
 
-        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, string json_rebuild, bool showOutput)
+        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, bool json_rebuild = false, bool showOutput = true)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild }, showOutput);
+            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild ? "recreate_json" : "" }, showOutput);
         }
 
         public async Task ImportSidecar(string sidecarPath)

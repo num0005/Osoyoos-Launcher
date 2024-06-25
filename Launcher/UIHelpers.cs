@@ -216,68 +216,42 @@ namespace ToolkitLauncher
 
                 foreach (TogglesUI toggle in enable_for)
                 {
-                    bool valid_toggle = true;
-
                     if (toggle.HasFlag(TogglesUI.H1) && !MainWindow.halo_ce)
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.H2) && !MainWindow.halo_2)
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.H3) && !MainWindow.halo_3)
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.HR) && !MainWindow.halo_reach)
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.H4) && !MainWindow.halo_4)
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.CommunityBuild) && !MainWindow.halo_community)
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.LegacyStock) && (MainWindow.halo_mcc || MainWindow.halo_community))
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.HasTool) && string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.HasGuerilla) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.HasSapien) && string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
                     if (toggle.HasFlag(TogglesUI.HasStandalone) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
-                    {
-                        valid_toggle = false;
-                    }
+                        continue;
 
-                    if (valid_toggle)
-                    {
-                        enable = true;
-                        break;
-                    }
+                    // everything checks out, exit early
+                    enable = true;
+                    break;
                 }
             }
             else

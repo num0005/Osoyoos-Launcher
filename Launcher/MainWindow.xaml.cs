@@ -574,18 +574,6 @@ namespace ToolkitLauncher
             }
         }
 
-        public static bool halo_ce_standalone_community
-        {
-            get
-            {
-                if (profile_mapping.Count > 0 && profile_index >= 0)
-                {
-                    return toolkit_profile.GameGen == 0 && toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
-                }
-                return false;
-            }
-        }
-
         public static bool halo_ce_mcc
         {
             get
@@ -1857,16 +1845,16 @@ namespace ToolkitLauncher
                         if (error)
                             MessageBox.Show("No output tags selected. Model sidecar generation aborted.");
                         else
-                            await GenerateModelSidecar();
+                            GenerateModelSidecar();
                         break;
                     case 1:
-                        await GenerateStructureSidecar();
+                        GenerateStructureSidecar();
                         break;
                     case 2:
-                        await GenerateDecoratorSidecar();
+                        GenerateDecoratorSidecar();
                         break;
                     case 3:
-                        await GenerateParticleSidecar();
+                        GenerateParticleSidecar();
                         break;
                     case 4:
                         MessageBox.Show("Cinematics Not Currently Supported Yet!"); // Need more info about how cinematic sidecars work before this can be implemented
@@ -1898,20 +1886,20 @@ namespace ToolkitLauncher
                 switch (asset_type.SelectedIndex)
                 {
                     case 0:
-                        await GenerateModelSidecar();
+                        GenerateModelSidecar();
                         break;
                     case 1:
-                        await GenerateStructureSidecar();
+                        GenerateStructureSidecar();
                         break;
                     case 2:
-                        await GenerateDecoratorSidecar();
+                        GenerateDecoratorSidecar();
                         break;
                     case 3:
-                        await GenerateParticleSidecar();
+                        GenerateParticleSidecar();
                         break;
                     case 4:
                         MessageBox.Show("Cinematics Not Currently Supporterd Yet!");
-                        //await GenerateCinematicSidecar();
+                        //GenerateCinematicSidecar();
                         break;
                 }
 
@@ -1922,117 +1910,67 @@ namespace ToolkitLauncher
         private async Task ConvertFBX()
         {
             HRToolkit tool = toolkit as HRToolkit;
+            List<Task> dispatchedTasks = new();
 
-            string[] folders = Directory.EnumerateDirectories(fullPath).ToArray();
-
-            foreach (var folder in folders)
+            string getFilepath(string file)
             {
-                string[] s = folder.Split("\\");
-                string folderName = s.Last();
-                int count = 0;
+                string[] t = file.Split(".");
+                string filepath = "";
+                for (int i = 0; i < t.Length - 1; i++)
+                    filepath += t[i];
 
-                string[] assetFolders = new string[] { "animations", "collision", "markers", "physics", "render", "skeleton" };
+                return filepath;
+            }
+
+            void ConvertAllInFolder(string folder)
+            {
+                IEnumerable<string> files = Directory.EnumerateFiles(folder, "*.fbx");
+
+                foreach (var f in files)
+                {
+                    Task toolTask = tool.GR2FromFBX(
+                        f,
+                        getFilepath(f) + ".json",
+                        getFilepath(f) + ".gr2",
+                        (json_rebuild.IsChecked == true),
+                        (bool)show_output.IsChecked);
+                    dispatchedTasks.Add(toolTask);
+                }
+            }
+
+            foreach (var folder in Directory.EnumerateDirectories(fullPath))
+            {
+                string folderName = Path.GetDirectoryName(folder);
+
+                string[] assetFolders = new[] { "animations", "collision", "markers", "physics", "render", "skeleton" };
 
                 if (assetFolders.Any(folderName.Contains))
                 {
                     if (folderName == "animations")
                     {
-                        try
+                        string[] subfolders = new[] { "JMM", "JMA", "JMT", "JMZ", "JMV", "JMO (Keyframe)", "JMO (Pose)", "JMR (Local)", "JMR (Object)" };
+                        foreach (string sub in subfolders)
                         {
-                            string[] subfolders = new string[] { "JMM", "JMA", "JMT", "JMZ", "JMV", "JMO (Keyframe)", "JMO (Pose)", "JMR (Local)", "JMR (Object)" };
-                            foreach (string sub in subfolders)
-                            {
-                                string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName + "\\" + sub, "*.fbx").ToArray();
-
-                                foreach (var f in files)
-                                {
-                                    if (count == Environment.ProcessorCount)
-                                    {
-                                        count = 0;
-                                        Thread.Sleep(250);
-                                    }
-
-                                    if (!(bool)show_output.IsChecked)
-                                        Thread.Sleep(250);
-
-                                    tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
-                                    count++;
-                                }
-                            }
-                        }
-                        catch (Exception)
-                        {
-
+                            ConvertAllInFolder(fullPath + "\\" + folderName + "\\" + sub);
                         }
                     }
                     else
                     {
-                        try
-                        {
-                            string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName, "*.fbx").ToArray();
-
-                            foreach (var f in files)
-                            {
-                                if (count == Environment.ProcessorCount)
-                                {
-                                    count = 0;
-                                    Thread.Sleep(250);
-                                }
-
-                                if (!(bool)show_output.IsChecked)
-                                    Thread.Sleep(250);
-
-                                tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
-                                count++;
-                            }
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        ConvertAllInFolder(fullPath + "\\" + folderName);
                     }
                 }
                 else
                 {
-                    string[] subfolders = new string[] { "structure", "structure_design" };
+                    string[] subfolders = new[] { "structure", "structure_design" };
                     foreach (string sub in subfolders)
                     {
-                        try
-                        {
-                            string[] files = Directory.EnumerateFiles(fullPath + "\\" + folderName + "\\" + sub, "*.fbx").ToArray();
-
-                            foreach (var f in files)
-                            {
-                                if (count == Environment.ProcessorCount)
-                                {
-                                    count = 0;
-                                    Thread.Sleep(250);
-                                }
-
-                                if (!(bool)show_output.IsChecked)
-                                    Thread.Sleep(250);
-
-                                tool.GR2FromFBX(f, getFilepath(f) + ".json", getFilepath(f) + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
-                                count++;
-                            }
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        ConvertAllInFolder(fullPath + "\\" + folderName + "\\" + sub);
                     }
                 }
             }
-        }
 
-        private string getFilepath(string file)
-        {
-            string[] t = file.Split(".");
-            string filepath = "";
-            for (int i = 0; i < t.Length - 1; i++)
-                filepath += t[i];
-
-            return filepath;
+            // wait for all the FBX files to get converted
+            await Task.WhenAll(dispatchedTasks);
         }
 
         private void CreateModelFolders()
@@ -2089,7 +2027,7 @@ namespace ToolkitLauncher
         }
 
         // Generate a Sidecar when the user has opted to create one for a model
-        private async Task GenerateModelSidecar()
+        private void GenerateModelSidecar()
         {
             XDocument srcTree = new XDocument(
                 new XElement("Metadata", WriteHeader(),
@@ -2107,7 +2045,7 @@ namespace ToolkitLauncher
                 MessageBox.Show("Sidecar Generated Successfully!");
         }
 
-        private async Task GenerateStructureSidecar()
+        private void GenerateStructureSidecar()
         {
             XDocument srcTree = new XDocument(
                 new XElement("Metadata", WriteHeader(),
@@ -2129,7 +2067,7 @@ namespace ToolkitLauncher
                 MessageBox.Show("Sidecar Generated Successfully!");
         }
 
-        private async Task GenerateDecoratorSidecar()
+        private void GenerateDecoratorSidecar()
         {
             XDocument srcTree = new XDocument(
                 new XElement("Metadata", WriteHeader(),
@@ -2149,7 +2087,7 @@ namespace ToolkitLauncher
                 MessageBox.Show("Sidecar Generated Successfully!");
         }
 
-        private async Task GenerateParticleSidecar()
+        private void GenerateParticleSidecar()
         {
             XDocument srcTree = new XDocument(
                 new XElement("Metadata", WriteHeader(),
@@ -2169,7 +2107,7 @@ namespace ToolkitLauncher
                 MessageBox.Show("Sidecar Generated Successfully!");
         }
 
-        private async Task GenerateCinematicSidecar()
+        private void GenerateCinematicSidecar()
         {
             XDocument srcTree = new XDocument(
                 new XElement("Metadata", WriteHeader(),
@@ -2788,7 +2726,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
                     if (!(bool)show_output.IsChecked)
                         Thread.Sleep(250);
 
-                    tool.GR2FromFBX(filename, filepath + ".json", filepath + ".gr2", (json_rebuild.IsChecked == true) ? "recreate_json" : "", (bool)show_output.IsChecked);
+                    tool.GR2FromFBX(filename, filepath + ".json", filepath + ".gr2", (json_rebuild.IsChecked == true), (bool)show_output.IsChecked);
                     count++;
                 }
             }
