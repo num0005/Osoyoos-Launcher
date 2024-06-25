@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -8,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using ToolkitLauncher.Properties;
+using static ToolkitLauncher.BindingToolkitParser;
 
 namespace ToolkitLauncher
 {
@@ -130,187 +133,354 @@ namespace ToolkitLauncher
         }
     }
 
-    public class ToolkitToSpaceConverter : OneWayValueConverter
+    internal class BindingToolkitParser
+    {
+        [Flags]
+        public enum TogglesUI
+        {
+            None = 0,
+
+            H1 = 1 << 0,
+            H2 = 1 << 2,
+            H3 = 1 << 3,
+            HR = 1 << 4,
+            H4 = 1 << 5,
+
+            MCC = 1 << 6,
+            H2Codez = 1 << 7,
+
+        }
+
+        static public TogglesUI ParseFlagSet(string input)
+        {
+            TogglesUI flags = TogglesUI.None;
+
+            foreach (string element  in input.Split("|")) 
+            {
+                if (String.IsNullOrEmpty(element)) continue;
+
+                TogglesUI value = Enum.Parse<TogglesUI>(element.Trim(), true);
+                flags |= value;
+            }
+
+            return flags;
+        }
+
+        static public List<TogglesUI> ParseMultiFlagSet(string input)
+        {
+            List<TogglesUI> flagSets = new();
+
+            foreach (string element in input.Split("+"))
+            {
+                TogglesUI flags = ParseFlagSet(element.Trim());
+                flagSets.Add(flags);
+            }
+
+            return flagSets;
+        }
+
+        static public List<string> ParseBindingList(string input)
+        {
+            Debug.Assert(input != null);
+            Debug.Assert(input.StartsWith("("));
+            Debug.Assert(input.EndsWith(")"));
+
+            input = input[1..^1];
+
+            List<string> elements = new ();
+            foreach (string element in input.Split(","))
+            {
+                elements.Add(element.Trim());
+            }
+
+            return elements;
+        }
+    }
+
+    public class BooleanToSpaceConverter : OneWayValueConverter
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var grid = new GridLength(0);
+            if (value is true)
+                return new GridLength(8);
+            else
+                return new GridLength(0);
+        }
+    }
+
+    public class ToolkitToSpaceConverter : OneWayValueConverter
+    {
+        private GridLength ParseGridConfig(string input)
+        {
+            Debug.Assert(input != null);
+            input = input.Trim();
+            if (input == "star")
+                return new GridLength(1, GridUnitType.Star);
+            else if (input == "auto")
+                return new GridLength(1, GridUnitType.Auto);
+            else
+            {
+                _ = int.TryParse(input, out int intger_size);
+
+                return new GridLength(intger_size);
+            }
+        }
+        public object ConvertNew(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (parameter == null)
+                return new GridLength(0);
+
+            List<string> config = BindingToolkitParser.ParseBindingList(parameter as string);
+            List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(config[0]);
+
+            bool enable;
             if (MainWindow.profile_mapping.Count > 0)
             {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
+                enable = false;
+
+                foreach (TogglesUI toggle in enable_for)
                 {
-                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    if (MainWindow.halo_ce_mcc)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    if (MainWindow.halo_2_standalone_community)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 3)
-                {
-                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 4)
-                {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_mcc)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
-                {
-                    if (MainWindow.halo_ce || MainWindow.halo_2)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
-                {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
-                {
-                    if (MainWindow.halo_2_mcc)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 8)
-                {
-                    if ((bool)value)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 9)
-                {
-                    if (MainWindow.halo_2_mcc)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength((double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 10)
-                {
-                    if (MainWindow.halo_ce_mcc)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 11)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 12)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 13)
-                {
-                    if (MainWindow.halo_3)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 14)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 15)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 16)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 17)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2 && !MainWindow.halo_reach && !MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 18)
-                {
-                    if (MainWindow.halo_reach)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 19)
-                {
-                    if (MainWindow.halo_ce)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 20)
-                {
-                    if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 21)
-                {
-                    if (MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 22)
-                {
-                    if (MainWindow.halo_reach || MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 23)
-                {
-                    if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        grid = new GridLength(8);
+                    bool valid_toggle = true;
+                    
+                    if (toggle.HasFlag(TogglesUI.H1) && !MainWindow.halo_ce)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H2) && !MainWindow.halo_2)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H3) && !MainWindow.halo_3)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HR) && !MainWindow.halo_reach)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H4) && !MainWindow.halo_4)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (valid_toggle)
+                    {
+                        enable = true;
+                        break;
+                    }
                 }
             }
             else
             {
                 //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                if (parameter is string && Int32.Parse(parameter as string) == 9
-                    || parameter is string && Int32.Parse(parameter as string) == 10
-                    || parameter is string && Int32.Parse(parameter as string) == 11
-                    || parameter is string && Int32.Parse(parameter as string) == 13
-                    || parameter is string && Int32.Parse(parameter as string) == 14
-                    || parameter is string && Int32.Parse(parameter as string) == 15
-                    || parameter is string && Int32.Parse(parameter as string) == 16
-                    || parameter is string && Int32.Parse(parameter as string) == 17
-                    || parameter is string && Int32.Parse(parameter as string) == 18
-                    || parameter is string && Int32.Parse(parameter as string) == 19
-                    || parameter is string && Int32.Parse(parameter as string) == 20
-                    || parameter is string && Int32.Parse(parameter as string) == 21
-                    || parameter is string && Int32.Parse(parameter as string) == 22
-                    || parameter is string && Int32.Parse(parameter as string) == 23)
+                enable = true;
+            }
+
+            if (enable)
+            {
+                return ParseGridConfig(config[1]);
+            }
+            else
+            {
+                return ParseGridConfig(config[2]);
+            }
+        }
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool is_new_style = false;
+            if (parameter is string t && t.StartsWith("("))
+            {
+                is_new_style = true;
+            }
+
+            if (!is_new_style)
+            {
+                var grid = new GridLength(0);
+                if (MainWindow.profile_mapping.Count > 0)
                 {
-                    grid = new GridLength(1, GridUnitType.Star);
+                    if (parameter is string && Int32.Parse(parameter as string) == 0)
+                    {
+                        if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 1)
+                    {
+                        if (MainWindow.halo_ce_mcc)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 2)
+                    {
+                        if (MainWindow.halo_2_standalone_community)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 3)
+                    {
+                        if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 4)
+                    {
+                        if (MainWindow.halo_2_standalone_community || MainWindow.halo_mcc)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 5)
+                    {
+                        if (MainWindow.halo_ce || MainWindow.halo_2)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 6)
+                    {
+                        if (MainWindow.halo_2_mcc || MainWindow.halo_3)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 7)
+                    {
+                        if (MainWindow.halo_2_mcc)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 8)
+                    {
+                        if ((bool)value)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 9)
+                    {
+                        if (MainWindow.halo_2_mcc)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength((double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 10)
+                    {
+                        if (MainWindow.halo_ce_mcc)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 11)
+                    {
+                        if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 12)
+                    {
+                        if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
+                            grid = new GridLength(8);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 13)
+                    {
+                        if (MainWindow.halo_3)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 14)
+                    {
+                        if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 15)
+                    {
+                        if (!MainWindow.halo_ce && !MainWindow.halo_2)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 16)
+                    {
+                        if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 17)
+                    {
+                        if (!MainWindow.halo_ce && !MainWindow.halo_2 && !MainWindow.halo_reach && !MainWindow.halo_4)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 18)
+                    {
+                        if (MainWindow.halo_reach)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 19)
+                    {
+                        if (MainWindow.halo_ce)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 20)
+                    {
+                        if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 21)
+                    {
+                        if (MainWindow.halo_4)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 22)
+                    {
+                        if (MainWindow.halo_reach || MainWindow.halo_4)
+                            grid = new GridLength(1, GridUnitType.Star);
+                        else
+                            grid = new GridLength(1, (double)GridUnitType.Auto);
+                    }
+                    else if (parameter is string && Int32.Parse(parameter as string) == 23)
+                    {
+                        if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
+                            grid = new GridLength(8);
+                    }
                 }
                 else
                 {
-                    grid = new GridLength(8);
-                }
+                    //Either we're in desinger or there are no profiles. Reveal ourselves either way.
+                    if (parameter is string && Int32.Parse(parameter as string) == 9
+                        || parameter is string && Int32.Parse(parameter as string) == 10
+                        || parameter is string && Int32.Parse(parameter as string) == 11
+                        || parameter is string && Int32.Parse(parameter as string) == 13
+                        || parameter is string && Int32.Parse(parameter as string) == 14
+                        || parameter is string && Int32.Parse(parameter as string) == 15
+                        || parameter is string && Int32.Parse(parameter as string) == 16
+                        || parameter is string && Int32.Parse(parameter as string) == 17
+                        || parameter is string && Int32.Parse(parameter as string) == 18
+                        || parameter is string && Int32.Parse(parameter as string) == 19
+                        || parameter is string && Int32.Parse(parameter as string) == 20
+                        || parameter is string && Int32.Parse(parameter as string) == 21
+                        || parameter is string && Int32.Parse(parameter as string) == 22
+                        || parameter is string && Int32.Parse(parameter as string) == 23)
+                    {
+                        grid = new GridLength(1, GridUnitType.Star);
+                    }
+                    else
+                    {
+                        grid = new GridLength(8);
+                    }
 
+                }
+                return grid;
             }
-            return grid;
+            else
+            {
+                return ConvertNew(value, targetType, parameter, culture);
+            }
         }
     }
 

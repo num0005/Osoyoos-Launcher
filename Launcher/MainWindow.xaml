@@ -15,6 +15,7 @@
         <Visibility x:Key="show_light_slider">Visible</Visibility>
         <local:TextContentModifier x:Key="TextContentModifier" />
         <local:ToolkitToSpaceConverter x:Key="ToolkitToSpaceConverter" />
+        <local:BooleanToSpaceConverter x:Key="BooleanToSpaceConverter" />
         <local:ProfiletoVisibility x:Key="ProfiletoVisibility" />
         <local:ProfiletoVisibilityMulti x:Key="ProfiletoVisibilityMulti" />
         <local:ProfiletoIsEnabled x:Key="ProfiletoIsEnabled" />
@@ -132,7 +133,7 @@
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=3, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, ConverterParameter=(mcc\, 8\, 0), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
@@ -151,9 +152,9 @@
                                         <Grid Grid.Row="5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=3, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(mcc\, 8\, 0), ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=12, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, ConverterParameter=(h2|mcc + h2|h2codez + h3 + hr\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <GroupBox x:Name="light_quality_select_box" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}" IsManipulationEnabled="True">
@@ -176,15 +177,15 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Grid Grid.Column="1" Grid.Row="1">
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=19, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=20, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=21, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h1\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h2 + h3 + hr\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
                                                         <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=2, ElementName=toolkit_selection}">
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=5, ElementName=toolkit_selection}"/>
+                                                                <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h1 + h2\, 8\, 0), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                                 <RowDefinition Height="Auto"/>
                                                             </Grid.RowDefinitions>
                                                             <Grid Grid.Row="0">
@@ -216,7 +217,7 @@
                                                             <Grid Grid.Row="0">
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=2, ElementName=toolkit_selection}"/>
+                                                                    <ColumnDefinition Width="{Binding SelectedIndex, ConverterParameter=(h2|h2codez\, 8\, 0), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <ComboBox Grid.Column="0" x:Name="light_quality_level" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=2, ElementName=toolkit_selection}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=13, ElementName=toolkit_selection}" ToolTip="Lighting quality (checkerboard is the worst, super is the best)."/>
@@ -298,23 +299,23 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Grid Grid.Row="1" Grid.Column="1">
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=16, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=17, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=22, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
-                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=18, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h1|mcc\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h2|mcc + h3 + hr + h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h1|mcc + h2|mcc + h3\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h2|mcc + h3 + hr + h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h3\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(hr + h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h3\, star\, auto), ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h3\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
                                                         <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=3, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="phantom_hack" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to fix phantom BSP errors on level compile.">
@@ -563,7 +564,7 @@
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="8"/>
                                                 <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="{Binding IsChecked, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=8, ElementName=fp_anim}"/>
+                                                <RowDefinition Height="{Binding IsChecked, Converter={StaticResource BooleanToSpaceConverter}, ConverterParameter=8, ElementName=fp_anim}"/>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition/>
@@ -571,7 +572,7 @@
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=3, ElementName=toolkit_selection}"/>
+                                                    <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(mcc\, 8\, 0), ElementName=toolkit_selection}"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="8"/>
                                                     <ColumnDefinition/>
@@ -656,9 +657,9 @@
                                                         </Grid.ColumnDefinitions>
                                                         <Grid Grid.Row="1" Grid.Column="1">
                                                             <Grid.RowDefinitions>
-                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=10, ElementName=toolkit_selection}"/>
-                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
-                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=11, ElementName=toolkit_selection}"/>
+                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h1|mcc\, star\, auto), ElementName=toolkit_selection}"/>
+                                                                <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h2|mcc + h3 + hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                                <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h2|mcc + h3 + hr + h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                             </Grid.RowDefinitions>
                                                             <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=3, ElementName=toolkit_selection}">
                                                                 <Grid.RowDefinitions>
@@ -696,10 +697,10 @@
                                                                         <Grid.RowDefinitions>
                                                                             <RowDefinition Height="*"/>
                                                                             <RowDefinition Height="*"/>
-                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
-                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
-                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
-                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=15, ElementName=toolkit_selection}"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h3 + hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h3 + hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h3 + hr + h4\, star\, auto), ElementName=toolkit_selection}"/>
+                                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h3 + hr + h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                                         </Grid.RowDefinitions>
                                                                         <CheckBox x:Name="accurate_render" Content="Accurate Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to disable the plane builder" Grid.ColumnSpan="2"/>
                                                                         <CheckBox Grid.Row="1" x:Name="prt_enabled" Content="PRT Render" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to import render models with PRT" Grid.ColumnSpan="2"/>
@@ -752,7 +753,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="8"/>
                                             <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=2, ElementName=toolkit_selection}"/>
+                                            <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h2|h2codez\, 8\, 0), ElementName=toolkit_selection}"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition/>
@@ -973,7 +974,7 @@
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=3, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(mcc\, 8\, 0), ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition/>
