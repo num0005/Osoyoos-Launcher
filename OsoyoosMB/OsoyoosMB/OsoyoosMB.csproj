@@ -6,6 +6,7 @@
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>x64</Platforms>
+    <BaseAddress>0x40000</BaseAddress>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -18,7 +19,7 @@
   <PropertyGroup>
     <StartupObject>OsoyoosMB.MBHandler</StartupObject>
     <NoWin32Manifest>true</NoWin32Manifest>
-    <IsPublishable>False</IsPublishable>
+    <IsPublishable>True</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ManagedBlam, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
@@ -33,4 +34,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
+  <Target Name="PostBuild Local" AfterTargets="PostBuildEvent">
+    <Exec Command="call &quot;$(DevEnvDir)..\Tools\VsDevCmd.bat&quot; &amp;&amp; editbin /HIGHENTROPYVA:NO /DYNAMICBASE:NO /REBASE:base=0x10000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
+  </Target>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Exec Command="call &quot;$(DevEnvDir)..\Tools\VsDevCmd.bat&quot; &amp;&amp; editbin /HIGHENTROPYVA:NO /DYNAMICBASE:NO /REBASE:base=0x10000 &quot;$(TargetDir)publish\$(TargetName).exe&quot;" />
+  </Target>
 </Project>
