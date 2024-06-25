@@ -152,12 +152,13 @@ namespace ToolkitLauncher
             H2Codez = 1 << 7,
             CommunityBuild = 1 << 8,
             LegacyStock = 1 << 9,
+            ODST = 1 << 10,
 
             // what tools do we have?
-            HasTool = 1 << 10,
-            HasSapien = 1 << 11,
-            HasGuerilla = 1 << 12,
-            HasStandalone = 1 << 13,
+            HasTool = 1 << 11,
+            HasSapien = 1 << 12,
+            HasGuerilla = 1 << 13,
+            HasStandalone = 1 << 14,
 
         }
 
@@ -311,6 +312,17 @@ namespace ToolkitLauncher
         }
     }
 
+    public class BooleanToVisiblity : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is true)
+                return Visibility.Visible;
+            else
+                return Visibility.Collapsed;
+        }
+    }
+
     public class ToolkitToSpaceConverter : OneWayValueConverter
     {
         private GridLength ParseGridConfig(string input)
@@ -370,159 +382,36 @@ namespace ToolkitLauncher
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList.Count > 0)
+            List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(parameter as string);
+
+            bool enable = IsAnyInEnableListValid(enable_for);
+
+            return enable ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    public class IsScenarioPathToVisibilityConverter : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string input = (string)value;
+            bool reverse = parameter is string type && type == "inverse";
+
+            bool enabled = input.EndsWith(".scenario");
+            if (reverse)
+                enabled = !enabled;
+
+            if (MainWindow.profile_mapping.Count > 0)
             {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
-                {
-                    if (MainWindow.halo_community)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    if (MainWindow.halo_ce)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 3)
-                {
-                    if (MainWindow.halo_ce_mcc)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 4)
-                {
-                    if (MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
-                {
-                    if (MainWindow.halo_2_standalone_community)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
-                {
-                    if (MainWindow.halo_2_mcc)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 8)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_2_standalone_community)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 9)
-                {
-                    string textbox_path = (string)value;
-                    if (!textbox_path.EndsWith(".scenario"))
-                    {
-                        vis = Visibility.Visible;
-                    }
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 10)
-                {
-                    string textbox_path = (string)value;
-                    if (textbox_path.EndsWith(".scenario"))
-                    {
-                        vis = Visibility.Visible;
-                    }
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 11)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 12)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 13)
-                {
-                    if (!MainWindow.halo_ce)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 14)
-                {
-                    if ((bool)value)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 15)
-                {
-                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 16)
-                {
-                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_mcc)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 17)
-                {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_3)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 18)
-                {
-                    if (MainWindow.halo_3_odst)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 19)
-                {
-                    if (!MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 20)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 21)
-                {
-                    if (MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 22)
-                {
-                    if (MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 23)
-                {
-                    if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 24)
-                {
-                    if (MainWindow.halo_reach || MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 25)
-                {
-                    if (MainWindow.halo_3 || MainWindow.halo_3_odst)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 26)
-                {
-                    if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
+                return enabled ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                vis = Visibility.Visible;
+                return Visibility.Visible;
             }
-            return vis;
         }
     }
+
 
     public class ProfiletoVisibilityMulti : OneWayMultiValueConverter
     {
