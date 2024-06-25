@@ -169,7 +169,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
-                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H2")) { return; }; }
+                if (genShaders) { if (! await AutoShaders.CreateEmptyShaders(GetTagDirectory(), GetDataDirectory(), path, "H2")) { return; }; }
 
                 // check PRT tool is setup before we use it
                 if (renderPRT)

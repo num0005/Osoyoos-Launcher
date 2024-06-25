@@ -24,7 +24,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
-                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3ODST")) { return; }; }
+                if (genShaders) { if (!AutoShaders.CreateEmptyShaders(GetTagDirectory(), GetDataDirectory(), path, "H3ODST")) { return; }; }
                 if (skyRender)
                 {
                     args.Add("render-sky");

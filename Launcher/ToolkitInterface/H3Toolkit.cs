@@ -182,7 +182,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             if (importType.HasFlag(ModelCompile.render))
             {
-                await RunTool(ToolType.Tool, ImportRender(genShaders, skyRender, BaseDirectory, path, accurateRender, renderPRT), true);
+                await RunTool(ToolType.Tool, await ImportRenderArgs(genShaders, skyRender, path, accurateRender, renderPRT), true);
             }
             if (importType.HasFlag(ModelCompile.collision))
             {
@@ -194,16 +194,16 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
-                await RunTool(ToolType.Tool, ImportAnimations(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
+                await RunTool(ToolType.Tool, ImportAnimationsArgs(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
             }
         }
 
-        public static List<string> ImportRender(bool genShaders, bool skyRender, string BaseDirectory, string path, bool accurateRender, bool renderPRT)
+        private async Task<List<string>> ImportRenderArgs(bool genShaders, bool skyRender, string path, bool accurateRender, bool renderPRT)
         {
-            List<string> args = new List<string>();
+            List<string> args = new();
 
             // Generate shaders if requested
-            if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H3")) { }; }
+            if (genShaders) { if (! await AutoShaders.CreateEmptyShaders(GetTagDirectory(), GetDataDirectory(), path, "H3")) { }; }
             if (skyRender)
             {
                 args.Add("render-sky");
@@ -225,9 +225,9 @@ namespace ToolkitLauncher.ToolkitInterface
             return args;
         }
 
-        public static List<string> ImportAnimations(bool FPAnim, bool verboseAnim, bool uncompressedAnim, bool resetCompression, string path, string characterFPPath, string weaponFPPath)
+        private static List<string> ImportAnimationsArgs(bool FPAnim, bool verboseAnim, bool uncompressedAnim, bool resetCompression, string path, string characterFPPath, string weaponFPPath)
         {
-            List<string> args = new List<string>();
+            List<string> args = new();
 
             if (FPAnim)
             {

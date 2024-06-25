@@ -5,17 +5,14 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 internal class AutoShaders
 {
-    public static bool CreateEmptyShaders(string BaseDirectory, string path, string gameType)
+    public static async Task<bool> CreateEmptyShaders(string tag_path, string data_path, string path, string gameType)
     {
-        // Variables
-        string full_jms_path = "";
-        int counter = 0;
-
         //Grabbing full path from drive letter to render folder
-        string jmsPath = (BaseDirectory + @"\data\" + path + @"\render").Replace("\\\\", "\\");
+        string jmsPath = Path.Join(data_path, path, "render");
 
         // Get all files in render folder
         string[] files = Array.Empty<string>();
@@ -29,7 +26,7 @@ internal class AutoShaders
             return false;
         }
 
-        string destinationShadersFolder = BaseDirectory + @"\tags\" + path + @"\shaders";
+        string destinationShadersFolder = Path.Join(tag_path, path, "shaders");
 
         // Checking if shaders already exist, if so don't re-gen them
         try
@@ -40,7 +37,7 @@ internal class AutoShaders
                 if (MessageBox.Show("Shaders for this model already exist!\nWould you like to generate any missing shaders?", "Shader Gen. Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
                     string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
-                    shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
+                    await shaderGen(shaders, destinationShadersFolder, tag_path, gameType);
                 }
                 else
                 {
@@ -50,89 +47,79 @@ internal class AutoShaders
             else
             {
                 string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
-                shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
+                await shaderGen(shaders, destinationShadersFolder, BaseDirectory, gameType);
             }
         }
         catch (DirectoryNotFoundException)
         {
             Debug.WriteLine("No folders exist, proceeding with shader gen");
             string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
-            shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
+            await shaderGen(shaders, destinationShadersFolder, BaseDirectory, gameType);
         }
 
-        static void shaderGen(string[] shaders, int counter, string full_jms_path, string destinationShadersFolder, string BaseDirectory, string gameType)
+        static async Task<bool> shaderGen(string[] shaders, string destinationShadersFolder, string tagFolder, string gameType)
         {
-            string defaultShaderLocation = "";
-
             // Create directories               
             Directory.CreateDirectory(destinationShadersFolder);
 
             // Make sure default.shader exists, if not, create it
-            defaultShaderLocation = gameType == "H2"
-                ? BaseDirectory + @"\tags\shaders\default.shader"
-                : BaseDirectory + @"\tags\levels\shared\shaders\simple\default.shader";
+            string defaultShaderLocation = gameType == "H2"
+                ? Path.Combine(tagFolder, @"\shaders\default.shader")
+                : Path.Combine(tagFolder, @"\levels\shared\shaders\simple\default.shader");
 
-            if (!File.Exists(defaultShaderLocation))
+            byte[] default_shader_contents = null;
+
+            try
             {
-                if (gameType == "H3")
+                default_shader_contents = await File.ReadAllBytesAsync(defaultShaderLocation);
+            }
+            catch
+            {
+                Debug.Print("Default shader missing, writing to disk!");
+                switch (gameType)
                 {
-                    File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH3);
+                    case "H3":
+                        default_shader_contents = ToolkitLauncher.Utility.Resources.defaultH3;
+                        break;
+                    case "H3ODST":
+                        default_shader_contents = ToolkitLauncher.Utility.Resources.defaultODST;
+                        break;
+                    case "H2":
+                        default_shader_contents = ToolkitLauncher.Utility.Resources.defaultH2;
+                        break;
                 }
-                else if (gameType == "H3ODST")
+
+                try
                 {
-                    File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultODST);
+                    File.WriteAllBytes(defaultShaderLocation, default_shader_contents);
                 }
-                else
+                catch
                 {
-                    File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
+                    Debug.Print("Failed to write default shader, continuing anyways");
                 }
             }
 
+            bool success = true;
             // Write each shader
             foreach (string shader in shaders)
             {
-                string shaderName = shader + ".shader";
-                if (shaderName == ".shader")
-                {
-                    MessageBox.Show("Detected an invalid (possibly blank) shader name!\nThis shader will not be generated.\nThis won't work well in-game.", "Shader Gen. Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    try { File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, "im.too.dumb.to.name.my.shader")); } catch { Debug.WriteLine("ah well"); };
+                // skip invalid shaders
+                if (string.IsNullOrEmpty(shader))
                     continue;
-                }
-                if (!File.Exists(Path.Combine(destinationShadersFolder, shaderName)))
+
+                string shader_file_path = Path.Combine(destinationShadersFolder, shader + ".shader");
+                try
                 {
-                    try
-                    {
-                        File.Copy(defaultShaderLocation, Path.Combine(destinationShadersFolder, shaderName));
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        // Will probably only occur if user somehow deletes default.shader after the check for its existence occurs,
-                        // but before shaders are generated
-                        if (MessageBox.Show("Unable to find shader to copy from!\nThis really shouldn't have happened.\nPress OK to try again, or Cancel to skip shader generation.", "Shader Gen. Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-                        {
-                            if (gameType == "H3")
-                            {
-                                File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH3);
-                            }
-                            else if (gameType == "H3ODST")
-                            {
-                                File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultODST);
-                            }
-                            else
-                            {
-                                File.WriteAllBytes(defaultShaderLocation, ToolkitLauncher.Utility.Resources.defaultH2);
-                            }
-                            counter = 0;
-                            shaderGen(shaders, counter, full_jms_path, destinationShadersFolder, BaseDirectory, gameType);
-                            break;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
+
+                    await File.WriteAllBytesAsync(shader, default_shader_contents);
+                } catch
+                {
+                    success = false;
                 }
+
             }
+
+            return success;
         }
 
         // Default fall-through

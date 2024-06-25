@@ -2074,7 +2074,6 @@ namespace ToolkitLauncher
         private XElement GetCinematicContentObjects()
         {
             string[] cFiles = Directory.EnumerateFiles(fullPath + "\\cinematics", "*.gr2").ToArray();
-            List<XElement> temp = new List<XElement>();
 
             foreach (var f in cFiles)
             {
@@ -2090,7 +2089,6 @@ namespace ToolkitLauncher
                         new XElement("OutputTagCollection",
                             new XElement("OutputTag", new XAttribute("Type", "cinematic_scene"), dataPath + "\\" + assetName))
                     ));
-                XElement co = null;
             }
 
             return null;
