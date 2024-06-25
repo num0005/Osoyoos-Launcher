@@ -274,7 +274,7 @@
                                                 <GroupBox.Header>
                                                     <TextBlock>
                                                         <Run>Instance Count</Run>
-                                                        <Hyperlink FontStyle="Italic" TextDecorations="{x:Null}" FontSize="10" NavigateUri="lighting">help</Hyperlink>
+                                                        <Hyperlink FontStyle="Italic" TextDecorations="{x:Null}" FontSize="10" NavigateUri="instances">help</Hyperlink>
                                                     </TextBlock>
                                                 </GroupBox.Header>
                                                 <GroupBox.BindingGroup>
