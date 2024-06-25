@@ -2637,43 +2637,38 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             }
         }
 
-        private void convert_model_from_fbx_to_gr2_Click(object sender, RoutedEventArgs e)
+        private async void convert_model_from_fbx_to_gr2_Click(object sender, RoutedEventArgs e)
         {
-            int count = 0;
-            var dialog = new Microsoft.Win32.OpenFileDialog();
-            dialog.FileName = ""; // Default file name
-            dialog.DefaultExt = ".fbx"; // Default file extension
-            dialog.Filter = "FBX files (.fbx)|*.fbx"; // Filter files by extension
-            dialog.Multiselect = true;
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                FileName = "", // Default file name
+                DefaultExt = ".fbx", // Default file extension
+                Filter = "FBX files (.fbx)|*.fbx", // Filter files by extension
+                Multiselect = true
+            };
 
             // Show open file dialog box
             bool? result = dialog.ShowDialog();
+            List<Task> dispatchedTasks = new();
 
             // Process open file dialog box results
             if (result == true)
             {
+                HRToolkit tool = toolkit as HRToolkit;
+
                 foreach (var filename in dialog.FileNames)
                 {
-                    HRToolkit tool = toolkit as HRToolkit;
-
-                    string[] t = filename.Split(".");
-                    string filepath = "";
-                    for (int i = 0; i < t.Length - 1; i++)
-                        filepath += t[i];
-
-                    if (count == Environment.ProcessorCount)
-                    {
-                        count = 0;
-                        Thread.Sleep(250);
-                    }
-
-                    if (!(bool)show_output.IsChecked)
-                        Thread.Sleep(250);
-
-                    tool.GR2FromFBX(filename, filepath + ".json", filepath + ".gr2", (json_rebuild.IsChecked == true), (bool)show_output.IsChecked);
-                    count++;
+                    Task task = tool.GR2FromFBX(
+                        filename, 
+                        Path.ChangeExtension(filename, ".json"),
+                        Path.ChangeExtension(filename, ".gr2"), 
+                        (json_rebuild.IsChecked == true), 
+                        (bool)show_output.IsChecked);
+                    dispatchedTasks.Add(task);
                 }
             }
+
+            await Task.WhenAll(dispatchedTasks);
         }
 
         private void xml_path_TextChanged(object sender, TextChangedEventArgs e)
