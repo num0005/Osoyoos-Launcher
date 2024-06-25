@@ -19,13 +19,15 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
     - name: setup-msbuild
-      uses: microsoft/setup-msbuild@0b44c6745b7e81956596964100aadb92d667c497
+      uses: microsoft/setup-msbuild@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
     - name: Install dependencies
       run: dotnet restore
+    - name: Enable developer command prompt
+      uses: ilammy/msvc-dev-cmd@460a772e4cf7358f9f2f23773240813e40e7a894
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
