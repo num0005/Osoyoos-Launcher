@@ -10,13 +10,13 @@ namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void GetBitmapData(string ek_path, string tag_folder, string compress_value)
+        public static void GetBitmapData(string ek_path, string tag_folder, string ek_tags_folder_path, string compress_value)
         {
             // Initialize ManagedBlam
             ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
 
             // Makes "empty" bitmap tags
-            MBHelpers.CreateDummyBitmaps(ek_path, tag_folder);
+            MBHelpers.CreateDummyBitmaps(ek_path, tag_folder, ek_tags_folder_path);
 
             // Get all bitmap tags
             string tag_folder_full = Path.Combine(ek_path, "tags", tag_folder);

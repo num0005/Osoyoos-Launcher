@@ -2,7 +2,6 @@
 using Bungie;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
 
@@ -15,7 +14,7 @@ namespace OsoyoosMB.Utils
             return Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, full_path), null);
         }
 
-        public static void CreateDummyBitmaps(string ek_path, string files_path)
+        public static void CreateDummyBitmaps(string ek_path, string files_path, string ek_tags_folder_path)
         {
             // Get all tiffs in data folder
             string[] extensions = new[] { "*.tif", "*.tiff", "*.dds" };
@@ -30,10 +29,11 @@ namespace OsoyoosMB.Utils
 
             foreach (string full_texture_path in all_textures)
             {
+                string relative_texture_path = GetBitmapRelativePath(base_path, full_texture_path);
+
                 // Only create bitmap tag if it doesn't already exist
-                if (!File.Exists(Path.ChangeExtension(Regex.Replace(full_texture_path, @"(H3EK|H3ODSTEK)\\data", "$1\\tags"), ".bitmap")))
+                if (!File.Exists(Path.ChangeExtension(Path.Combine(ek_tags_folder_path, relative_texture_path), ".bitmap")))
                 {
-                    string relative_texture_path = GetBitmapRelativePath(base_path, full_texture_path);
                     TagPath tag_path = TagPath.FromPathAndType(relative_texture_path, "bitm*");
                     TagFile tagFile = new TagFile();
                     tagFile.New(tag_path);

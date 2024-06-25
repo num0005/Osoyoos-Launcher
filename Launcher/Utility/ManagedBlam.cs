@@ -6,7 +6,7 @@ namespace ToolkitLauncher.Utility
 {
     public class ManagedBlam
     {
-        public static void RunMBBitmaps(string ek_path, string tag_path, string compression_type)
+        public static void RunMBBitmaps(string ek_path, string tag_path, string tags_folder_path, string compression_type)
         {
             string exe_path = Path.Combine(ek_path, @"bin\OsoyoosMB.exe");
 
@@ -15,7 +15,7 @@ namespace ToolkitLauncher.Utility
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
                     FileName = exe_path,
-                    Arguments = $"getbitmapdata \"{ek_path}\" \"{tag_path.TrimEnd('\\')}\" \"{compression_type}\"",
+                    Arguments = $"getbitmapdata \"{ek_path}\" \"{tag_path.TrimEnd('\\')}\" \"{tags_folder_path}\" \"{compression_type}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
