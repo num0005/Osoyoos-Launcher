@@ -2,6 +2,9 @@
 using System.Windows;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System;
+using OsoyoosMB;
 
 namespace ToolkitLauncher
 {
@@ -41,6 +44,34 @@ namespace ToolkitLauncher
             }
 
             base.OnStartup(e);
+        }
+
+        [STAThread]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static int Main(String[] args)
+        {
+            int return_code = 0;
+            // check if we are called by ourselves
+            if (args.Length > 0 && args[0] == MBHandler.command_id && OperatingSystem.IsWindows())
+            {
+                return_code = MBHandler.Premain(args[1..]);
+            }
+            else // otherwise just run the launcher
+            {
+                // run WPF application
+                ApplicationMain();
+            }
+
+
+            return return_code;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        static void ApplicationMain()
+        {
+            var app = new App();
+            app.InitializeComponent();
+            app.Run();
         }
     }
 }

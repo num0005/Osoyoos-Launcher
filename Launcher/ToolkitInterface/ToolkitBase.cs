@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OsoyoosMB;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -121,7 +122,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path">Directory containing the bitmaps</param>
         /// <param name="type">The type of bitmap to import it by</param>
         /// <param name="debug_plate">MCC H1A: Whether or not we dump plate data to the data folder for inspection</param>
-        public abstract Task ImportBitmaps(string path, string type, string compression, string tags_folder_path, bool debug_plate = false);
+        public abstract Task ImportBitmaps(string path, string type, string compression, bool debug_plate = false);
 
         /// <summary>
         /// How build cache will handle resources
@@ -378,6 +379,36 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         public abstract string GetDocumentationName();
+
+        public enum ManagedBlamErrorCode
+        {
+            Success,
+            MissingManagedBlam,
+            InternalError,
+        }
+
+        protected async Task<ManagedBlamErrorCode> RunManagedBlamCommand(List<string> arguments)
+        {
+            string? executable_path = Process.GetCurrentProcess().MainModule?.FileName;
+            Debug.Print($"our path is {executable_path}");
+
+            if (executable_path is null)
+                return ManagedBlamErrorCode.InternalError;
+
+            List<string> actual_arguments = new() { MBHandler.command_id };
+            actual_arguments.AddRange(arguments);
+
+            Utility.Process.Result result = await Utility.Process.StartProcess(BaseDirectory, executable_path, actual_arguments);
+
+            Debug.Print($" Managedblam result {result}");
+
+            // -2 is the special code for missing assembly
+            if (result.ReturnCode == -2)
+                return ManagedBlamErrorCode.MissingManagedBlam;
+
+            // don't bother disambiguating this out unless the UI is updated.
+            return result.ReturnCode == 0 ? ManagedBlamErrorCode.Success : ManagedBlamErrorCode.InternalError;
+        }
 
         /// <summary>
         /// Should the shell be used to handle this tool execution request?

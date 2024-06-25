@@ -1,7 +1,6 @@
 ﻿using Bungie;
 using Bungie.Tags;
 using OsoyoosMB.Utils;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void GetBitmapData(string ek_path, string tag_folder, string ek_tags_folder_path, int compress_value)
+        public static void ConfigureCompression(string ek_path, string tag_folder, string ek_tags_folder_path, int compress_value)
         {
             // Initialize ManagedBlam
             ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);

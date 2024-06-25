@@ -18,13 +18,14 @@ namespace ToolkitLauncher.ToolkitInterface
             get => "Sapien";
         }
 
-        override public async Task ImportBitmaps(string path, string type, string compression, string tags_folder_path, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, bool debug_plate)
         {
-            // Call managedblam
-            ManagedBlam.RunMBBitmaps(BaseDirectory, path, tags_folder_path, compression);
+            // Call managedblam import
+            await RunManagedBlamCommand(new() { "setup_bitmap_compression", BaseDirectory, path, GetTagDirectory(), compression });
+            
 
             // Import bitmaps - run this regardless of managedblam success
-            await RunTool(ToolType.Tool, new List<string>() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
+            await RunTool(ToolType.Tool, new() { debug_plate ? "bitmaps-debug" : "bitmaps", path });
         }
 
         override public async Task ImportUnicodeStrings(string path)

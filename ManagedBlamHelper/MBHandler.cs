@@ -16,7 +16,6 @@ will crash at runtime. Don't forget to revert the reference back to version in t
 before committing or release.
 */
 using System;
-using System.Configuration.Assemblies;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -24,9 +23,10 @@ using System.Runtime.CompilerServices;
 
 namespace OsoyoosMB
 {
-    internal class MBHandler
+    public class MBHandler
     {
-
+        // random ID for MBHandler
+        public const string command_id = "70512702-FBD6-400F-8398-E96D8EB3D802";
         /// <summary>
         /// Load assemblies from the bin folder in the working directory
         /// </summary>
@@ -66,51 +66,45 @@ namespace OsoyoosMB
                 return true;
             } catch (FileNotFoundException)
             {
-                Console.WriteLine("Unable to find ManagedBlam!");
+                // bad times
                 return false;
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void Main(String[] args)
+        public static int Premain(String[] args)
         {
-            // premain setup
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.AssemblyResolve += new ResolveEventHandler(LoadFromBinFolder);
-            PreloadManagedBlam();
-            ProgramMain(args);
+            try
+            {
+                // premain setup
+                AppDomain currentDomain = AppDomain.CurrentDomain;
+                currentDomain.AssemblyResolve += new ResolveEventHandler(LoadFromBinFolder);
+                if (!PreloadManagedBlam())
+                {
+                    return -2;
+                }
+
+                return RunCommands(args);
+            }
+            catch (Exception)
+            {
+                return -3;
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ProgramMain(String[] args)
+        public static int RunCommands(String[] args)
         {
-            // not used for anything apart from testing
-            System.Threading.Tasks.Task.Run(() => { });
-            if (args.Length == 0)
+            if (args[0] == "setup_bitmap_compression" && args.Length == 5)
             {
-                Console.WriteLine("Do not run this manually, it is a helper executable for Osoyoos. This is not a standalone application.\nPress Enter to exit.");
-                Console.ReadLine();
+                Console.WriteLine("Running setup_bitmap_compression");
+                BitmapSettings.ConfigureCompression(args[1], args[2], args[3], int.Parse(args[4]));
+                return 1;
             }
             else
             {
-                if (args[0] == "getbitmapdata" && args.Length == 5)
-                {
-                    Console.WriteLine("Running GetBitmapData");
-                    BitmapSettings.GetBitmapData(args[1], args[2], args[3], int.Parse(args[4]));
-                }
-                else
-                {
-                    Console.WriteLine("Insufficient arguments");
-                }
+                return -1;
             }
         }
-        
-        /*
-        //Use this instead if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
-        public static void Main()
-        {
-            BitmapSettings.GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", @"C:\Program Files (x86)\Steam\steamapps\common\H3EK\tags", "2");
-        }
-        */
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Bungie.Tags;
-using Bungie;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 
 namespace OsoyoosMB.Utils
 {
@@ -11,7 +9,7 @@ namespace OsoyoosMB.Utils
     {
         public static string GetBitmapRelativePath(string base_path, string full_path)
         {
-            return Path.ChangeExtension(PathNetCore.GetRelativePath(base_path, full_path), null);
+            return Path.ChangeExtension(Path.GetRelativePath(base_path, full_path), null);
         }
 
         public static void CreateDummyBitmaps(string ek_path, string files_path, string ek_tags_folder_path)
@@ -21,6 +19,12 @@ namespace OsoyoosMB.Utils
             List<string> all_textures = new List<string>();
             string data_folder_full = Path.Combine(ek_path, "data", files_path);
             string base_path = Path.Combine(ek_path, "data");
+
+            // exit early if our directories don't exist
+            if (!Directory.Exists(data_folder_full) || !Directory.Exists(base_path))
+            {
+                return;
+            }
 
             foreach (string extension in extensions)
             {

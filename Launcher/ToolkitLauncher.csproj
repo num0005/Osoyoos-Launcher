@@ -39,6 +39,17 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ManagedBlam, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ref\ManagedBlam.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="BultinProfiles.json" />
     <None Remove="Documentation.json" />
     <None Remove="Images\gear.png" />
@@ -78,6 +89,9 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="7.0.0" />
     <PackageReference Include="TlshSharp" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ManagedBlamHelper\ManagedBlamHelper.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Credits.xaml.cs">
@@ -126,4 +140,10 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <Target Name="PostBuild Local" AfterTargets="PostBuildEvent">
+    <Exec Command="call &quot;$(DevEnvDir)..\Tools\VsDevCmd.bat&quot; &amp;&amp; editbin /HIGHENTROPYVA:NO /DYNAMICBASE:NO /REBASE:base=0x10000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
+  </Target>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Exec Command="call &quot;$(DevEnvDir)..\Tools\VsDevCmd.bat&quot; &amp;&amp; editbin /HIGHENTROPYVA:NO /DYNAMICBASE:NO /REBASE:base=0x10000 &quot;$(TargetDir)publish\$(TargetName).exe&quot;" />
+  </Target>
 </Project>
