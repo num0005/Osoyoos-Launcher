@@ -36,7 +36,7 @@ internal class AutoShaders
                 Debug.WriteLine("Shaders already exist!");
                 if (MessageBox.Show("Shaders for this model already exist!\nWould you like to generate any missing shaders?", "Shader Gen. Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
+                    string[] shaders = JMSMaterialReader.ReadAllMaterials(files, tag_path, gameType);
                     await shaderGen(shaders, destinationShadersFolder, tag_path, gameType);
                 }
                 else
@@ -46,15 +46,15 @@ internal class AutoShaders
             }
             else
             {
-                string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
-                await shaderGen(shaders, destinationShadersFolder, BaseDirectory, gameType);
+                string[] shaders = JMSMaterialReader.ReadAllMaterials(files, tag_path, gameType);
+                await shaderGen(shaders, destinationShadersFolder, tag_path, gameType);
             }
         }
         catch (DirectoryNotFoundException)
         {
             Debug.WriteLine("No folders exist, proceeding with shader gen");
-            string[] shaders = JMSMaterialReader.ReadAllMaterials(files, counter, full_jms_path, BaseDirectory, gameType);
-            await shaderGen(shaders, destinationShadersFolder, BaseDirectory, gameType);
+            string[] shaders = JMSMaterialReader.ReadAllMaterials(files, tag_path, gameType);
+            await shaderGen(shaders, destinationShadersFolder, tag_path, gameType);
         }
 
         static async Task<bool> shaderGen(string[] shaders, string destinationShadersFolder, string tagFolder, string gameType)
@@ -131,26 +131,26 @@ internal class AutoShaders
 // TODO (PepperMan) - Make this less hardcoded, changes to line positions in JMS format will break this
 internal class JMSMaterialReader
 {
-    public static string[] ReadAllMaterials(string[] files, int counter, string full_jms_path, string BaseDirectory, string gameType)
+    public static string[] ReadAllMaterials(string[] files, string tag_path, string gameType)
     {
         string line;
         List<string> shaders = new();
         // Find name of each jms file, then grab every material name from it
         foreach (string file in files)
         {
-            counter = 0;
+            int counter = 0;
             
             if (Path.GetExtension(file).ToLower() is ".jms")
             {
-                full_jms_path = file;
+                string full_jms_path = file;
 
                 // Open shader_collections.txt
                 List<string> collections = new();
 
-                string collection_path = BaseDirectory + @"\tags\scenarios\shaders\shader_collections.shader_collections";
+                string collection_path = tag_path + @"\scenarios\shaders\shader_collections.shader_collections";
                 if (gameType == "H3" || gameType == "H3ODST")
                 {
-                    collection_path = BaseDirectory + @"\tags\levels\shader_collections.txt";
+                    collection_path = tag_path + @"\levels\shader_collections.txt";
                 }
                 if (File.Exists(collection_path))
                 {
