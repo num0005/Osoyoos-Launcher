@@ -2,6 +2,7 @@
 using Bungie;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
 
@@ -30,7 +31,7 @@ namespace OsoyoosMB.Utils
             foreach (string full_texture_path in all_textures)
             {
                 // Only create bitmap tag if it doesn't already exist
-                if (!File.Exists(Path.ChangeExtension(full_texture_path.Replace("H3EK\\data", "H3EK\\tags"), ".bitmap")))
+                if (!File.Exists(Path.ChangeExtension(Regex.Replace(full_texture_path, @"(H3EK|H3ODSTEK)\\data", "$1\\tags"), ".bitmap")))
                 {
                     string relative_texture_path = GetBitmapRelativePath(base_path, full_texture_path);
                     TagPath tag_path = TagPath.FromPathAndType(relative_texture_path, "bitm*");
@@ -40,7 +41,10 @@ namespace OsoyoosMB.Utils
 
                     Debug.WriteLine("Created bitmap " + relative_texture_path);
                 }
-                Debug.WriteLine("Bitmap for texture: " + full_texture_path + " already exists");
+                else 
+                {
+                    Debug.WriteLine("Bitmap for texture: " + full_texture_path + " already exists");
+                }
             }
         }
     }
