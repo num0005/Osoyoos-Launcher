@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using ToolkitLauncher.Properties;
-using ToolkitLauncher.ToolkitInterface;
-using System.Threading.Tasks;
-using System.Windows.Navigation;
-using System.Windows.Documents;
 using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using System.Threading;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Navigation;
+using System.Xml.Linq;
+using ToolkitLauncher.Properties;
+using ToolkitLauncher.ToolkitInterface;
 
 namespace ToolkitLauncher
 {
