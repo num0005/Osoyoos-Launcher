@@ -953,7 +953,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sidecar" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sidecar" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
