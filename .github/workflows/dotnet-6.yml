@@ -18,6 +18,8 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@0b44c6745b7e81956596964100aadb92d667c497
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
