@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using static ToolkitLauncher.Documentation.Data;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -209,6 +212,67 @@ namespace ToolkitLauncher.ToolkitInterface
         public async Task ImportSidecar(string sidecarPath)
         {
             await RunTool(ToolType.Tool, new List<string>() { "import", sidecarPath });
+        }
+
+        public async Task GR2FromFBXBatch(string fbx_search_path, bool json_rebuild, bool show_output)
+        {
+            List<Task> dispatchedTasks = new();
+
+            string getFilepath(string file)
+            {
+                string[] t = file.Split(".");
+                string filepath = "";
+                for (int i = 0; i < t.Length - 1; i++)
+                    filepath += t[i];
+
+                return filepath;
+            }
+
+            void ConvertAllInFolder(string folder)
+            {
+                IEnumerable<string> files = Directory.EnumerateFiles(folder, "*.fbx");
+
+                foreach (var f in files)
+                {
+                    Task toolTask = GR2FromFBX(
+                        f,
+                        getFilepath(f) + ".json",
+                        getFilepath(f) + ".gr2",
+                        json_rebuild,
+                        show_output);
+                    dispatchedTasks.Add(toolTask);
+                }
+            }
+
+            foreach (var folder in Directory.EnumerateDirectories(fbx_search_path))
+            {
+                string folderName = Path.GetDirectoryName(folder);
+
+                string[] assetFolders = new[] { "animations", "collision", "markers", "physics", "render", "skeleton" };
+
+                if (assetFolders.Any(folderName.Contains))
+                {
+                    if (folderName == "animations")
+                    {
+                        string[] subfolders = new[] { "JMM", "JMA", "JMT", "JMZ", "JMV", "JMO (Keyframe)", "JMO (Pose)", "JMR (Local)", "JMR (Object)" };
+                        foreach (string sub in subfolders)
+                            ConvertAllInFolder(Path.Join(fbx_search_path, folderName, sub));
+                    }
+                    else
+                    {
+                        ConvertAllInFolder(Path.Join(fbx_search_path, folderName));
+                    }
+                }
+                else
+                {
+                    string[] subfolders = new[] { "structure", "structure_design" };
+                    foreach (string sub in subfolders)
+                        ConvertAllInFolder(Path.Join(fbx_search_path, folderName, sub));
+                }
+            }
+
+            // wait for all the FBX files to get converted
+            await Task.WhenAll(dispatchedTasks);
         }
 
         public override bool IsMutexLocked(ToolType tool)

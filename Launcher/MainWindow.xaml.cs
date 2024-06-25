@@ -1910,67 +1910,11 @@ namespace ToolkitLauncher
         private async Task ConvertFBX()
         {
             HRToolkit tool = toolkit as HRToolkit;
-            List<Task> dispatchedTasks = new();
 
-            string getFilepath(string file)
-            {
-                string[] t = file.Split(".");
-                string filepath = "";
-                for (int i = 0; i < t.Length - 1; i++)
-                    filepath += t[i];
-
-                return filepath;
-            }
-
-            void ConvertAllInFolder(string folder)
-            {
-                IEnumerable<string> files = Directory.EnumerateFiles(folder, "*.fbx");
-
-                foreach (var f in files)
-                {
-                    Task toolTask = tool.GR2FromFBX(
-                        f,
-                        getFilepath(f) + ".json",
-                        getFilepath(f) + ".gr2",
-                        (json_rebuild.IsChecked == true),
-                        (bool)show_output.IsChecked);
-                    dispatchedTasks.Add(toolTask);
-                }
-            }
-
-            foreach (var folder in Directory.EnumerateDirectories(fullPath))
-            {
-                string folderName = Path.GetDirectoryName(folder);
-
-                string[] assetFolders = new[] { "animations", "collision", "markers", "physics", "render", "skeleton" };
-
-                if (assetFolders.Any(folderName.Contains))
-                {
-                    if (folderName == "animations")
-                    {
-                        string[] subfolders = new[] { "JMM", "JMA", "JMT", "JMZ", "JMV", "JMO (Keyframe)", "JMO (Pose)", "JMR (Local)", "JMR (Object)" };
-                        foreach (string sub in subfolders)
-                        {
-                            ConvertAllInFolder(fullPath + "\\" + folderName + "\\" + sub);
-                        }
-                    }
-                    else
-                    {
-                        ConvertAllInFolder(fullPath + "\\" + folderName);
-                    }
-                }
-                else
-                {
-                    string[] subfolders = new[] { "structure", "structure_design" };
-                    foreach (string sub in subfolders)
-                    {
-                        ConvertAllInFolder(fullPath + "\\" + folderName + "\\" + sub);
-                    }
-                }
-            }
-
-            // wait for all the FBX files to get converted
-            await Task.WhenAll(dispatchedTasks);
+            await tool.GR2FromFBXBatch(
+                fullPath,
+                (json_rebuild.IsChecked == true),
+                (bool)show_output.IsChecked);
         }
 
         private void CreateModelFolders()
