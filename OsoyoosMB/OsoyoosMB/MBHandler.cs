@@ -31,10 +31,10 @@ namespace OsoyoosMB
             }
             else
             {
-                if (args[0] == "getbitmapdata" && args.Length >= 4)
+                if (args[0] == "getbitmapdata" && args.Length >= 5)
                 {
                     Console.WriteLine("Running GetBitmapData");
-                    BitmapSettings.GetBitmapData(args[1], args[2], args[3]);
+                    BitmapSettings.GetBitmapData(args[1], args[2], args[3], args[4]);
                 }
                 else
                 {
@@ -47,7 +47,7 @@ namespace OsoyoosMB
         //Use this instead if you need to debug GetBitmapData(), can't debug when run from the main Osoyoos solution
         public static void Main()
         {
-            BitmapSettings.GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", "Uncompressed");
+            BitmapSettings.GetBitmapData(@"C:\Program Files (x86)\Steam\steamapps\common\H3EK", @"objects\scenery\minecraft_door\bitmaps", @"C:\Program Files (x86)\Steam\steamapps\common\H3EK\tags", "2");
         }
         */
     }
