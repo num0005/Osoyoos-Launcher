@@ -140,14 +140,24 @@ namespace ToolkitLauncher
         {
             None = 0,
 
+            // game type
             H1 = 1 << 0,
             H2 = 1 << 2,
             H3 = 1 << 3,
             HR = 1 << 4,
             H4 = 1 << 5,
 
+            // what sort of toolkit is this?
             MCC = 1 << 6,
             H2Codez = 1 << 7,
+            CommunityBuild = 1 << 8,
+            LegacyStock = 1 << 9,
+
+            // what tools do we have?
+            HasTool = 1 << 10,
+            HasSapien = 1 << 11,
+            HasGuerilla = 1 << 12,
+            HasStandalone = 1 << 13,
 
         }
 
@@ -195,6 +205,88 @@ namespace ToolkitLauncher
 
             return elements;
         }
+
+        static public bool IsAnyInEnableListValid(IEnumerable<TogglesUI> enable_for)
+        {
+            bool enable;
+            if (MainWindow.profile_mapping.Count > 0)
+            {
+                enable = false;
+
+                foreach (TogglesUI toggle in enable_for)
+                {
+                    bool valid_toggle = true;
+
+                    if (toggle.HasFlag(TogglesUI.H1) && !MainWindow.halo_ce)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H2) && !MainWindow.halo_2)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H3) && !MainWindow.halo_3)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HR) && !MainWindow.halo_reach)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H4) && !MainWindow.halo_4)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.CommunityBuild) && !MainWindow.halo_community)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.LegacyStock) && (MainWindow.halo_mcc || MainWindow.halo_community))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasTool) && string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasGuerilla) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasSapien) && string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasStandalone) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (valid_toggle)
+                    {
+                        enable = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
+                enable = true;
+            }
+
+            return enable;
+        }
     }
 
     public class BooleanToSpaceConverter : OneWayValueConverter
@@ -205,6 +297,17 @@ namespace ToolkitLauncher
                 return new GridLength(8);
             else
                 return new GridLength(0);
+        }
+    }
+
+    public class ForceBooleanConverter : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is true)
+                return true;
+            else
+                return false;
         }
     }
 
@@ -233,52 +336,7 @@ namespace ToolkitLauncher
             List<string> config = BindingToolkitParser.ParseBindingList(parameter as string);
             List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(config[0]);
 
-            bool enable;
-            if (MainWindow.profile_mapping.Count > 0)
-            {
-                enable = false;
-
-                foreach (TogglesUI toggle in enable_for)
-                {
-                    bool valid_toggle = true;
-                    
-                    if (toggle.HasFlag(TogglesUI.H1) && !MainWindow.halo_ce)
-                    {
-                        valid_toggle = false;
-                    }
-
-                    if (toggle.HasFlag(TogglesUI.H2) && !MainWindow.halo_2)
-                    {
-                        valid_toggle = false;
-                    }
-
-                    if (toggle.HasFlag(TogglesUI.H3) && !MainWindow.halo_3)
-                    {
-                        valid_toggle = false;
-                    }
-
-                    if (toggle.HasFlag(TogglesUI.HR) && !MainWindow.halo_reach)
-                    {
-                        valid_toggle = false;
-                    }
-
-                    if (toggle.HasFlag(TogglesUI.H4) && !MainWindow.halo_4)
-                    {
-                        valid_toggle = false;
-                    }
-
-                    if (valid_toggle)
-                    {
-                        enable = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                enable = true;
-            }
+            bool enable = IsAnyInEnableListValid(enable_for);
 
             if (enable)
             {
@@ -491,86 +549,11 @@ namespace ToolkitLauncher
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var is_enabled = false;
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
-                {
-                    if (MainWindow.halo_ce)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    if (MainWindow.halo_2)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    if (MainWindow.halo_2_standalone_stock)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 3)
-                {
-                    if (MainWindow.halo_3)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 4)
-                {
-                    //Tool
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
-                {
-                    //Guerilla
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
-                {
-                    //Sapien
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
-                {
-                    //Game
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 8)
-                {
-                    if (!MainWindow.halo_ce)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 9)
-                {
-                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 10)
-                {
-                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_3)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 11)
-                {
-                    bool is_level_import = (bool)value;
-                    if (!is_level_import)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 12)
-                {
-                    if (MainWindow.halo_reach || MainWindow.halo_4)
-                        is_enabled = true;
-                }
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                is_enabled = true;
-            }
-            return is_enabled;
+            List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(parameter as string);
+
+            bool enable = IsAnyInEnableListValid(enable_for);
+
+            return enable;
         }
     }
 

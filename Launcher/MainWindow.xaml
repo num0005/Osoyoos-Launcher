@@ -19,6 +19,7 @@
         <local:ProfiletoVisibility x:Key="ProfiletoVisibility" />
         <local:ProfiletoVisibilityMulti x:Key="ProfiletoVisibilityMulti" />
         <local:ProfiletoIsEnabled x:Key="ProfiletoIsEnabled" />
+        <local:ForceBooleanConverter x:Key="ForceBooleanConverter" />
         <local:ProfiletoContent x:Key="ProfiletoContent" />
         <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />
         <ObjectDataProvider x:Key="cache_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
@@ -71,9 +72,9 @@
                         <RowDefinition Height="10"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Column="0" Grid.Row="0" Content="Run Sapien" Click="RunSapien" Padding="4" HorizontalAlignment="Left" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=6, ElementName=toolkit_selection}" ToolTip="Start a new instance of Sapien (the world editor)."/>
-                    <Button Grid.Column="1" Grid.Row="0" Content="Run Game" Click="RunGame" Padding="4" HorizontalAlignment="Center" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=7, ElementName=toolkit_selection}" ToolTip="Start the game (only works if game path is set)."/>
-                    <Button Grid.Column="2" Grid.Row="0" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=11, ElementName=toolkit_selection}" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=5, ElementName=toolkit_selection}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=12, ElementName=toolkit_selection}"/>
+                    <Button Grid.Column="0" Grid.Row="0" Content="Run Sapien" Click="RunSapien" Padding="4" HorizontalAlignment="Left" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=HasSapien, ElementName=toolkit_selection}" ToolTip="Start a new instance of Sapien (the world editor)."/>
+                    <Button Grid.Column="1" Grid.Row="0" Content="Run Game" Click="RunGame" Padding="4" HorizontalAlignment="Center" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=HasStandalone, ElementName=toolkit_selection}" ToolTip="Start the game (only works if game path is set)."/>
+                    <Button Grid.Column="2" Grid.Row="0" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=11, ElementName=toolkit_selection}" Click="RunGuerilla" Padding="4" HorizontalAlignment="Right" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=HasGuerilla, ElementName=toolkit_selection}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=12, ElementName=toolkit_selection}"/>
                     <Button Grid.Column="0" Grid.Row="2" x:Name="run_cmd" Content="Open CMD in Toolkit folder" Click="run_cmd_Click" Padding="4" HorizontalAlignment="Left" ToolTip="Open the command line in the base folder of the current toolkit."/>
                     <Button Grid.Column="1" Grid.Row="2" x:Name="open_explorer" Content="Open Toolkit Folder" Padding="4" HorizontalAlignment="Center" Click="open_explorer_Click" ToolTip="Open toolkit base folder in File Explorer."/>
                     <Grid Grid.Column="2" Grid.Row="2" HorizontalAlignment="Right">
@@ -164,7 +165,7 @@
                                                         <Hyperlink FontStyle="Italic" TextDecorations="{x:Null}" FontSize="10" NavigateUri="lighting">help</Hyperlink>
                                                     </TextBlock>
                                                 </GroupBox.Header>
-                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=11, ElementName=CompileOnly}">
+                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ForceBooleanConverter}, ElementName=CompileOnly}">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="5"/>
                                                         <RowDefinition Height="*"/>
@@ -281,7 +282,7 @@
                                                 <GroupBox.BindingGroup>
                                                     <BindingGroup/>
                                                 </GroupBox.BindingGroup>
-                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=11, ElementName=CompileOnly}">
+                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ForceBooleanConverter}, ElementName=CompileOnly}">
                                                     <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="{DynamicResource brushTextboxBackground}" Foreground="{DynamicResource TextColor}" Text="1" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24" CaretBrush="{DynamicResource TextColor}" ToolTip="How many processes will be used for lightmapping?"/>
                                                 </Grid>
                                             </GroupBox>
@@ -546,9 +547,9 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Model" Margin="-2,6,0,-6" Height="24" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=9, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Model" Margin="-2,6,0,-6" Height="24" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
-                                    <Grid IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=9, ElementName=toolkit_selection}">
+                                    <Grid IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="5"/>
                                             <RowDefinition Height="*"/>
@@ -736,8 +737,8 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sound" Margin="-2,6,0,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=9, ElementName=toolkit_selection}">
-                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=9, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sound" Margin="-2,6,0,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
                                         <RowDefinition Height="*"/>
@@ -950,7 +951,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sidecar" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=12, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sidecar" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
