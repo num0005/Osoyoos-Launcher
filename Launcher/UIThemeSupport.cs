@@ -1,10 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace ToolkitLauncher.UI
+namespace ToolkitLauncher
 {
-
-    // todo(num0005) move the colour config into a JSON file
     public class LauncherThemeSettings
     {
         public void SetLauncherTheme(ThemeType theme_index)

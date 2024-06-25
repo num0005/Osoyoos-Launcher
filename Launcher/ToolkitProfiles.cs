@@ -80,6 +80,9 @@ namespace ToolkitLauncher
             [JsonPropertyName("batch")]
             public bool Batch { get; set; }
 
+            [JsonPropertyName("prt_tool_version")]
+            public int? LatestPRTToolVersion { get; set; }
+
             /// <summary>
             /// Whatever we should temporarily be experts
             /// </summary>

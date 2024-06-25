@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface

@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using static ToolkitLauncher.ToolkitProfiles;
-using System.IO;
-using System.Threading;
 using System.Diagnostics;
-using ToolkitLauncher.Utility;
+using System.Threading;
+using System.Threading.Tasks;
+using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {

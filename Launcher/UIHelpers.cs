@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -8,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using ToolkitLauncher.Properties;
+using static ToolkitLauncher.BindingToolkitParser;
 
 namespace ToolkitLauncher
 {
@@ -130,187 +133,231 @@ namespace ToolkitLauncher
         }
     }
 
-    public class ToolkitToSpaceConverter : OneWayValueConverter
+    internal class BindingToolkitParser
     {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        [Flags]
+        public enum TogglesUI
         {
-            var grid = new GridLength(0);
+            None = 0,
+
+            // game type
+            H1 = 1 << 0,
+            H2 = 1 << 2,
+            H3 = 1 << 3,
+            HR = 1 << 4,
+            H4 = 1 << 5,
+
+            // what sort of toolkit is this?
+            MCC = 1 << 6,
+            H2Codez = 1 << 7,
+            CommunityBuild = 1 << 8,
+            LegacyStock = 1 << 9,
+            ODST = 1 << 10,
+
+            // what tools do we have?
+            HasTool = 1 << 11,
+            HasSapien = 1 << 12,
+            HasGuerilla = 1 << 13,
+            HasStandalone = 1 << 14,
+
+        }
+
+        static public TogglesUI ParseFlagSet(string input)
+        {
+            TogglesUI flags = TogglesUI.None;
+
+            foreach (string element  in input.Split("|")) 
+            {
+                if (String.IsNullOrEmpty(element)) continue;
+
+                TogglesUI value = Enum.Parse<TogglesUI>(element.Trim(), true);
+                flags |= value;
+            }
+
+            return flags;
+        }
+
+        static public List<TogglesUI> ParseMultiFlagSet(string input)
+        {
+            List<TogglesUI> flagSets = new();
+
+            foreach (string element in input.Split("+"))
+            {
+                TogglesUI flags = ParseFlagSet(element.Trim());
+                flagSets.Add(flags);
+            }
+
+            return flagSets;
+        }
+
+        static public List<string> ParseBindingList(string input)
+        {
+            Debug.Assert(input != null);
+            Debug.Assert(input.StartsWith("("));
+            Debug.Assert(input.EndsWith(")"));
+
+            input = input[1..^1];
+
+            List<string> elements = new ();
+            foreach (string element in input.Split(","))
+            {
+                elements.Add(element.Trim());
+            }
+
+            return elements;
+        }
+
+        static public bool IsAnyInEnableListValid(IEnumerable<TogglesUI> enable_for)
+        {
+            bool enable;
             if (MainWindow.profile_mapping.Count > 0)
             {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
+                enable = false;
+
+                foreach (TogglesUI toggle in enable_for)
                 {
-                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_standalone_community)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    if (MainWindow.halo_ce_mcc)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    if (MainWindow.halo_2_standalone_community)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 3)
-                {
-                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 4)
-                {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_mcc)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
-                {
-                    if (MainWindow.halo_ce || MainWindow.halo_2)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
-                {
-                    if (MainWindow.halo_2_mcc || MainWindow.halo_3)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
-                {
-                    if (MainWindow.halo_2_mcc)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 8)
-                {
-                    if ((bool)value)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 9)
-                {
-                    if (MainWindow.halo_2_mcc)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength((double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 10)
-                {
-                    if (MainWindow.halo_ce_mcc)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 11)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 12)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
-                        grid = new GridLength(8);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 13)
-                {
-                    if (MainWindow.halo_3)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 14)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 15)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 16)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 17)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2 && !MainWindow.halo_reach && !MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 18)
-                {
-                    if (MainWindow.halo_reach)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 19)
-                {
-                    if (MainWindow.halo_ce)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 20)
-                {
-                    if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 21)
-                {
-                    if (MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 22)
-                {
-                    if (MainWindow.halo_reach || MainWindow.halo_4)
-                        grid = new GridLength(1, GridUnitType.Star);
-                    else
-                        grid = new GridLength(1, (double)GridUnitType.Auto);
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 23)
-                {
-                    if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        grid = new GridLength(8);
+                    bool valid_toggle = true;
+
+                    if (toggle.HasFlag(TogglesUI.H1) && !MainWindow.halo_ce)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H2) && !MainWindow.halo_2)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H3) && !MainWindow.halo_3)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HR) && !MainWindow.halo_reach)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.H4) && !MainWindow.halo_4)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.CommunityBuild) && !MainWindow.halo_community)
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.LegacyStock) && (MainWindow.halo_mcc || MainWindow.halo_community))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasTool) && string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasGuerilla) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasSapien) && string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (toggle.HasFlag(TogglesUI.HasStandalone) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
+                    {
+                        valid_toggle = false;
+                    }
+
+                    if (valid_toggle)
+                    {
+                        enable = true;
+                        break;
+                    }
                 }
             }
             else
             {
                 //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                if (parameter is string && Int32.Parse(parameter as string) == 9
-                    || parameter is string && Int32.Parse(parameter as string) == 10
-                    || parameter is string && Int32.Parse(parameter as string) == 11
-                    || parameter is string && Int32.Parse(parameter as string) == 13
-                    || parameter is string && Int32.Parse(parameter as string) == 14
-                    || parameter is string && Int32.Parse(parameter as string) == 15
-                    || parameter is string && Int32.Parse(parameter as string) == 16
-                    || parameter is string && Int32.Parse(parameter as string) == 17
-                    || parameter is string && Int32.Parse(parameter as string) == 18
-                    || parameter is string && Int32.Parse(parameter as string) == 19
-                    || parameter is string && Int32.Parse(parameter as string) == 20
-                    || parameter is string && Int32.Parse(parameter as string) == 21
-                    || parameter is string && Int32.Parse(parameter as string) == 22
-                    || parameter is string && Int32.Parse(parameter as string) == 23)
-                {
-                    grid = new GridLength(1, GridUnitType.Star);
-                }
-                else
-                {
-                    grid = new GridLength(8);
-                }
-
+                enable = true;
             }
-            return grid;
+
+            return enable;
+        }
+    }
+
+    public class BooleanToSpaceConverter : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is true)
+                return new GridLength(8);
+            else
+                return new GridLength(0);
+        }
+    }
+
+    public class ForceBooleanConverter : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is true)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public class BooleanToVisiblity : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is true)
+                return Visibility.Visible;
+            else
+                return Visibility.Collapsed;
+        }
+    }
+
+    public class ToolkitToSpaceConverter : OneWayValueConverter
+    {
+        private GridLength ParseGridConfig(string input)
+        {
+            Debug.Assert(input != null);
+            input = input.Trim();
+            if (input == "star")
+                return new GridLength(1, GridUnitType.Star);
+            else if (input == "auto")
+                return new GridLength(1, GridUnitType.Auto);
+            else
+            {
+                _ = int.TryParse(input, out int intger_size);
+
+                return new GridLength(intger_size);
+            }
+        }
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (parameter == null)
+                return new GridLength(0);
+
+            List<string> config = BindingToolkitParser.ParseBindingList(parameter as string);
+            List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(config[0]);
+
+            bool enable = IsAnyInEnableListValid(enable_for);
+
+            if (enable)
+            {
+                return ParseGridConfig(config[1]);
+            }
+            else
+            {
+                return ParseGridConfig(config[2]);
+            }
         }
     }
 
@@ -335,159 +382,36 @@ namespace ToolkitLauncher
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var vis = Visibility.Collapsed;
-            if (ToolkitProfiles.SettingsList.Count > 0)
+            List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(parameter as string);
+
+            bool enable = IsAnyInEnableListValid(enable_for);
+
+            return enable ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    public class IsScenarioPathToVisibilityConverter : OneWayValueConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string input = (string)value;
+            bool reverse = parameter is string type && type == "inverse";
+
+            bool enabled = input.EndsWith(".scenario");
+            if (reverse)
+                enabled = !enabled;
+
+            if (MainWindow.profile_mapping.Count > 0)
             {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
-                {
-                    if (MainWindow.halo_community)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    if (MainWindow.halo_ce)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 3)
-                {
-                    if (MainWindow.halo_ce_mcc)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 4)
-                {
-                    if (MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
-                {
-                    if (MainWindow.halo_2_standalone_community)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
-                {
-                    if (MainWindow.halo_2_mcc)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 8)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone_stock && !MainWindow.halo_2_standalone_community)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 9)
-                {
-                    string textbox_path = (string)value;
-                    if (!textbox_path.EndsWith(".scenario"))
-                    {
-                        vis = Visibility.Visible;
-                    }
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 10)
-                {
-                    string textbox_path = (string)value;
-                    if (textbox_path.EndsWith(".scenario"))
-                    {
-                        vis = Visibility.Visible;
-                    }
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 11)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 12)
-                {
-                    if (!MainWindow.halo_ce && !MainWindow.halo_2_standalone)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 13)
-                {
-                    if (!MainWindow.halo_ce)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 14)
-                {
-                    if ((bool)value)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 15)
-                {
-                    if (MainWindow.halo_mcc || !MainWindow.halo_ce && !MainWindow.halo_2)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 16)
-                {
-                    if (MainWindow.halo_ce_mcc || MainWindow.halo_2_mcc)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 17)
-                {
-                    if (MainWindow.halo_2_standalone_community || MainWindow.halo_3)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 18)
-                {
-                    if (MainWindow.halo_3_odst)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 19)
-                {
-                    if (!MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 20)
-                {
-                    if (!MainWindow.halo_ce_standalone && !MainWindow.halo_2_standalone && !MainWindow.halo_reach && !MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 21)
-                {
-                    if (MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 22)
-                {
-                    if (MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 23)
-                {
-                    if (MainWindow.halo_2 || MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 24)
-                {
-                    if (MainWindow.halo_reach || MainWindow.halo_4)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 25)
-                {
-                    if (MainWindow.halo_3 || MainWindow.halo_3_odst)
-                        vis = Visibility.Visible;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 26)
-                {
-                    if (MainWindow.halo_3 || MainWindow.halo_3_odst || MainWindow.halo_reach)
-                        vis = Visibility.Visible;
-                }
+                return enabled ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                vis = Visibility.Visible;
+                return Visibility.Visible;
             }
-            return vis;
         }
     }
+
 
     public class ProfiletoVisibilityMulti : OneWayMultiValueConverter
     {
@@ -514,86 +438,11 @@ namespace ToolkitLauncher
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var is_enabled = false;
-            if (ToolkitProfiles.SettingsList.Count > 0)
-            {
-                if (parameter is string && Int32.Parse(parameter as string) == 0)
-                {
-                    if (MainWindow.halo_ce)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 1)
-                {
-                    if (MainWindow.halo_2)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 2)
-                {
-                    if (MainWindow.halo_2_standalone_stock)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 3)
-                {
-                    if (MainWindow.halo_3)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 4)
-                {
-                    //Tool
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 5)
-                {
-                    //Guerilla
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GuerillaPath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 6)
-                {
-                    //Sapien
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.SapienPath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 7)
-                {
-                    //Game
-                    if (!string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 8)
-                {
-                    if (!MainWindow.halo_ce)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 9)
-                {
-                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_4)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 10)
-                {
-                    if (!MainWindow.halo_2_standalone_stock && !MainWindow.halo_3)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 11)
-                {
-                    bool is_level_import = (bool)value;
-                    if (!is_level_import)
-                        is_enabled = true;
-                }
-                else if (parameter is string && Int32.Parse(parameter as string) == 12)
-                {
-                    if (MainWindow.halo_reach || MainWindow.halo_4)
-                        is_enabled = true;
-                }
-            }
-            else
-            {
-                //Either we're in desinger or there are no profiles. Reveal ourselves either way.
-                is_enabled = true;
-            }
-            return is_enabled;
+            List<TogglesUI> enable_for = BindingToolkitParser.ParseMultiFlagSet(parameter as string);
+
+            bool enable = IsAnyInEnableListValid(enable_for);
+
+            return enable;
         }
     }
 
@@ -1111,177 +960,5 @@ namespace ToolkitLauncher
         // END copied
 
         private ToolTip _autoToolTip => typeof(Slider).GetField("_autoToolTip", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this) as ToolTip;
-    }
-
-    public class LauncherThemeSettings
-    {
-        public void SetLauncherTheme(ThemeType theme_index)
-        {
-            switch (theme_index)
-            {
-                case ThemeType.light:
-                    // Light Theme
-
-                    //Window Colors - Grids need Background set for this to work
-                    Application.Current.Resources["WindowPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                    Application.Current.Resources["WindowSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 229, 229, 229));
-
-                    // Button Colors - Set in style. Will work across all buttons automatically
-                    Application.Current.Resources["ButtonPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 221, 221, 221));
-                    Application.Current.Resources["ButtonSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 112, 112, 112));
-                    Application.Current.Resources["ButtonHoverPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 190, 230, 253));
-                    Application.Current.Resources["ButtonHoverSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 60, 127, 177));
-                    Application.Current.Resources["ButtonIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 244, 244, 244));
-                    Application.Current.Resources["ButtonIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 173, 178, 181));
-
-                    // Groupbox Colors - Set in style. Will work across all groupboxes automatically
-                    Application.Current.Resources["GroupboxPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 213, 223, 229));
-                    Application.Current.Resources["GroupboxSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-
-                    // TabControl Colors - Set in style. Will work across all tab controls automatically
-                    Application.Current.Resources["TabControlPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                    Application.Current.Resources["TabControlSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 172, 172, 172));
-
-                    // TabItem Colors - Set in style. Will work across all tab items automatically
-                    // (General_101) I'm replacing the gradient instead of using Dynamic colors in the gradient to work around an issue.
-                    // (General_101) This should work fine for tab item. 
-                    LinearGradientBrush TabItemBackgroundLight = new();
-                    TabItemBackgroundLight.StartPoint = new Point(0, 0);
-                    TabItemBackgroundLight.EndPoint = new Point(0, 1);
-                    TabItemBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 240, 240, 240), 0.0));
-                    TabItemBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 229, 229, 229), 1.0));
-                    Application.Current.Resources["TabItemBackground"] = TabItemBackgroundLight;
-                    Application.Current.Resources["TabItemTertiaryColor"] = new SolidColorBrush(Color.FromArgb(255, 140, 142, 148));
-                    LinearGradientBrush TabItemHoverBackgroundLight = new();
-                    TabItemHoverBackgroundLight.StartPoint = new Point(0, 0);
-                    TabItemHoverBackgroundLight.EndPoint = new Point(0, 1);
-                    TabItemHoverBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 236, 244, 252), 0.0));
-                    TabItemHoverBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 220, 236, 252), 1.0));
-                    Application.Current.Resources["TabItemHoverBackground"] = TabItemHoverBackgroundLight;
-                    Application.Current.Resources["TabItemSelectedPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                    Application.Current.Resources["TabItemSelectedSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 172, 172, 172));
-                    Application.Current.Resources["TabItemIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 244, 244, 244));
-                    Application.Current.Resources["TabItemIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 201, 199, 186));
-
-                    // Slider Colors - Set in style. Will work across all sliders automatically
-                    Application.Current.Resources["SliderThumbPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                    Application.Current.Resources["SliderThumbSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 172, 172, 172));
-                    Application.Current.Resources["SliderThumbHoverPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 220, 236, 252));
-                    Application.Current.Resources["SliderThumbHoverSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 126, 180, 234));
-                    Application.Current.Resources["SliderThumbHeldPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 218, 236, 252));
-                    Application.Current.Resources["SliderThumbHeldSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 86, 157, 229));
-                    Application.Current.Resources["SliderThumbIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                    Application.Current.Resources["SliderThumbIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 217, 217, 217));
-                    Application.Current.Resources["SliderTrackPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 231, 234, 234));
-                    Application.Current.Resources["SliderTrackSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 214, 214, 214));
-
-                    // Text Color - Items with text need Foreground set for this to work
-                    Application.Current.Resources["TextColor"] = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-
-                    // ComboBox Colors - Set in style. Will work across all comboboxes automatically
-                    // (General_101) I'm replacing the gradient instead of using Dynamic colors in the gradient to work around an issue.
-                    // (General_101) This should work fine for comboboxes. 
-                    LinearGradientBrush ComboBoxBackgroundLight = new();
-                    ComboBoxBackgroundLight.StartPoint = new Point(0, 0);
-                    ComboBoxBackgroundLight.EndPoint = new Point(0, 1);
-                    ComboBoxBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 240, 240, 240), 0.0));
-                    ComboBoxBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 229, 229, 229), 1.0));
-                    Application.Current.Resources["ComboBoxPrimaryColor"] = ComboBoxBackgroundLight;
-                    Application.Current.Resources["ComboBoxSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 172, 172, 172));
-                    LinearGradientBrush ComboBoxHoverBackgroundLight = new();
-                    ComboBoxHoverBackgroundLight.StartPoint = new Point(0, 0);
-                    ComboBoxHoverBackgroundLight.EndPoint = new Point(0, 1);
-                    ComboBoxHoverBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 236, 244, 252), 0.0));
-                    ComboBoxHoverBackgroundLight.GradientStops.Add(new GradientStop(Color.FromArgb(255, 220, 236, 252), 1.0));
-                    Application.Current.Resources["ComboBoxHoverPrimaryColor"] = ComboBoxHoverBackgroundLight;
-                    Application.Current.Resources["ComboBoxHoverSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 126, 180, 234));
-                    Application.Current.Resources["ComboBoxListPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                    Application.Current.Resources["ComboBoxListSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 100, 100, 100));
-                    Application.Current.Resources["ComboBoxIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                    Application.Current.Resources["ComboBoxIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 217, 217, 217));
-                    break;
-                case ThemeType.dark:
-                    // Dark Theme
-
-                    //Window Colors - Grids need Background set for this to work
-                    Application.Current.Resources["WindowPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 54, 53, 57));
-                    Application.Current.Resources["WindowSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32));
-
-                    // Button Colors - Set in style. Will work across all buttons automatically
-                    Application.Current.Resources["ButtonPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 85, 85, 85));
-                    Application.Current.Resources["ButtonSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
-                    Application.Current.Resources["ButtonHoverPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 90, 130, 153));
-                    Application.Current.Resources["ButtonHoverSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 0, 27, 77));
-                    Application.Current.Resources["ButtonIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 144, 144, 144));
-                    Application.Current.Resources["ButtonIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 73, 78, 81));
-
-                    // Groupbox Colors - Set in style. Will work across all groupboxes automatically
-                    Application.Current.Resources["GroupboxPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 42, 32, 26));
-                    Application.Current.Resources["GroupboxSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-
-                    // TabControl Colors - Set in style. Will work across all tab controls automatically
-                    Application.Current.Resources["TabControlPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-                    Application.Current.Resources["TabControlSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 83, 83, 83));
-
-                    // TabItem Colors - Set in style. Will work across all tab items automatically
-                    // (General_101) I'm replacing the gradient instead of using Dynamic colors in the gradient to work around an issue.
-                    // (General_101) This should work fine for tab item. 
-                    LinearGradientBrush TabItemBackgroundDark = new();
-                    TabItemBackgroundDark.StartPoint = new Point(0, 0);
-                    TabItemBackgroundDark.EndPoint = new Point(0, 1);
-                    TabItemBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 85, 85, 85), 0.0));
-                    TabItemBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 70, 70, 70), 1.0));
-                    Application.Current.Resources["TabItemBackground"] = TabItemBackgroundDark;
-                    Application.Current.Resources["TabItemTertiaryColor"] = new SolidColorBrush(Color.FromArgb(255, 40, 42, 48));
-                    LinearGradientBrush TabItemHoverBackgroundDark = new();
-                    TabItemHoverBackgroundDark.StartPoint = new Point(0, 0);
-                    TabItemHoverBackgroundDark.EndPoint = new Point(0, 1);
-                    TabItemHoverBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 136, 144, 152), 0.0));
-                    TabItemHoverBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 120, 136, 152), 1.0));
-                    Application.Current.Resources["TabItemHoverBackground"] = TabItemHoverBackgroundDark;
-                    Application.Current.Resources["TabItemSelectedPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 125, 125, 125));
-                    Application.Current.Resources["TabItemSelectedSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 80, 82, 88));
-                    Application.Current.Resources["TabItemIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
-                    Application.Current.Resources["TabItemIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 20, 30, 40));
-
-                    // Slider Colors - Set in style. Will work across all sliders automatically
-                    Application.Current.Resources["SliderThumbPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 140, 140, 140));
-                    Application.Current.Resources["SliderThumbSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 72, 72, 72));
-                    Application.Current.Resources["SliderThumbHoverPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 120, 136, 152));
-                    Application.Current.Resources["SliderThumbHoverSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 26, 80, 134));
-                    Application.Current.Resources["SliderThumbHeldPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 118, 136, 152));
-                    Application.Current.Resources["SliderThumbHeldSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 20, 57, 129));
-                    Application.Current.Resources["SliderThumbIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 140, 140, 140));
-                    Application.Current.Resources["SliderThumbIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 117, 117, 117));
-                    Application.Current.Resources["SliderTrackPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 131, 134, 134));
-                    Application.Current.Resources["SliderTrackSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 114, 114, 114));
-
-                    // Text Color - Items with text need Foreground set for this to work
-                    Application.Current.Resources["TextColor"] = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-
-                    // ComboBox Colors - Set in style. Will work across all comboboxes automatically
-                    // (General_101) I'm replacing the gradient instead of using Dynamic colors in the gradient to work around an issue.
-                    // (General_101) This should work fine for comboboxes. 
-                    LinearGradientBrush ComboBoxBackgroundDark = new();
-                    ComboBoxBackgroundDark.StartPoint = new Point(0, 0);
-                    ComboBoxBackgroundDark.EndPoint = new Point(0, 1);
-                    ComboBoxBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 85, 85, 85), 0.0));
-                    ComboBoxBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 70, 70, 70), 1.0));
-                    Application.Current.Resources["ComboBoxPrimaryColor"] = ComboBoxBackgroundDark;
-                    Application.Current.Resources["ComboBoxSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 51, 51, 51));
-                    LinearGradientBrush ComboBoxHoverBackgroundDark = new();
-                    ComboBoxHoverBackgroundDark.StartPoint = new Point(0, 0);
-                    ComboBoxHoverBackgroundDark.EndPoint = new Point(0, 1);
-                    ComboBoxHoverBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 136, 144, 152), 0.0));
-                    ComboBoxHoverBackgroundDark.GradientStops.Add(new GradientStop(Color.FromArgb(255, 120, 136, 152), 1.0));
-                    Application.Current.Resources["ComboBoxHoverPrimaryColor"] = ComboBoxHoverBackgroundDark;
-                    Application.Current.Resources["ComboBoxHoverSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 26, 80, 134));
-                    Application.Current.Resources["ComboBoxListPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-                    Application.Current.Resources["ComboBoxListSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                    Application.Current.Resources["ComboBoxIsEnabledPrimaryColor"] = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
-                    Application.Current.Resources["ComboBoxIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 20, 30, 40));
-                    break;
-            }
-        }
     }
 }

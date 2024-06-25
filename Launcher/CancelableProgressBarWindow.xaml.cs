@@ -155,7 +155,7 @@ namespace ToolkitLauncher
 
         private bool _complete = false;
         public bool Complete {
-            set { _complete = value; update(); }
+            set {if (_complete != value) { _complete = value; update(); } }
             get => _complete;
         }
 

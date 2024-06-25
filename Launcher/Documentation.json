@@ -8,18 +8,17 @@
       "General": "general/community-tools/osoyoos/"
     },
     "H1": {
-
+      "Lighting": "h1/h1-ek/h1-tool/#lightmaps",
+      "Packaging": "h1/h1-ek/h1-tool/#build-cache-file",
+      "Phantom": "h1/h1-ek/h1-tool/#phantom-bsp-fix",
+      "H2LOD": "h1/h1-ek/h1-tool/#halo-2-lod-selection-logic"
     },
     "H1CE": {
-      "Base": "H1",
-      "Lighting": "h1/tools/hek/tool/#lightmaps"
+      "Base": "H1"
     },
     "H1MCC": {
-      "Base": "H1",
-      "Lighting": "h1/tools/h1a-ek/h1a-tool/#lightmaps",
-      "Packaging": "h1/tools/h1a-ek/h1a-tool/#build-cache-file",
-      "Phantom": "h1/tools/h1a-ek/h1a-tool/#phantom-bsp-fix",
-      "H2LOD": "h1/tools/h1a-ek/h1a-tool/#halo-2-lod-selection-logic"
+      "Base": "H1"
+
     },
     "H2": {
 
@@ -32,16 +31,19 @@
     },
     "H2MCC": {
       "Base": "H2",
-      "Lighting": "h2/tools/h2-ek/h2-tool/#lightmaps",
+      "Lighting": "h2/tools/h2-ek/h2-tool/#baking-lightmaps",
+      "MultiInstance": "h2/tools/h2-ek/h2-tool/#multi-instance-lightmaps",
       "Packaging": "h2/tools/h2-ek/h2-tool/#build-cache-file"
     },
     "H3": {
-      "Packaging": "h3/tools/h3-ek/h3-tool/#build-cache-file",
-      "Lighting": "h3/tools/h3-ek/h3-tool/#baking-lightmaps-faux"
+      "Packaging": "h3/h3-ek/h3-tool/#build-cache-file",
+      "Lighting": "h3/h3-ek/h3-tool/#baking-lightmaps-faux",
+      "MultiInstance": "h3/h3-ek/h3-tool/#baking-lightmaps-faux"
     },
     "HR": {
       "Packaging": "hr/hr-ek/hr-tool/#build-cache-file-cache",
-      "Lighting": "hr/hr-ek/hr-tool/#baking-lightmaps-faux"
+      "Lighting": "hr/hr-ek/hr-tool/#baking-lightmaps-faux",
+      "MultiInstance": "hr/hr-ek/hr-tool/#baking-lightmaps-faux"
     },
     "H4": {
 

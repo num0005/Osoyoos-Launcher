@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Windows.Shapes;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 using Path = System.IO.Path;

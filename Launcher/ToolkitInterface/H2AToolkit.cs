@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using ToolkitLauncher.Utility;
-using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
     public class H2AToolkit : H2Toolkit, IToolkitFBX2Jointed, IToolkitFBX2ASS, IToolkitFBX2JMI
     {
 
-        public H2AToolkit(ProfileSettingsLauncher profle, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profle, baseDirectory, toolPaths) { }
+        public H2AToolkit(ToolkitProfiles.ProfileSettingsLauncher profle, string baseDirectory, Dictionary<ToolType, string> toolPaths) : base(profle, baseDirectory, toolPaths) { }
 
         private string tagPath
         {
@@ -75,7 +75,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(tool, new List<string>() { command, data_file }, true);
         }
 
-        private string set_flags(string flag_string, string flag_name)
+        static private string SetFlag(string flag_string, string flag_name)
         {
             if (!String.IsNullOrEmpty(flag_string))
             {
@@ -86,73 +86,128 @@ namespace ToolkitLauncher.ToolkitInterface
             return flag_string;
         }
 
+        private string _get_prt_tool_path()
+        {
+            return Path.Join(BaseDirectory, @"prt_sim.exe");
+        }
+
+        private async Task CheckPRTToolDeployment()
+        {
+            string prt_tool_path = _get_prt_tool_path();
+
+            bool should_update_prt = false;
+            if (!File.Exists(prt_tool_path))
+            {
+                // no tool, clear the version data as it's inaccurate
+                Profile.LatestPRTToolVersion = null;
+                ToolkitProfiles.Save();
+
+                var result = MessageBox.Show(
+                    "PRT related operations will fail until it is installed, do you want to do that now?", 
+                    "PRT Simulation Tool not installed!",
+                    MessageBoxButtons.YesNo);
+                should_update_prt = result == DialogResult.Yes;
+            }
+            else if (!PRTSimInstaller.IsRedistInstalled())
+            {
+                var result = MessageBox.Show(
+                    "PRT installation is incomplete (missing redist), do you want to reinstall it now?",
+                    "D3DX Redist Package Missing!",
+                    MessageBoxButtons.YesNo);
+                should_update_prt = result == DialogResult.Yes;
+            }
+            else
+            {
+
+                if (Profile.LatestPRTToolVersion is not null)
+                {
+                    // todo(num0005) put prt tool update logic here
+                }
+                else
+                {
+                    // untracked PRT tool version, there's nothing we can do now
+                }
+            }
+
+            if (should_update_prt)
+            {
+                int? installed_version = await PRTSimInstaller.Install(prt_tool_path);
+                if (installed_version is null)
+                {
+                    MessageBox.Show(
+                    "Failed to install PRT simulation tool!",
+                    "Error",
+                    MessageBoxButtons.OK);
+                }
+                else
+                {
+                    Profile.LatestPRTToolVersion = installed_version;
+                    ToolkitProfiles.Save();
+                }
+            }
+
+        }
+
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
             string flags = "";
             if (verboseAnim)
             {
-                flags = set_flags(flags, "verbose");
+                flags = SetFlag(flags, "verbose");
             }
             if (uncompressedAnim)
             {
-                flags = set_flags(flags, "uncompressed");
+                flags = SetFlag(flags, "uncompressed");
             }
             if (resetCompression)
             {
-                flags = set_flags(flags, "reset_compression");
+                flags = SetFlag(flags, "reset_compression");
             }
 
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
-            List<string> args = new List<string>();
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested
                 if (genShaders) { if (!AutoShaders.CreateEmptyShaders(BaseDirectory, path, "H2")) { return; }; }
-                args.Add("render");
-                args.Add(path);
-                if (accurateRender)
-                {
-                    args.Add("true");
-                }
+
+                // check PRT tool is setup before we use it
                 if (renderPRT)
                 {
-                    if (!accurateRender)
-                    {
-                        args.Add("false");
-                    }
-                    args.Add("true");
+                    await CheckPRTToolDeployment();
                 }
+
+                List<string> args = new() {
+                    "render",
+                    path,
+                    accurateRender ? "true" : "false",
+                    renderPRT ? "true" : "false" };
+                await RunTool(ToolType.Tool, args, true);
+
             }
             if (importType.HasFlag(ModelCompile.collision))
             {
-                args.Add("collision");
-                args.Add(path);
+                await RunTool(ToolType.Tool, new() { "collision", path });
             }
             if (importType.HasFlag(ModelCompile.physics))
             {
-                args.Add("physics");
-                args.Add(path);
+                await RunTool(ToolType.Tool, new() { "physics", path });
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
                 if (FPAnim)
-                {
-                    args.Add("fp-model-animations");
-                    args.Add(path);
-                    args.Add(characterFPPath);
-                    args.Add(weaponFPPath);
-                    args.Add(flags);
-                }
+                    await RunTool(ToolType.Tool, new() { 
+                        "fp-model-animations", 
+                        path, 
+                        characterFPPath, 
+                        weaponFPPath, 
+                        flags });
                 else
-                {
-                    args.Add("model-animations");
-                    args.Add(path);
-                    args.Add(flags);
-                }
+                    await RunTool(ToolType.Tool, new() { 
+                        "model-animations", 
+                        path, 
+                        flags });
             }
-
-            await RunTool(ToolType.Tool, args, true);
         }
 
         public override async Task ImportSound(string path, string platform, string bitrate, string ltf_path, string sound_command, string class_type, string compression_type, string custom_extension)
@@ -165,23 +220,23 @@ namespace ToolkitLauncher.ToolkitInterface
             string flags = "";
             if (cacheCompress)
             {
-                flags = set_flags(flags, "compress");
+                flags = SetFlag(flags, "compress");
             }
             if (cacheResourceSharing)
             {
-                flags = set_flags(flags, "resource_sharing");
+                flags = SetFlag(flags, "resource_sharing");
             }
             if (cacheMultilingualSounds)
             {
-                flags = set_flags(flags, "multilingual_sounds");
+                flags = SetFlag(flags, "multilingual_sounds");
             }
             if (cacheRemasteredSupport)
             {
-                flags = set_flags(flags, "remastered_support");
+                flags = SetFlag(flags, "remastered_support");
             }
             if (cacheMPTagSharing)
             {
-                flags = set_flags(flags, "mp_tag_sharing");
+                flags = SetFlag(flags, "mp_tag_sharing");
             }
 
             List<string> args = new List<string>();
