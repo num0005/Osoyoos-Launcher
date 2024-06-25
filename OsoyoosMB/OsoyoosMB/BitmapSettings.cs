@@ -10,7 +10,7 @@ namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void GetBitmapData(string ek_path, string tag_folder, string ek_tags_folder_path, string compress_value)
+        public static void GetBitmapData(string ek_path, string tag_folder, string ek_tags_folder_path, int compress_value)
         {
             // Initialize ManagedBlam
             ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
@@ -83,7 +83,7 @@ namespace OsoyoosMB
                 }
             }
 
-            ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, int.Parse(compress_value));
+            ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, compress_value);
         }
 
         // These are the block/field names within the tag file

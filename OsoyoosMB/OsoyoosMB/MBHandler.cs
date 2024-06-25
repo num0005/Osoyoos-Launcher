@@ -16,14 +16,76 @@ will crash at runtime. Don't forget to revert the reference back to version in t
 before committing or release.
 */
 using System;
+using System.Configuration.Assemblies;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace OsoyoosMB
 {
     internal class MBHandler
     {
-        
+
+        /// <summary>
+        /// Load assemblies from the bin folder in the working directory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        static Assembly LoadFromBinFolder(object sender, ResolveEventArgs args)
+        {
+            AssemblyName assemblyName = new AssemblyName(args.Name);
+            Debug.Write($"{assemblyName}");
+
+            string currentPath = Directory.GetCurrentDirectory();
+            string assemblyPath = Path.Combine(currentPath, "bin", assemblyName.Name) + ".dll";
+
+            if (File.Exists(assemblyPath))
+            {
+                Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                return assembly;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Preload the managed blam assembly
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static bool PreloadManagedBlam()
+        {
+            string currentPath = Directory.GetCurrentDirectory();
+            string binManagedBlamPath = Path.Combine(currentPath, "bin", "ManagedBlam.dll");
+            try
+            {
+                Assembly.LoadFile(binManagedBlamPath);
+                return true;
+            } catch (FileNotFoundException)
+            {
+                Console.WriteLine("Unable to find ManagedBlam!");
+                return false;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Main(String[] args)
         {
+            // premain setup
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.AssemblyResolve += new ResolveEventHandler(LoadFromBinFolder);
+            PreloadManagedBlam();
+            ProgramMain(args);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ProgramMain(String[] args)
+        {
+            // not used for anything apart from testing
+            System.Threading.Tasks.Task.Run(() => { });
             if (args.Length == 0)
             {
                 Console.WriteLine("Do not run this manually, it is a helper executable for Osoyoos. This is not a standalone application.\nPress Enter to exit.");
@@ -31,10 +93,10 @@ namespace OsoyoosMB
             }
             else
             {
-                if (args[0] == "getbitmapdata" && args.Length >= 5)
+                if (args[0] == "getbitmapdata" && args.Length == 5)
                 {
                     Console.WriteLine("Running GetBitmapData");
-                    BitmapSettings.GetBitmapData(args[1], args[2], args[3], args[4]);
+                    BitmapSettings.GetBitmapData(args[1], args[2], args[3], int.Parse(args[4]));
                 }
                 else
                 {
