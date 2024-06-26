@@ -20,7 +20,7 @@ namespace ToolkitLauncher
         {
             InitializeComponent();
             version.Text = Assembly.GetEntryAssembly()
-                .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         }
 
 
