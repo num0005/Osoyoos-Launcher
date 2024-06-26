@@ -111,7 +111,7 @@ namespace ToolkitLauncher
             /// <returns></returns>
             public bool IsH2Codez()
             {
-                return CommunityTools && BuildType == build_type.release_standalone && GameGen == 2 && File.Exists(GetH2CodezPath());
+                return CommunityTools && BuildType == build_type.release_standalone && GameGen == 1 && File.Exists(GetH2CodezPath());
             }
         }
 #nullable restore
