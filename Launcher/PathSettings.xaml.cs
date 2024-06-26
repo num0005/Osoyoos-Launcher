@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 
 namespace ToolkitLauncher
 {
@@ -351,8 +352,23 @@ namespace ToolkitLauncher
                 ExpertMode = (bool)expert_mode.IsChecked,
                 Batch = (bool)batch.IsChecked,
             };
+
+            // get new and old base directory
+            string? old_base_directory = Path.GetDirectoryName(ToolkitProfiles.SettingsList[profile_index].ToolPath);
+            string? new_base_directory = Path.GetDirectoryName(tool_path.Text);
+
+            int? prt_version_info = ToolkitProfiles.SettingsList[profile_index].LatestPRTToolVersion;
+            
+
             Debug.Assert(profile_index >= 0 && ToolkitProfiles.SettingsList.Count > profile_index);
             ToolkitProfiles.SettingsList[profile_index] = settings;
+
+            // if the base path was not changed, the prt install information can be carried over
+            if (old_base_directory is not null && old_base_directory == new_base_directory)
+            {
+                ToolkitProfiles.SettingsList[profile_index].LatestPRTToolVersion = prt_version_info;
+            }
+
             h2codez_update_groupbox.Visibility = settings.IsH2Codez() ? Visibility.Visible : Visibility.Collapsed;
         }
 
