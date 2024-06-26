@@ -19,7 +19,7 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportBitmaps(string path, string type, string compression, bool debug_plate)
         {
             string bitmaps_command = "bitmaps";
-            if (Profile.CommunityTools || Profile.BuildType == build_type.release_mcc)
+            if (Profile.CommunityTools || Profile.IsMCC)
             {
                 bitmaps_command = "bitmaps-with-type";
                 await RunTool(ToolType.Tool, new List<string>() { bitmaps_command, path, type });
@@ -57,7 +57,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             string quality = GetLightmapQuality(args);
 
-            if (args.instanceCount > 1 && (Profile.BuildType == build_type.release_mcc || Profile.CommunityTools)) // multi instance?
+            if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
             {
                 if (progress is not null)
                     progress.MaxValue += 1 + args.instanceCount;
@@ -109,7 +109,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     progress.DisableCancellation();
                     progress.MaxValue += 1;
                 }
-                await RunTool((args.NoAssert && Profile.BuildType == build_type.release_mcc) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+                await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
                 if (progress is not null)
                     progress.Report(1);
             }
@@ -118,7 +118,7 @@ namespace ToolkitLauncher.ToolkitInterface
         private async Task RunMergeLightmap(string scenario, string bsp, int workerCount, bool useFast)
         {
 
-            if (Profile.BuildType == build_type.release_mcc)
+            if (Profile.IsMCC)
             {
                 await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>()
                 {
@@ -143,7 +143,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         private async Task<Utility.Process.Result> RunLightmapWorker(string scenario, string bsp, string quality, int workerCount, int index, bool useFast, CancellationToken cancelationToken, bool output)
         {
-            if (Profile.BuildType == build_type.release_mcc)
+            if (Profile.IsMCC)
             {
                 bool wereWeExperts = Profile.ElevatedToExpert;
                 Profile.ElevatedToExpert = true;

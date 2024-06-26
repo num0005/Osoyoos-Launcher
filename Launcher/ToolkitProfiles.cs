@@ -93,7 +93,12 @@ namespace ToolkitLauncher
 
             [JsonPropertyName("build_type")]
             [JsonConverter(typeof(BuildTypeJsonConverter))]
-            public build_type BuildType { get; set; }
+            [Obsolete("Build type property is obsolute, use IsMcc, IsReach, IsODST and IsHalo4 instead")]
+            [JsonInclude]
+            public build_type BuildType { private get; set; }
+
+            [JsonPropertyName("alt_build")]
+            public bool? IsAlternativeBuild { get; set; }
 
             [JsonPropertyName("community_tools")]
             public bool CommunityTools { get; set; }
@@ -102,7 +107,7 @@ namespace ToolkitLauncher
             public bool Verbose { get; set; }
 
             [JsonPropertyName("expert_mode")]
-            private bool experMode { get; set; }
+            public bool ActualExpertMode { get; set; }
 
             [JsonPropertyName("batch")]
             public bool Batch { get; set; }
@@ -119,11 +124,59 @@ namespace ToolkitLauncher
             [JsonIgnore]
             public bool ExpertMode
             {
-                get => experMode || ElevatedToExpert;
+                get => ActualExpertMode || ElevatedToExpert;
                 set
                 {
                     ElevatedToExpert = false;
-                    experMode = value;
+                    ActualExpertMode = value;
+                }
+            }
+
+            /// <summary>
+            /// Is this an MCC build?
+            /// </summary>
+            [JsonIgnore]
+            public bool IsMCC
+            {
+                get
+                {
+                    return IsAlternativeBuild ?? false || Generation > GameGen.Halo2;
+                }
+            }
+
+            /// <summary>
+            /// is it ODST?
+            /// </summary>
+            [JsonIgnore]
+            public bool IsODST
+            {
+                get
+                {
+                    return Generation == GameGen.Halo3 && (IsAlternativeBuild ?? false);
+                }
+            }
+
+            /// <summary>
+            /// Is it Halo Reach?
+            /// </summary>
+            [JsonIgnore]
+            public bool IsReach
+            {
+                get
+                {
+                    return Generation == GameGen.Gen4 && (IsAlternativeBuild ?? false) == false;
+                }
+            }
+
+            /// <summary>
+            /// Is Halo 4 or H2A?
+            /// </summary>
+            [JsonIgnore]
+            public bool IsH4
+            {
+                get
+                {
+                    return Generation == GameGen.Gen4 && (IsAlternativeBuild == true);
                 }
             }
 
@@ -154,6 +207,11 @@ namespace ToolkitLauncher
                         Generation = GameGen.Invalid;
                     }
                 }
+
+                if (IsAlternativeBuild is null)
+                {
+                    IsAlternativeBuild = BuildType == build_type.release_mcc;
+                }
 #pragma warning restore 612, 618
             }
 
@@ -162,6 +220,10 @@ namespace ToolkitLauncher
 #pragma warning disable 612, 618
                 // downgrade generation for backwards compat
                 GameGenLegacy = (int)Generation - 1;
+                if (IsAlternativeBuild is bool altBuild)
+                {
+                    BuildType = altBuild ? build_type.release_mcc : build_type.release_standalone;
+                }
 #pragma warning restore 612, 618
             }
         }
@@ -238,7 +300,7 @@ namespace ToolkitLauncher
             var profile = new ProfileSettingsLauncher
             {
                 ProfileName = String.Format("Profile {0}", count),
-                BuildType = build_type.release_standalone
+                IsAlternativeBuild = false,
             };
             _SettingsList.Add(profile);
             return count;

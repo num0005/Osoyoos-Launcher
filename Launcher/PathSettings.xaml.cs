@@ -293,16 +293,7 @@ namespace ToolkitLauncher
                 data_path.Text = ToolkitProfiles.SettingsList[profile_index].DataPath;
                 tag_path.Text = ToolkitProfiles.SettingsList[profile_index].TagPath;
                 gen_type.SelectedIndex = (int)ToolkitProfiles.SettingsList[profile_index].Generation - 1;
-                build_type profile_build = ToolkitProfiles.SettingsList[profile_index].BuildType;
-                switch (profile_build)
-                {
-                    case build_type.release_standalone:
-                        is_mcc.IsChecked = false;
-                        break;
-                    case build_type.release_mcc:
-                        is_mcc.IsChecked = true;
-                        break;
-                }
+                is_mcc.IsChecked = ToolkitProfiles.SettingsList[profile_index].IsAlternativeBuild;
                 community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_index].CommunityTools;
                 verbose.IsChecked = ToolkitProfiles.SettingsList[profile_index].Verbose;
                 expert_mode.IsChecked = ToolkitProfiles.SettingsList[profile_index].ExpertMode;
@@ -354,7 +345,7 @@ namespace ToolkitLauncher
                 DataPath = data_path.Text,
                 TagPath = tag_path.Text,
                 Generation = (ToolkitProfiles.GameGen)(gen_type.SelectedIndex + 1),
-                BuildType = (bool)is_mcc.IsChecked ? build_type.release_mcc : build_type.release_standalone,
+                IsAlternativeBuild = (bool)is_mcc.IsChecked,
                 CommunityTools = (bool)community_tools.IsChecked,
                 Verbose = (bool)verbose.IsChecked,
                 ExpertMode = (bool)expert_mode.IsChecked,

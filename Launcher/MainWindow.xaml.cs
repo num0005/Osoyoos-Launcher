@@ -544,7 +544,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.BuildType == build_type.release_mcc || toolkit_profile.Generation > ToolkitProfiles.GameGen.Halo2;
+                    return toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -568,7 +568,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1 && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1 && !toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -580,7 +580,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1 && toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -604,7 +604,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && !toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -616,7 +616,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && !toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && !toolkit_profile.CommunityTools && !toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -628,7 +628,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.CommunityTools && !toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -640,7 +640,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.IsMCC;
                 }
                 return false;
             }
@@ -664,7 +664,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo3 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.IsODST;
                 }
                 return false;
             }
@@ -676,7 +676,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Gen4 && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.IsReach;
                 }
                 return false;
             }
@@ -688,7 +688,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Gen4 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.IsH4;
                 }
                 return false;
             }
@@ -828,22 +828,22 @@ namespace ToolkitLauncher
             switch (profile.Generation)
             {
                 case ToolkitProfiles.GameGen.Halo1:
-                    toolkit = profile.BuildType == build_type.release_standalone ?
+                    toolkit = !profile.IsMCC ?
                         new H1Toolkit(profile, base_path, tool_paths) :
                         new H1AToolkit(profile, base_path, tool_paths);
                     break;
                 case ToolkitProfiles.GameGen.Halo2:
-                    toolkit = profile.BuildType == build_type.release_standalone ?
+                    toolkit = !profile.IsMCC ?
                         new H2Toolkit(profile, base_path, tool_paths) :
                         new H2AToolkit(profile, base_path, tool_paths);
                     break;
                 case ToolkitProfiles.GameGen.Halo3:
-                    toolkit = profile.BuildType == build_type.release_standalone ?
+                    toolkit = !profile.IsODST ?
                     toolkit = new H3Toolkit(profile, base_path, tool_paths) :
                     toolkit = new H3ODSTToolkit(profile, base_path, tool_paths);
                     break;
                 case ToolkitProfiles.GameGen.Gen4:
-                    toolkit = profile.BuildType == build_type.release_standalone ?
+                    toolkit = profile.IsReach ?
                     toolkit = new HRToolkit(profile, base_path, tool_paths) :
                     toolkit = new H4Toolkit(profile, base_path, tool_paths);
                     break;
