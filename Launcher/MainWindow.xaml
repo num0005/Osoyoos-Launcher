@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="Osoyoos"
         SizeToContent="WidthAndHeight"
-        FlowDirection="LeftToRight" Closing="MainWindow_Closing" MinHeight="440" MinWidth="620">
+        FlowDirection="LeftToRight" Closing="MainWindow_Closing" MinHeight="480" MinWidth="620">
     <Window.Resources>
         <Visibility x:Key="show_light_slider">Visible</Visibility>
         <local:TextContentModifier x:Key="TextContentModifier" />
@@ -157,7 +157,7 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(mcc\, 8\, 0), ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="{Binding SelectedIndex, ConverterParameter=(h2|mcc + h2|h2codez + h3 + hr\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                <ColumnDefinition Width="{Binding SelectedIndex, ConverterParameter=(h2|mcc + h2|h2codez + h3 + hr\, 10\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <GroupBox x:Name="light_quality_select_box" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="90" Visibility="{Binding Mode=OneWay, Source={StaticResource show_light_slider}}" IsManipulationEnabled="True">
