@@ -355,7 +355,7 @@ namespace ToolkitLauncher
             if (MainWindow.toolkit_profile != null && string_encoding >= 0 && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.GameGen >= 1 || string_encoding == 1)
+                if (MainWindow.toolkit_profile.Generation >= ToolkitProfiles.GameGen.Halo2 || string_encoding == 1)
                     text_string = "Select a folder with .txt files to import.";
             }
             return text_string;
@@ -797,7 +797,7 @@ namespace ToolkitLauncher
             if (MainWindow.toolkit_profile != null && lightmap_quality >= 0 && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.GameGen >= 1 && lightmap_quality == custom_index)
+                if (MainWindow.toolkit_profile.Generation >= ToolkitProfiles.GameGen.Halo2 && lightmap_quality == custom_index)
                     return true;
                 return false;
             }

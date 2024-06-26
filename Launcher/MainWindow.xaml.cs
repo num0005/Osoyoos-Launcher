@@ -544,7 +544,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.BuildType == build_type.release_mcc || toolkit_profile.GameGen > 1;
+                    return toolkit_profile.BuildType == build_type.release_mcc || toolkit_profile.Generation > ToolkitProfiles.GameGen.Halo2;
                 }
                 return false;
             }
@@ -556,7 +556,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 0;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1;
                 }
                 return false;
             }
@@ -568,7 +568,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 0 && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1 && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -580,7 +580,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 0 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo1 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -592,7 +592,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 1;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2;
                 }
                 return false;
             }
@@ -604,7 +604,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 1 && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -616,7 +616,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 1 && !toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && !toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -628,7 +628,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 1 && toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.CommunityTools && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -640,7 +640,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 1 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -652,7 +652,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 2;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo3;
                 }
                 return false;
             }
@@ -664,7 +664,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 2 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo3 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -676,7 +676,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 3 && toolkit_profile.BuildType == build_type.release_standalone;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Gen4 && toolkit_profile.BuildType == build_type.release_standalone;
                 }
                 return false;
             }
@@ -688,7 +688,7 @@ namespace ToolkitLauncher
             {
                 if (profile_mapping.Count > 0 && profile_index >= 0)
                 {
-                    return toolkit_profile.GameGen == 3 && toolkit_profile.BuildType == build_type.release_mcc;
+                    return toolkit_profile.Generation == ToolkitProfiles.GameGen.Gen4 && toolkit_profile.BuildType == build_type.release_mcc;
                 }
                 return false;
             }
@@ -825,33 +825,31 @@ namespace ToolkitLauncher
 
             ToolkitBase toolkit = null;
 
-            switch (profile.GameGen)
+            switch (profile.Generation)
             {
-                case 0:
+                case ToolkitProfiles.GameGen.Halo1:
                     toolkit = profile.BuildType == build_type.release_standalone ?
                         new H1Toolkit(profile, base_path, tool_paths) :
                         new H1AToolkit(profile, base_path, tool_paths);
                     break;
-                case 1:
+                case ToolkitProfiles.GameGen.Halo2:
                     toolkit = profile.BuildType == build_type.release_standalone ?
                         new H2Toolkit(profile, base_path, tool_paths) :
                         new H2AToolkit(profile, base_path, tool_paths);
                     break;
-                case 2:
+                case ToolkitProfiles.GameGen.Halo3:
                     toolkit = profile.BuildType == build_type.release_standalone ?
                     toolkit = new H3Toolkit(profile, base_path, tool_paths) :
                     toolkit = new H3ODSTToolkit(profile, base_path, tool_paths);
                     break;
-                case 3:
+                case ToolkitProfiles.GameGen.Gen4:
                     toolkit = profile.BuildType == build_type.release_standalone ?
                     toolkit = new HRToolkit(profile, base_path, tool_paths) :
                     toolkit = new H4Toolkit(profile, base_path, tool_paths);
                     break;
                 default:
-                    Debug.Assert(false, "Profile has a game gen that isn't supported. Defaulting to Halo 1");
-                    toolkit = profile.BuildType == build_type.release_standalone ?
-                        new H1Toolkit(profile, base_path, tool_paths) :
-                        new H1AToolkit(profile, base_path, tool_paths);
+                    Debug.Assert(false, "Profile has a game gen that isn't supported. Using the disabled toolkit");
+                    toolkit = new DisabledToolkit(profile, base_path, tool_paths);
                     break;
             }
 
@@ -1633,16 +1631,16 @@ namespace ToolkitLauncher
 
             (string ext, string fbxFileName, string outputFileName)? FBXArgs;
 
-            switch (toolkit.Profile.GameGen)
+            switch (toolkit.Profile.Generation)
             {
-                case 0:
+                case ToolkitProfiles.GameGen.Halo1:
                     FBXArgs = PromptForFBXPaths("Select JMS save location", "Jointed model skeleton|*.JMS");
                     if (FBXArgs is not null)
                         await FBX2Jointed.JMSFromFBX(FBXArgs.Value.fbxFileName, FBXArgs.Value.outputFileName, null);
                     break;
 
-                case 1:
-                case 2:
+                case ToolkitProfiles.GameGen.Halo2:
+                case ToolkitProfiles.GameGen.Halo3:
                     FBXArgs = PromptForFBXPaths("Select JMS/ASS save location", "Jointed model skeleton|*.JMS|Amalgam scene specification|*.ASS");
                     if (FBXArgs is not null)
                     {
@@ -1667,7 +1665,7 @@ namespace ToolkitLauncher
                         }
                     }
                     break;
-                case 3:
+                case ToolkitProfiles.GameGen.Gen4:
                     FBXArgs = PromptForFBXPaths("Select GR2 save location", "Granny3D 2|*.GR2");
                     if (FBXArgs is not null)
                     {
@@ -1710,9 +1708,9 @@ namespace ToolkitLauncher
 
             (string ext, string fbxFileName, string outputFileName)? FBXArgs;
 
-            switch (toolkit.Profile.GameGen)
+            switch (toolkit.Profile.Generation)
             {
-                case 0:
+                case ToolkitProfiles.GameGen.Halo1:
                     FBXArgs = PromptForFBXPaths("Select JMS/JMA save location", "Jointed model skeleton|*.JMS|Jointed model animation|*.JMA");
                     if (FBXArgs is not null)
                         switch (FBXArgs.Value.ext)
@@ -1733,7 +1731,7 @@ namespace ToolkitLauncher
                         }
                     break;
 
-                case 1:
+                case ToolkitProfiles.GameGen.Halo2:
                     FBXArgs = PromptForFBXPaths("Select JMS/JMA/JMI save location", "Jointed model skeleton|*.JMS|Jointed model animation|*.JMA|Jointed model instance|*.JMI");
                     if (FBXArgs is not null)
                         switch (FBXArgs.Value.ext)
@@ -1761,7 +1759,7 @@ namespace ToolkitLauncher
                         }
                     break;
 
-                case 2:
+                case ToolkitProfiles.GameGen.Halo3:
                     FBXArgs = PromptForFBXPaths("Select JMS/JMA/JMI save location", "Jointed model skeleton|*.JMS|Jointed model animation|*.JMA|Jointed model instance|*.JMI");
                     if (FBXArgs is not null)
                         switch (FBXArgs.Value.ext)
@@ -1789,7 +1787,7 @@ namespace ToolkitLauncher
                         }
                     break;
 
-                case 3:
+                case ToolkitProfiles.GameGen.Gen4:
                     FBXArgs = PromptForFBXPaths("Select GR2 save location", "Granny3D 2|*.GR2");
                     if (FBXArgs is not null)
                     {

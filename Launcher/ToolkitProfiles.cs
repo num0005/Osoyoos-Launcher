@@ -31,6 +31,28 @@ namespace ToolkitLauncher
             }
         }
 
+        public enum GameGen
+        {
+            Invalid = 0,
+            /// <summary>
+            /// Halo 1 - h1ce, h1pc and h1mcc
+            /// </summary>
+            Halo1 = 1,
+            /// <summary>
+            /// Halo 2 - vista, h2x and h2mcc
+            /// </summary>
+            Halo2 = 2,
+            /// <summary>
+            /// Halo 3 and Halo 3 ODST
+            /// </summary>
+            Halo3 = 3,
+            /// <summary>
+            // Halo Reach and H4/H2A
+            /// </summary>
+            Gen4 = 4,
+        }
+
+
 #nullable enable
         public class ProfileSettingsLauncher
         {
@@ -62,7 +84,12 @@ namespace ToolkitLauncher
             public string TagPath { get; set; } = "";
 
             [JsonPropertyName("game_gen")]
-            public int GameGen { get; set; }
+            [JsonInclude]
+            [Obsolete("Game generation is now set through the GameGen enum")]
+            public int GameGenLegacy { private get; set; } = -1;
+
+            [JsonPropertyName("generation")]
+            public GameGen Generation { get; set; } = GameGen.Invalid;
 
             [JsonPropertyName("build_type")]
             [JsonConverter(typeof(BuildTypeJsonConverter))]
@@ -111,10 +138,44 @@ namespace ToolkitLauncher
             /// <returns></returns>
             public bool IsH2Codez()
             {
-                return CommunityTools && BuildType == build_type.release_standalone && GameGen == 1 && File.Exists(GetH2CodezPath());
+                return CommunityTools && BuildType == build_type.release_standalone && Generation == GameGen.Halo2 && File.Exists(GetH2CodezPath());
+            }
+
+            public void Upgrade()
+            {
+                // disable obsolute warnings in upgrade code (this should be common sense)
+#pragma warning disable 612, 618
+                // upgrade from old style generation to new
+                if (Generation == GameGen.Invalid)
+                {
+                    Generation = (GameGen)(GameGenLegacy + 1);
+                    if (!Enum.IsDefined(typeof(GameGen), Generation))
+                    {
+                        Generation = GameGen.Invalid;
+                    }
+                }
+#pragma warning restore 612, 618
+            }
+
+            public void PrepareForSave()
+            {
+#pragma warning disable 612, 618
+                // downgrade generation for backwards compat
+                GameGenLegacy = (int)Generation - 1;
+#pragma warning restore 612, 618
             }
         }
 #nullable restore
+
+        private readonly static JsonSerializerOptions options = new()
+        {
+            WriteIndented = true,
+            Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+        };
+
         /// <summary>
         /// Loads settings from disk if they exist.
         /// </summary>
@@ -128,7 +189,9 @@ namespace ToolkitLauncher
                 try
                 {
                     string jsonString = File.ReadAllText(file_path);
-                    _SettingsList = JsonSerializer.Deserialize<List<ProfileSettingsLauncher>>(jsonString);
+                    _SettingsList = JsonSerializer.Deserialize<List<ProfileSettingsLauncher>>(jsonString, options);
+                    _SettingsList.ForEach(x => x.Upgrade());
+
                 }
                 catch (JsonException)
                 {
@@ -144,6 +207,8 @@ namespace ToolkitLauncher
 
         public static bool Save()
         {
+            // update backwards compat settings
+            _SettingsList.ForEach(x => x.PrepareForSave());
             WriteJSONFile();
             return true;
         }
@@ -181,10 +246,6 @@ namespace ToolkitLauncher
 
         private static void WriteJSONFile()
         {
-            JsonSerializerOptions options = new()
-            {
-                WriteIndented = true
-            };
             string json_string = JsonSerializer.Serialize(_SettingsList, options);
             string file_path = Path.Combine(appdata_path + "\\" + save_folder, settings_file);
 

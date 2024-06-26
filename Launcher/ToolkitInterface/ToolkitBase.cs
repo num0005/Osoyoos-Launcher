@@ -294,7 +294,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// Should the toolkit be enabled
         /// </summary>
         /// <returns></returns>
-        public bool IsEnabled()
+        public virtual bool IsEnabled()
         {
             foreach (var exe in ToolPaths)
                 if (File.Exists(exe.Value))
@@ -336,7 +336,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             List<string> args = new();
 
-            if (Profile.GameGen != 2 && Profile.BuildType == build_type.release_mcc)
+            if (Profile.Generation != GameGen.Halo3 && Profile.BuildType == build_type.release_mcc)
             {
                 if (!IsDefaultTagDirectory())
                 {
@@ -355,13 +355,13 @@ namespace ToolkitLauncher.ToolkitInterface
                     args.Add("-verbose");
                 }
 
-                if (!string.IsNullOrWhiteSpace(Profile.GamePath) && Directory.Exists(Profile.GamePath) && Profile.GameGen == 0)
+                if (!string.IsNullOrWhiteSpace(Profile.GamePath) && Directory.Exists(Profile.GamePath) && Profile.Generation == GameGen.Halo1)
                 {
                     args.Add("-game_root_dir");
                     args.Add(Profile.GamePath);
                 }
 
-                if (Profile.GameGen == 1)
+                if (Profile.Generation == GameGen.Halo2)
                 {
                     if (Profile.ExpertMode)
                     {

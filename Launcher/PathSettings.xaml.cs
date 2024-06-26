@@ -292,7 +292,7 @@ namespace ToolkitLauncher
                 game_exe_path.Text = ToolkitProfiles.SettingsList[profile_index].GameExePath;
                 data_path.Text = ToolkitProfiles.SettingsList[profile_index].DataPath;
                 tag_path.Text = ToolkitProfiles.SettingsList[profile_index].TagPath;
-                gen_type.SelectedIndex = ToolkitProfiles.SettingsList[profile_index].GameGen;
+                gen_type.SelectedIndex = (int)ToolkitProfiles.SettingsList[profile_index].Generation - 1;
                 build_type profile_build = ToolkitProfiles.SettingsList[profile_index].BuildType;
                 switch (profile_build)
                 {
@@ -353,7 +353,7 @@ namespace ToolkitLauncher
                 GameExePath = game_exe_path.Text,
                 DataPath = data_path.Text,
                 TagPath = tag_path.Text,
-                GameGen = gen_type.SelectedIndex,
+                Generation = (ToolkitProfiles.GameGen)(gen_type.SelectedIndex + 1),
                 BuildType = (bool)is_mcc.IsChecked ? build_type.release_mcc : build_type.release_standalone,
                 CommunityTools = (bool)community_tools.IsChecked,
                 Verbose = (bool)verbose.IsChecked,
