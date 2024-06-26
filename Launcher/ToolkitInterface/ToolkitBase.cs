@@ -336,7 +336,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             List<string> args = new();
 
-            if (Profile.Generation != GameGen.Halo3 && Profile.IsMCC)
+            if ((Profile.Generation == GameGen.Halo1 || Profile.Generation == GameGen.Halo2) && Profile.IsMCC)
             {
                 if (!IsDefaultTagDirectory())
                 {
