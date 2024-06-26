@@ -191,7 +191,7 @@ namespace ToolkitLauncher
             /// <returns></returns>
             public bool IsH2Codez()
             {
-                return CommunityTools && BuildType == build_type.release_standalone && Generation == GameGen.Halo2 && File.Exists(GetH2CodezPath());
+                return CommunityTools && !IsMCC && Generation == GameGen.Halo2 && File.Exists(GetH2CodezPath());
             }
 
             public void Upgrade()
