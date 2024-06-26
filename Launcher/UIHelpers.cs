@@ -231,10 +231,15 @@ namespace ToolkitLauncher
                     if (toggle.HasFlag(TogglesUI.H4) && !MainWindow.halo_4)
                         continue;
 
+
+
                     if (toggle.HasFlag(TogglesUI.CommunityBuild) && !MainWindow.halo_community)
                         continue;
 
                     if (toggle.HasFlag(TogglesUI.LegacyStock) && (MainWindow.halo_mcc || MainWindow.halo_community))
+                        continue;
+
+                    if (toggle.HasFlag(TogglesUI.MCC) && !MainWindow.halo_mcc)
                         continue;
 
                     if (toggle.HasFlag(TogglesUI.HasTool) && string.IsNullOrEmpty(MainWindow.toolkit_profile.ToolPath))
