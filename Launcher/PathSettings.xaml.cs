@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Windows.Documents;
+using System.Xml.Linq;
 
 namespace ToolkitLauncher
 {
@@ -481,30 +482,53 @@ namespace ToolkitLauncher
             }
         }
 
-        private void update_h2codez_Click(object sender, RoutedEventArgs e)
+        private string getBaseToolPath(string requested_for)
+        {
+            string tool_directory = Path.GetDirectoryName(tool_path.Text);
+
+            if (tool_directory is null || !Directory.Exists(tool_directory))
+            {
+                MessageBox.Show($"Unable to install {requested_for} as the tool path is not set correctly.");
+                return null;
+            }
+
+            return tool_directory;
+
+        }
+
+        private async void update_h2codez_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("H2Codez is obsolete, please update to MCC", "H2Codez Updater", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No)
                 MessageBox.Show("What do you mean no? I told you it's obsolete", "Listen to me", MessageBoxButton.OK);
-            return;
-            /*
+            else
+                return;
+
+            string tool_directory = getBaseToolPath("H2Codez");
+
+            if (tool_directory is null)
+            {
+                return;
+            }
+
             CancelableProgressBarWindow<long> progress = new();
             progress.Status = "Fetching latest update";
             progress.Title = "Getting H2Codez update";
 
             GitHubReleases gitHubReleases = new();
             IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("Project-Cartographer", "H2Codez");
-            Debug.Print(list.ToString());
-            Debug.Print(list[0].ToString());
+            GitHubReleases.Release? selectedRelease = UpdateUIHelper.AskUserToSelectUpdate(list);
 
-            GitHubReleases.Release latestRelease = list[0];
+            if (selectedRelease is null)
+                return;
+
             async Task<byte[]> GetAsset(string name)
             {
                 progress.Status = $"Downloading {name}";
                 progress.MaxValue = 0;
                 progress.CurrentProgress = 0;
                 return await gitHubReleases.DownloadReleaseAsset(
-latestRelease.Assets.First(assert => assert.Name == name),
+selectedRelease.Assets.First(assert => assert.Name == name),
 progress, progress.GetCancellationToken());
             }
 
@@ -512,16 +536,19 @@ progress, progress.GetCancellationToken());
             byte[] latestHash = await GetAsset("hash");
             byte[] latestDLL = await GetAsset("H2Codez.dll");
 
+            progress.Status = $"Updating files on disk!";
+
+            await File.WriteAllBytesAsync(Path.Join(tool_directory, "H2Codez.dll"), latestDLL, progress.GetCancellationToken());
+
+
             progress.Complete = true;
-                        */
         }
         private async void update_prt_Click(object sender, RoutedEventArgs e)
         {
-            string tool_directory = Path.GetDirectoryName(tool_path.Text);
+            string tool_directory = getBaseToolPath("PRT simulator");
 
-            if (tool_directory is null || !Directory.Exists(tool_directory))
+            if (tool_directory is null)
             {
-                MessageBox.Show("Unable to install PRT simulator as the tool path is not set");
                 return;
             }
 
