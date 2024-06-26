@@ -125,12 +125,12 @@
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Column="1" Grid.Row="1">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="8"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="8"/>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
                                         <Grid>
@@ -152,7 +152,7 @@
                                             </Grid>
                                             <TextBox Name="compile_level_path" Grid.Column="4" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                         </Grid>
-                                        <Grid Grid.Row="5">
+                                        <Grid Grid.Row="4">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(mcc\, 8\, 0), ElementName=toolkit_selection}"/>
@@ -408,7 +408,7 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <RadioButton Grid.Column="0" Grid.Row="1" Name="CompileOnly" Content="Import Only" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True" Checked="CompileOnly_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Only import the level, don't light it."/>
+                                            <RadioButton Grid.Column="0" Grid.Row="1" Name="CompileOnly" Content="Import Only" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True" Checked="CompileOnly_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Only import the level, don't light it." Margin="0,10,0,10"/>
                                             <RadioButton Grid.Column="1" Grid.Row="1" Name="LightOnly" Content="Light Only" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="LightOnly_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Only light, don't import"/>
                                             <RadioButton Grid.Column="2" Grid.Row="1" Name="CompileAndLight" Content="Import and Light" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CompileAndLight_Checked" Foreground="{DynamicResource TextColor}" ToolTip="Import level then light level."/>
                                         </Grid>
