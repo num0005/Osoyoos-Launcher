@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ToolkitLauncher.Properties;
 using ToolkitLauncher.Utility;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -121,10 +123,18 @@ namespace ToolkitLauncher.ToolkitInterface
 
                 if (Profile.LatestPRTToolVersion is not null)
                 {
-                    // todo(num0005) put prt tool update logic here
+                    if (Profile.LatestPRTToolVersion < (Settings.Default.newest_prt_sim_version ?? 0))
+                    {
+                        var result = MessageBox.Show(
+                            $"A newer version ({Settings.Default.newest_prt_sim_version}) of prt_sim has been installed for other toolkits, do you want to update from {Profile.LatestPRTToolVersion} to latest?",
+                            "PRT Simulation Tool Update Available",
+                            MessageBoxButtons.YesNo);
+                        should_update_prt = result == DialogResult.Yes;
+                    }
                 }
                 else
                 {
+                    Debug.Print("Running untracked prt_sim, might be outdated, or unoffical build");
                     // untracked PRT tool version, there's nothing we can do now
                 }
             }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ToolkitLauncher.Properties;
 using Path = System.IO.Path;
 
 namespace ToolkitLauncher.Utility
@@ -179,6 +180,12 @@ progress, token);
 
             if (success)
             {
+                if (Settings.Default.newest_prt_sim_version is null || 
+                    (targetRelease.ID > Settings.Default.newest_prt_sim_version && !targetRelease.IsPreRelease))
+                {
+                    Settings.Default.newest_prt_sim_version = targetRelease.ID;
+                    Settings.Default.Save();
+                }
                 return targetRelease.ID;
             }
             else

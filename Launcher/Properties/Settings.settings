@@ -17,5 +17,8 @@
     <Setting Name="last_fbx_path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="newest_prt_sim_version" Type="System.Nullable&lt;System.Int32&gt;" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
   </Settings>
 </SettingsFile>
