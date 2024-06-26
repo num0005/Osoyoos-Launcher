@@ -140,7 +140,7 @@ namespace ToolkitLauncher
             {
                 get
                 {
-                    return IsAlternativeBuild ?? false || Generation > GameGen.Halo2;
+                    return (IsAlternativeBuild ?? false) || Generation > GameGen.Halo2;
                 }
             }
 
