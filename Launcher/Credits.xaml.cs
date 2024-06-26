@@ -151,7 +151,7 @@ progress, token);
 
         }
 
-        private void license_info_open_Click(object sender, RoutedEventArgs e)
+        private async void license_info_open_Click(object sender, RoutedEventArgs e)
         {
             string license_file_name = Path.Combine(Path.GetTempPath(), $"launcher_copyright_{Guid.NewGuid()}.txt");
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -161,9 +161,21 @@ progress, token);
             {
                 stream.CopyTo(fileStream.BaseStream);
             }
-            ProcessStartInfo startInfo = new(license_file_name);
-            startInfo.UseShellExecute = true;
-            System.Diagnostics.Process.Start(startInfo);
+            ProcessStartInfo startInfo = new(license_file_name)
+            {
+                UseShellExecute = true
+            };
+            var process = System.Diagnostics.Process.Start(startInfo);
+            await process.WaitForExitAsync();
+
+            try
+            {
+                File.Delete(license_file_name);
+            }
+            catch 
+            {
+                Debug.Print($"Failed to delete temporary file {license_file_name}");
+            }
         }
     }
 }
