@@ -182,7 +182,7 @@ namespace ToolkitLauncher
 
             private string GetH2CodezPath()
             {
-                return Path.Combine(Path.GetDirectoryName(ToolPath) ?? "", "h2codez.dll");
+                return Path.Join(Path.GetDirectoryName(ToolPath) ?? "", "h2codez.dll");
             }
 
             /// <summary>
@@ -244,7 +244,7 @@ namespace ToolkitLauncher
         /// <returns>Whatever there was an issue parsing the settings</returns>
         public static bool Load()
         {
-            string file_path = Path.Combine(appdata_path + "\\" + save_folder, settings_file);
+            string file_path = Path.Join(appdata_path + "\\" + save_folder, settings_file);
 
             if (File.Exists(file_path))
             {
@@ -309,9 +309,9 @@ namespace ToolkitLauncher
         private static void WriteJSONFile()
         {
             string json_string = JsonSerializer.Serialize(_SettingsList, options);
-            string file_path = Path.Combine(appdata_path + "\\" + save_folder, settings_file);
+            string file_path = Path.Join(appdata_path + "\\" + save_folder, settings_file);
 
-            Directory.CreateDirectory(Path.Combine(appdata_path, save_folder));
+            Directory.CreateDirectory(Path.Join(appdata_path, save_folder));
 
             File.WriteAllText(file_path, json_string);
         }

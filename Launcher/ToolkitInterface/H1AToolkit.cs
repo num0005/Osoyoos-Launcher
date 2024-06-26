@@ -38,7 +38,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 if (Path.IsPathRooted(tagPath))
                     return tagPath;
                 else
-                    return Path.Combine(BaseDirectory, tagPath);
+                    return Path.Join(BaseDirectory, tagPath);
             }
             return base.GetTagDirectory();
         }
@@ -50,7 +50,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 if (Path.IsPathRooted(dataPath))
                     return dataPath;
                 else
-                    return Path.Combine(BaseDirectory, dataPath);
+                    return Path.Join(BaseDirectory, dataPath);
             }
             return base.GetDataDirectory();
         }

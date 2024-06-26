@@ -242,7 +242,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>path</returns>
         protected string GetDefaultTagDirectory()
         {
-            return Path.Combine(BaseDirectory, "tags");
+            return Path.Join(BaseDirectory, "tags");
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>path</returns>
         protected string GetDefaultDataDirectory()
         {
-            return Path.Combine(BaseDirectory, "data");
+            return Path.Join(BaseDirectory, "data");
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else if (data_file.EndsWith(".xml"))
             {
-                string full_path = Path.Combine(hrek_path, "data", data_file);
+                string full_path = Path.Join(hrek_path, "data", data_file);
 
                 XmlDocument sidecar = new XmlDocument();
                 sidecar.Load(full_path);

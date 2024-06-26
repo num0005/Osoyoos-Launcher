@@ -17,8 +17,8 @@ namespace OsoyoosMB.Utils
             // Get all tiffs in data folder
             string[] extensions = new[] { "*.tif", "*.tiff", "*.dds" };
             List<string> all_textures = new List<string>();
-            string data_folder_full = Path.Combine(ek_path, "data", files_path);
-            string base_path = Path.Combine(ek_path, "data");
+            string data_folder_full = Path.Join(ek_path, "data", files_path);
+            string base_path = Path.Join(ek_path, "data");
 
             // exit early if our directories don't exist
             if (!Directory.Exists(data_folder_full) || !Directory.Exists(base_path))
@@ -36,7 +36,7 @@ namespace OsoyoosMB.Utils
                 string relative_texture_path = GetBitmapRelativePath(base_path, full_texture_path);
 
                 // Only create bitmap tag if it doesn't already exist
-                if (!File.Exists(Path.ChangeExtension(Path.Combine(ek_tags_folder_path, relative_texture_path), ".bitmap")))
+                if (!File.Exists(Path.ChangeExtension(Path.Join(ek_tags_folder_path, relative_texture_path), ".bitmap")))
                 {
                     TagPath tag_path = TagPath.FromPathAndType(relative_texture_path, "bitm*");
                     TagFile tagFile = new TagFile();

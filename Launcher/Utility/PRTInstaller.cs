@@ -123,7 +123,7 @@ progress, token);
 
                         try
                         {
-                            string redist_executable_path = Path.Combine(temp_folder, redist_package_name);
+                            string redist_executable_path = Path.Join(temp_folder, redist_package_name);
                             await File.WriteAllBytesAsync(redist_executable_path, redist_package, progress.GetCancellationToken());
                             progress.Status = "Installing redist package!";
                             

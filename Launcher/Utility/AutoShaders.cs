@@ -15,7 +15,7 @@ internal class AutoShaders
         string jmsPath = Path.Join(data_path, path, "render");
 
         // Get all files in render folder
-        string[] files = Array.Empty<string>();
+        string[] files = null;
         try
         {
             files = Directory.GetFiles(jmsPath);
@@ -64,8 +64,8 @@ internal class AutoShaders
 
             // Make sure default.shader exists, if not, create it
             string defaultShaderLocation = gameType == "H2"
-                ? Path.Combine(tagFolder, @"\shaders\default.shader")
-                : Path.Combine(tagFolder, @"\levels\shared\shaders\simple\default.shader");
+                ? Path.Join(tagFolder, @"\shaders\default.shader")
+                : Path.Join(tagFolder, @"\levels\shared\shaders\simple\default.shader");
 
             byte[] default_shader_contents = null;
 
@@ -107,7 +107,7 @@ internal class AutoShaders
                 if (string.IsNullOrEmpty(shader))
                     continue;
 
-                string shader_file_path = Path.Combine(destinationShadersFolder, shader + ".shader");
+                string shader_file_path = Path.Join(destinationShadersFolder, shader + ".shader");
                 try
                 {
 

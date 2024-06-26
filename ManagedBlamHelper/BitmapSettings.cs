@@ -18,7 +18,7 @@ namespace OsoyoosMB
             MBHelpers.CreateDummyBitmaps(ek_path, tag_folder, ek_tags_folder_path);
 
             // Get all bitmap tags
-            string tag_folder_full = Path.Combine(ek_path, "tags", tag_folder);
+            string tag_folder_full = Path.Join(ek_path, "tags", tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
 
             // Define bitmap name suffixes for anything non-diffuse
@@ -106,7 +106,7 @@ namespace OsoyoosMB
         public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)
         {
             // EK "tags" folder location
-            string base_path = Path.Combine(ek_path, "tags");
+            string base_path = Path.Join(ek_path, "tags");
 
             foreach (string bitmap_full in diffuses)
             {

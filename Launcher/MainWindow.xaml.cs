@@ -1053,7 +1053,7 @@ namespace ToolkitLauncher
                     );
 
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path, Path.GetDirectoryName(toolkit_profile.ToolPath));
-                var scen_path = Path.Combine(info.ScenarioPath, info.ScenarioName);
+                var scen_path = Path.Join(info.ScenarioPath, info.ScenarioName);
                 CancelableProgressBarWindow<int> progress = null;
                 if (lightmaps_args.instanceCount > 1 || halo_3 || halo_reach)
                 {
@@ -1669,7 +1669,7 @@ namespace ToolkitLauncher
                     FBXArgs = PromptForFBXPaths("Select GR2 save location", "Granny3D 2|*.GR2");
                     if (FBXArgs is not null)
                     {
-                        string jsonPath = Path.Combine(System.IO.Path.GetDirectoryName(FBXArgs.Value.fbxFileName), Path.GetFileNameWithoutExtension(FBXArgs.Value.fbxFileName) + ".json");
+                        string jsonPath = Path.Join(Path.GetDirectoryName(FBXArgs.Value.fbxFileName), Path.GetFileNameWithoutExtension(FBXArgs.Value.fbxFileName) + ".json");
                         await FBX2GR2.GR2FromFBX(FBXArgs.Value.fbxFileName, jsonPath, FBXArgs.Value.outputFileName);
                     }
                     break;

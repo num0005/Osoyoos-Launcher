@@ -39,7 +39,7 @@ namespace OsoyoosMB
             Debug.Write($"{assemblyName}");
 
             string currentPath = Directory.GetCurrentDirectory();
-            string assemblyPath = Path.Combine(currentPath, "bin", assemblyName.Name) + ".dll";
+            string assemblyPath = Path.Join(currentPath, "bin", assemblyName.Name) + ".dll";
 
             if (File.Exists(assemblyPath))
             {
@@ -59,7 +59,7 @@ namespace OsoyoosMB
         private static bool PreloadManagedBlam()
         {
             string currentPath = Directory.GetCurrentDirectory();
-            string binManagedBlamPath = Path.Combine(currentPath, "bin", "ManagedBlam.dll");
+            string binManagedBlamPath = Path.Join(currentPath, "bin", "ManagedBlam.dll");
             try
             {
                 Assembly.LoadFile(binManagedBlamPath);
