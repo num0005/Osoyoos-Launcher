@@ -646,7 +646,7 @@
                                                 <RadioButton Grid.Column="0" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="model_compile_all" Content="All" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="model_compile_all_Checked" ToolTip="Import all model data."/>
                                             </Grid>
                                             <Grid Grid.Row="5">
-                                                <GroupBox x:Name="model_box" Header="Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}">
+                                                <GroupBox x:Name="model_box" Header="Import Settings" Grid.Column="2" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}">
                                                     <Grid>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="5"/>
