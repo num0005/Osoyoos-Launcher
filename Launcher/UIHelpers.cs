@@ -284,10 +284,15 @@ namespace ToolkitLauncher
     {
         public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is true)
-                return true;
-            else
-                return false;
+            bool boolean_value = value is true;
+
+            if (parameter is string param)
+            {
+                if ("reverse" == param)
+                    boolean_value = !boolean_value;
+            }
+
+            return boolean_value;
         }
     }
 

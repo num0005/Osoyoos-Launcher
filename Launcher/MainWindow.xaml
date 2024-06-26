@@ -167,7 +167,7 @@
                                                         <Hyperlink FontStyle="Italic" TextDecorations="{x:Null}" FontSize="10" NavigateUri="lighting">help</Hyperlink>
                                                     </TextBlock>
                                                 </GroupBox.Header>
-                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ForceBooleanConverter}, ElementName=CompileOnly}">
+                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ForceBooleanConverter}, ConverterParameter=reverse, ElementName=CompileOnly}">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="5"/>
                                                         <RowDefinition Height="*"/>
@@ -284,7 +284,7 @@
                                                 <GroupBox.BindingGroup>
                                                     <BindingGroup/>
                                                 </GroupBox.BindingGroup>
-                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ForceBooleanConverter}, ElementName=CompileOnly}">
+                                                <Grid IsEnabled="{Binding IsChecked, Converter={StaticResource ForceBooleanConverter}, ConverterParameter=reverse, ElementName=CompileOnly}">
                                                     <TextBox Name="instance_value" BorderBrush="{StaticResource brushWatermarkBorder}" VerticalAlignment="Center" TextWrapping="Wrap" Background="{DynamicResource brushTextboxBackground}" Foreground="{DynamicResource TextColor}" Text="1" MaxLines="1" MaxLength="4" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" HorizontalAlignment="Center" MinWidth="48" MinHeight="24" CaretBrush="{DynamicResource TextColor}" ToolTip="How many processes will be used for lightmapping?"/>
                                                 </Grid>
                                             </GroupBox>
