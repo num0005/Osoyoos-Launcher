@@ -33,7 +33,7 @@ namespace ToolkitLauncher.Utility
 
             Debug.Print($"selected release: {latestRelease}");
 
-            if (MessageBox.Show($"Do you want to update to {latestRelease.Name} created at {latestRelease.CreationTime}?", "Update?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show($"Do you want to update to \"{latestRelease.Name}\" created at {latestRelease.CreationTime}?", "Update?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 return latestRelease;
             }

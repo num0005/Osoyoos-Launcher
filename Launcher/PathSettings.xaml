@@ -84,6 +84,7 @@
                     </RowDefinition.Height>
                 </RowDefinition>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
@@ -335,7 +336,26 @@
                     <Button x:Name="update_h2codez" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="update_h2codez_Click" ToolTip="No regrets.">Update!</Button>
                 </Grid>
             </GroupBox>
-            <Grid Grid.Row="10">
+            <GroupBox Grid.Row="9" x:Name="prt_sim_update_groupbox" Header="PRT Simulator Update" IsEnabled="True">
+                <GroupBox.Visibility>
+                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                        <Binding ElementName="is_mcc" Path="IsChecked" />
+                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                        <Binding ElementName="community_tools" Path="IsChecked" />
+                        <Binding Source="3" />
+                    </MultiBinding>
+                </GroupBox.Visibility>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center">Do you want to upgrade PRT simulator?</TextBlock>
+                    <Button x:Name="update_prt" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" ToolTip="Prophet." Click="update_prt_Click">Update!</Button>
+                </Grid>
+            </GroupBox>
+            <Grid Grid.Row="11">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>
@@ -456,7 +476,7 @@
                     </Grid>
                 </GroupBox>
             </Grid>
-            <Grid Grid.Row="12">
+            <Grid Grid.Row="13">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>

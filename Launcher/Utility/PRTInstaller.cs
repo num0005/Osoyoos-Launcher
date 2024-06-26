@@ -16,6 +16,7 @@ namespace ToolkitLauncher.Utility
         const string repoName = "prt_sim";
         const string redist_dll_name = "d3dx9_43.dll";
         const string redist_package_name = "d3d9x_43_redist.exe";
+        public const string prt_executable_file_path = "prt_sim.exe";
 
         /// <summary>
         /// Get the 32-bit windows directory
@@ -46,10 +47,15 @@ namespace ToolkitLauncher.Utility
             return File.Exists(redist_dll);
         }
 
-        static public async Task<GitHubReleases.Release?> GetLatestRelease()
+        static public async Task<IReadOnlyList<GitHubReleases.Release>> GetReleases()
         {
             GitHubReleases gitHubReleases = new();
-            IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo(repoOwner, repoName);
+            return await gitHubReleases.GetReleasesForRepo(repoOwner, repoName);
+        }
+
+        static public async Task<GitHubReleases.Release?> GetLatestRelease()
+        {
+            IReadOnlyList<GitHubReleases.Release> list = await GetReleases();
 
             return list.FirstOrDefault(r => !r.IsPreRelease);
         }
@@ -79,7 +85,7 @@ namespace ToolkitLauncher.Utility
             progress.Status = "Downloading prt_sim";
             byte[]? newExe = await Task.Run(() => {
                 return gitHubReleases.DownloadReleaseAsset(
-release.Assets.First(assert => assert.Name == "prt_sim.exe"),
+release.Assets.First(assert => assert.Name == prt_executable_file_path),
 progress, token);
             });
             if (newExe is null)

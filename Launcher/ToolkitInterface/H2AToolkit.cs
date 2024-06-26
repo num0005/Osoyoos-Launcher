@@ -88,7 +88,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         private string _get_prt_tool_path()
         {
-            return Path.Join(BaseDirectory, @"prt_sim.exe");
+            return Path.Join(BaseDirectory, PRTSimInstaller.prt_executable_file_path);
         }
 
         private async Task CheckPRTToolDeployment()

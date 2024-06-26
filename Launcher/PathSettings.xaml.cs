@@ -515,11 +515,26 @@ progress, progress.GetCancellationToken());
             progress.Complete = true;
                         */
         }
-
-
-        private void isMCC_Checked(object sender, RoutedEventArgs e)
+        private async void update_prt_Click(object sender, RoutedEventArgs e)
         {
+            string tool_directory = Path.GetDirectoryName(tool_path.Text);
 
+            if (tool_directory is null || !Directory.Exists(tool_directory))
+            {
+                MessageBox.Show("Unable to install PRT simulator as the tool path is not set");
+                return;
+            }
+
+            string prt_install_path = Path.Join(tool_directory, PRTSimInstaller.prt_executable_file_path);
+
+            IReadOnlyList<GitHubReleases.Release> releases = await PRTSimInstaller.GetReleases();
+            GitHubReleases.Release? selectedRelease = UpdateUIHelper.AskUserToSelectUpdate(releases);
+            int? installed_version = await PRTSimInstaller.Install(prt_install_path, selectedRelease);
+
+            if (installed_version != null)
+            {
+                ToolkitProfiles.SettingsList[profile_index].LatestPRTToolVersion = installed_version;
+            }
         }
     }
 }
