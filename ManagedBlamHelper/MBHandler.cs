@@ -33,7 +33,7 @@ namespace OsoyoosMB
         /// <param name="sender"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        static Assembly LoadFromBinFolder(object sender, ResolveEventArgs args)
+        private static Assembly LoadFromBinFolder(object sender, ResolveEventArgs args)
         {
             AssemblyName assemblyName = new AssemblyName(args.Name);
             Debug.Write($"{assemblyName}");
@@ -56,7 +56,7 @@ namespace OsoyoosMB
         /// Preload the managed blam assembly
         /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static bool PreloadManagedBlam()
+        private static bool PreloadManagedBlam()
         {
             string currentPath = Directory.GetCurrentDirectory();
             string binManagedBlamPath = Path.Combine(currentPath, "bin", "ManagedBlam.dll");
@@ -93,7 +93,7 @@ namespace OsoyoosMB
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int RunCommands(String[] args)
+        private static int RunCommands(String[] args)
         {
             if (args[0] == "setup_bitmap_compression" && args.Length == 5)
             {
