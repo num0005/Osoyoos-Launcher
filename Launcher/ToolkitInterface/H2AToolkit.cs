@@ -206,16 +206,16 @@ namespace ToolkitLauncher.ToolkitInterface
             if (importType.HasFlag(ModelCompile.animations))
             {
                 if (FPAnim)
-                    await RunTool(ToolType.Tool, new() { 
-                        "fp-model-animations", 
-                        path, 
-                        characterFPPath, 
-                        weaponFPPath, 
+                    await RunTool(ToolType.Tool, new() {
+                        "fp-model-animations",
+                        path,
+                        characterFPPath,
+                        weaponFPPath,
                         flags });
                 else
-                    await RunTool(ToolType.Tool, new() { 
-                        "model-animations", 
-                        path, 
+                    await RunTool(ToolType.Tool, new() {
+                        "model-animations",
+                        path,
                         flags });
             }
         }

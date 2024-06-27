@@ -65,7 +65,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             async Task<Utility.Process.Result?> RunFastool(List<string> arguments, bool useShell)
             {
-                Utility.Process.Result? result = await RunTool(tool, arguments, useShell, progress.GetCancellationToken());
+                Utility.Process.Result? result = await RunTool(tool, arguments, useShell, cancellationToken: progress.GetCancellationToken());
                 progress.Report(1);
                 if (result is not null && result.HasErrorOccured)
                 {

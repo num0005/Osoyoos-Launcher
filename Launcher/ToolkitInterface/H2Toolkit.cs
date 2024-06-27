@@ -157,7 +157,7 @@ namespace ToolkitLauncher.ToolkitInterface
                         quality,
                         index.ToString(),
                         workerCount.ToString()
-                    }, output, cancelationToken, index == 0);
+                    }, output, index == 0, cancelationToken);
                 } finally
                 {
                     Profile.ElevatedToExpert = wereWeExperts;
@@ -174,7 +174,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     workerCount.ToString(),
                     index.ToString()
                 };
-                return await RunTool(ToolType.Tool, args, false, cancelationToken);
+                return await RunTool(ToolType.Tool, args, false, cancellationToken: cancelationToken);
             }
         }
 

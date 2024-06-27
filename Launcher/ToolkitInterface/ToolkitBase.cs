@@ -429,10 +429,10 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="tool">Tool to run</param>
         /// <param name="args">Arguments to pass to the tool</param>
         /// <param name="useShell">Force either use shell or not use it</param>
-        /// <param name="cancellationToken">Kill the tool before it exits</param>
         /// <param name="lowPriority">Lower priority if possible</param>
+        /// <param name="cancellationToken">Kill the tool before it exits</param>
         /// <returns>Results of running the tool if possible</returns>
-        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, bool? useShell = null, CancellationToken cancellationToken = default, bool lowPriority = false)
+        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, bool? useShell = null, bool lowPriority = false, CancellationToken cancellationToken = default)
         {
             Utility.Process.Result? result = await RunToolInternal(tool, args, useShell, cancellationToken, lowPriority);
             if (result is not null && result.ReturnCode != 0 && ToolFailure is not null)
