@@ -68,7 +68,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Report(1);
                 if (result is not null && result.HasErrorOccured)
                 {
-                    Debug.Print($"A lightmap command ({arguments}) has crashed, aborting");
+                    Trace.WriteLine($"A lightmap command ({arguments}) has crashed, aborting");
                     progress.Cancel("Tool has crashed, canceling lightmaps...");
                 }
                 return result;
@@ -85,7 +85,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 bool worked = instances.TrueForAll(result => result.Result is not null && result.Result.Success);
                 if (!worked)
                 {
-                    Debug.Print("Some instance crashed todo (numm005): do something here");
+                    Trace.WriteLine("Some instance crashed todo (numm005): do something here");
                     //return StageResult.ClientFail;
                 }
 

@@ -117,7 +117,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 catch (Exception ex)
                 {
                     // maybe it's bad to catch everything but WinAPI can be a crapshoot, better to not crash the whole launcher
-                    Debug.WriteLine(ex.ToString());
+                    Trace.WriteLine(ex.ToString());
                     return false;
                 }
             }

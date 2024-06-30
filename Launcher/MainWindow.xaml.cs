@@ -886,7 +886,7 @@ namespace ToolkitLauncher
                 }
                 else
                 {
-                    Debug.Print($"Profile '{current_profile.ProfileName}' has been disabled!");
+                    Trace.WriteLine($"Profile '{current_profile.ProfileName}' has been disabled!");
                 }
             }
             programs_box.IsEnabled = is_any_toolkit_enabled;

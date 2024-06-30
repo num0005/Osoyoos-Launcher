@@ -64,8 +64,8 @@ namespace ToolkitLauncher.Utility
             var response = await client.GetAsync(asset.DownloadURL, HttpCompletionOption.ResponseHeadersRead);
             if (!response.IsSuccessStatusCode)
             {
-                Debug.Print($"Failed to download Github asset \"{asset.Name}\" from \"{asset.DownloadURL}\"");
-                Debug.Print(response.ToString());
+                Trace.WriteLine($"Failed to download Github asset \"{asset.Name}\" from \"{asset.DownloadURL}\"");
+                Trace.WriteLine(response.ToString());
                 return null;
             }
             if (cancellationToken.IsCancellationRequested)

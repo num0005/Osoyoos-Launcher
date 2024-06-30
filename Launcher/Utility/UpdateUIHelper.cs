@@ -9,7 +9,7 @@ namespace ToolkitLauncher.Utility
     {
         public static GitHubReleases.Release? AskUserToSelectUpdate(IReadOnlyList<GitHubReleases.Release> releases)
         {
-            Debug.Print($"releases: {releases}");
+            Debug.WriteLine($"releases: {releases}");
             bool has_any_prerelease = releases.Any(r => r.IsPreRelease);
 
             bool usePrerelease = false;
@@ -31,7 +31,7 @@ namespace ToolkitLauncher.Utility
                 return null;
             }
 
-            Debug.Print($"selected release: {latestRelease}");
+            Trace.WriteLine($"selected release: {latestRelease}");
 
             if (MessageBox.Show($"Do you want to update to \"{latestRelease.Name}\" created at {latestRelease.CreationTime}?", "Update?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {

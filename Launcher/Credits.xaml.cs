@@ -58,7 +58,7 @@ progress, token);
                     File.Move(host, oldHost);
                 } catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.ToString());
+                    Trace.WriteLine(ex.ToString());
                     _ = MessageBox.Show("Couldn't rename running instance!", "Update Failed!", MessageBoxButton.OK);
                     progress.Cancel("couldn't rename running instance");
                     return;
@@ -110,7 +110,7 @@ progress, token);
             {
                 GitHubReleases gitHubReleases = new();
                 IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("num0005", "Osoyoos-Launcher");
-                Debug.Print(list.ToString());
+                Debug.WriteLine(list.ToString());
 
                 GitHubReleases.Release? selectedRelease = UpdateUIHelper.AskUserToSelectUpdate(list);
 
@@ -163,7 +163,7 @@ progress, token);
             }
             catch 
             {
-                Debug.Print($"Failed to delete temporary file {license_file_name}");
+                Trace.WriteLine($"Failed to delete temporary file {license_file_name}");
             }
         }
     }

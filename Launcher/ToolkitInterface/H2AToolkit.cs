@@ -134,7 +134,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 }
                 else
                 {
-                    Debug.Print("Running untracked prt_sim, might be outdated, or unoffical build");
+                    Trace.WriteLine("Running untracked prt_sim, might be outdated, or unoffical build");
                     // untracked PRT tool version, there's nothing we can do now
                 }
             }

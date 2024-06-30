@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OsoyoosMB;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportBitmaps(string path, string type, string compression, bool debug_plate)
         {
             // Call managedblam import
-            await RunManagedBlamCommand(new() { "setup_bitmap_compression", BaseDirectory, path, GetTagDirectory(), compression });
+            await RunManagedBlamCommand(new() { MBHandler.setup_bitmaps_command, path, compression });
             
 
             // Import bitmaps - run this regardless of managedblam success
@@ -100,7 +101,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Report(1);
                 if (result is not null && result.HasErrorOccured)
                 {
-                    Debug.Print($"A lightmap command ({arguments}) has crashed, aborting");
+                    Trace.WriteLine($"A lightmap command ({arguments}) has crashed, aborting");
                     progress.Cancel("Tool has crashed, canceling lightmaps...");
                 }
                 return result;
@@ -117,7 +118,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 bool worked = instances.TrueForAll(result => result.Result is not null && result.Result.Success);
                 if (!worked)
                 {
-                    Debug.Print("Some instance crashed todo (numm005): do something here");
+                    Trace.WriteLine("Some instance crashed todo (numm005): do something here");
                     //return StageResult.ClientFail;
                 }
 

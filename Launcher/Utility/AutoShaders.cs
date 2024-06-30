@@ -33,7 +33,7 @@ internal class AutoShaders
         {
             if (!(Directory.GetFiles(destinationShadersFolder) == Array.Empty<string>()))
             {
-                Debug.WriteLine("Shaders already exist!");
+                Trace.WriteLine("Shaders already exist!");
                 if (MessageBox.Show("Shaders for this model already exist!\nWould you like to generate any missing shaders?", "Shader Gen. Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
                     string[] shaders = JMSMaterialReader.ReadAllMaterials(files, tag_path, gameType);
@@ -52,7 +52,7 @@ internal class AutoShaders
         }
         catch (DirectoryNotFoundException)
         {
-            Debug.WriteLine("No folders exist, proceeding with shader gen");
+            Trace.WriteLine("No folders exist, proceeding with shader gen");
             string[] shaders = JMSMaterialReader.ReadAllMaterials(files, tag_path, gameType);
             await shaderGen(shaders, destinationShadersFolder, tag_path, gameType);
         }
@@ -75,7 +75,7 @@ internal class AutoShaders
             }
             catch
             {
-                Debug.Print("Default shader missing, writing to disk!");
+                Trace.WriteLine("Default shader missing, writing to disk!");
                 switch (gameType)
                 {
                     case "H3":
@@ -95,7 +95,7 @@ internal class AutoShaders
                 }
                 catch
                 {
-                    Debug.Print("Failed to write default shader, continuing anyways");
+                    Trace.WriteLine("Failed to write default shader, continuing anyways");
                 }
             }
 

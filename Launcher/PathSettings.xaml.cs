@@ -410,7 +410,7 @@ namespace ToolkitLauncher
                 // check exact MD5 hashes
                 foreach ((string name, string hash) file in HashHelpers.GetExecutableMD5Hashes(root_directory_path))
                 {
-                    Debug.WriteLine($"MD5 \"{file.hash}\" for \"{file.name}\"");
+                    Trace.WriteLine($"MD5 \"{file.hash}\" for \"{file.name}\"");
 
                     void CheckHash(BuiltinProfiles.Profile.Executable executable, ref string foundPath)
                     {
@@ -444,7 +444,7 @@ namespace ToolkitLauncher
 
                     foreach ((string name, TlshHash hash) file in HashHelpers.GetExecutableTLSHashes(root_directory_path))
                     {
-                        Debug.WriteLine($"TLSH \"{file.hash}\" for \"{file.name}\"");
+                        Trace.WriteLine($"TLSH \"{file.hash}\" for \"{file.name}\"");
 
                         void CheckHash(BuiltinProfiles.Profile.Executable executable, ref string foundPath, ref int lastDiff, [CallerFilePath] string callerFIle = "", [CallerLineNumber] int callerLine = 0)
                         {
@@ -455,7 +455,7 @@ namespace ToolkitLauncher
                                 {
                                     foundPath = file.name;
                                     lastDiff = newDiff;
-                                    Debug.WriteLine($"{callerFIle}:{callerLine} TLSH: {newDiff}");
+                                    Trace.WriteLine($"{callerFIle}:{callerLine} TLSH: {newDiff}");
                                 }
                             }
                         }

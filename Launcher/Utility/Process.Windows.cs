@@ -53,7 +53,7 @@ namespace ToolkitLauncher.Utility
                         string log_folder = Path.GetDirectoryName(logFileName);
                         Directory.CreateDirectory(log_folder);
                         loggingToDisk = true;
-                        Debug.Print($"log folder for process {log_folder}");
+                        Trace.WriteLine($"log folder for process {log_folder}");
                     }
 
                     foreach (string arg in args)
@@ -73,7 +73,7 @@ namespace ToolkitLauncher.Utility
                             proc.PriorityClass = LowerPriority(proc.PriorityClass);
                         } catch (Exception ex)
                         {
-                            Debug.Print(ex.ToString());
+                            Trace.WriteLine(ex.ToString());
                         }
                     }
 
@@ -98,8 +98,8 @@ namespace ToolkitLauncher.Utility
                             proc.Kill();
                         } catch (Exception ex)
                         {
-                            Debug.Print($"Error trying to terminate process (\"{executable}\", \"{info}\"):");
-                            Debug.Print(ex.ToString());
+                            Trace.WriteLine($"Error trying to terminate process (\"{executable}\", \"{info}\"):");
+                            Trace.WriteLine(ex.ToString());
                         }
                     }
                     
@@ -173,10 +173,10 @@ namespace ToolkitLauncher.Utility
                     {
                         try
                         {
-                            Debug.WriteLine($"initial priority: {process.PriorityClass}");
+                            Trace.WriteLine($"initial priority: {process.PriorityClass}");
                             if (lowPriority)
                                 process.PriorityClass = LowerPriority(process.PriorityClass);
-                            Debug.WriteLine($"final priority: {process.PriorityClass}");
+                            Trace.WriteLine($"final priority: {process.PriorityClass}");
                             await process.WaitForExitAsync(cancellationToken);
                         }
                         catch (OperationCanceledException) { };
@@ -191,7 +191,7 @@ namespace ToolkitLauncher.Utility
                 {
                     foreach (ManagementObject obj in mos.Get())
                     {
-                        Debug.Print($"Found child process on the {i}th iteration");
+                        Trace.WriteLine($"Found child process on the {i}th iteration");
                         var child_process = System.Diagnostics.Process.GetProcessById(Convert.ToInt32(obj["ProcessID"]));
                         return await HandleProcess(child_process);
                     }
@@ -199,7 +199,7 @@ namespace ToolkitLauncher.Utility
                     // wait a bit so cmd has a chance to start the process
                     await Task.Delay((int)(Math.Sqrt(i) * 30));
                 }
-                Debug.Print($"Unable to find child proc");
+                Trace.WriteLine($"Unable to find child proc");
                 return null;
             }
 

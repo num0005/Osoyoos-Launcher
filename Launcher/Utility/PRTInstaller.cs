@@ -70,7 +70,7 @@ namespace ToolkitLauncher.Utility
 
             if (redist_release == null)
             {
-                Debug.Print("Failed to find any release with redist package!");
+                Trace.WriteLine("Failed to find any release with redist package!");
                 // no redist found
                 return null;
             }
@@ -165,7 +165,7 @@ progress, token);
                 targetRelease = latestRelease;
             }
 
-            Debug.Print(targetRelease.ToString());
+            Trace.WriteLine(targetRelease.ToString());
 
             bool success = false;
             try

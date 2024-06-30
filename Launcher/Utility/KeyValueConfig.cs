@@ -34,7 +34,7 @@ namespace ToolkitLauncher.Utility
                 string[] pair =  line.Split("=", 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 if (pair.Length < 1)
                 {
-                    Debug.WriteLine($"Skipping invalid config line '{line}'");
+                    Trace.WriteLine($"Skipping invalid config line '{line}'");
                     continue;
                 }
                 if (pair.Length == 2)
@@ -60,7 +60,7 @@ namespace ToolkitLauncher.Utility
                 return true;
             } catch (IOException ex)
             {
-                Debug.WriteLine(ex.ToString()); // log error
+                Trace.WriteLine(ex.ToString()); // log error
             }
             return false;
         }
