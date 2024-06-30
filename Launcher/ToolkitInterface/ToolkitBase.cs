@@ -1,6 +1,7 @@
 ﻿using OsoyoosMB;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -47,6 +48,20 @@ namespace ToolkitLauncher.ToolkitInterface
         animations = 16,
         all = collision | physics | render | animations,
     }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum OutputMode
+    {
+        [Description("Keep shell open")]
+        keepOpen,
+        [Description("Close shell")]
+        closeShell,
+        [Description("Slient (log to disk)")]
+        logToDisk,
+        [Description("Slient (no log)")]
+        slient
+    }
+
     abstract public class ToolkitBase
     {
 
@@ -89,7 +104,7 @@ namespace ToolkitLauncher.ToolkitInterface
             bool NoAssert,
             string lightmapGroup,
             int instanceCount,
-            bool instanceOutput,
+            OutputMode outputSetting,
             string lightmapGlobals);
 
         public record ImportArgs(
@@ -416,10 +431,32 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="tool">The tool that will be run</param>
         /// <param name="args">Arguments pased to the tool</param>
         /// <returns>Whatever shell should be used</returns>
-        protected virtual bool ShouldUseShell(ToolType tool, List<string>? args)
+        protected virtual OutputMode GetDefaultOutputMode(ToolType tool, List<string>? args)
         {
-            return tool == ToolType.Tool;
+            bool isTool = tool == ToolType.Tool || tool == ToolType.ToolFast;
+            return isTool ? OutputMode.keepOpen : OutputMode.closeShell;
         }
+        /// <summary>
+        /// Used for lightmapping, gets you the more silent mode
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        static protected OutputMode GetMoreSilentMode(OutputMode mode)
+        {
+            switch (mode)
+            {
+                case OutputMode.logToDisk:
+                case OutputMode.slient:
+                    return OutputMode.slient;
+                case OutputMode.keepOpen:
+                case OutputMode.closeShell:
+                    return OutputMode.closeShell;
+                default:
+                    throw new NotImplementedException("Unknown OutputMode");
+            }
+        }
+
 
         public Action<Utility.Process.Result>? ToolFailure { get; set; }
 
@@ -432,9 +469,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="lowPriority">Lower priority if possible</param>
         /// <param name="cancellationToken">Kill the tool before it exits</param>
         /// <returns>Results of running the tool if possible</returns>
-        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, bool? useShell = null, bool lowPriority = false, CancellationToken cancellationToken = default)
+        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, OutputMode? outputMode = null, bool lowPriority = false, CancellationToken cancellationToken = default)
         {
-            Utility.Process.Result? result = await RunToolInternal(tool, args, useShell, cancellationToken, lowPriority);
+            Utility.Process.Result? result = await RunToolInternal(tool, args, outputMode, cancellationToken, lowPriority);
             if (result is not null && result.ReturnCode != 0 && ToolFailure is not null)
                 ToolFailure(result);
             return result;
@@ -443,7 +480,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <summary>
         /// Implementation of <c>RunTool</c>
         /// </summary>
-        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, bool? useShell, CancellationToken cancellationToken, bool lowPriority)
+        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, CancellationToken cancellationToken, bool lowPriority)
         {
             // always include the prepend args
             List<string> full_args = GetArgsToPrepend();
@@ -451,10 +488,10 @@ namespace ToolkitLauncher.ToolkitInterface
                 full_args.AddRange(args);
 
             string tool_path = GetToolExecutable(tool);
-            if (useShell is null)
-                useShell = ShouldUseShell(tool, args);
+            if (outputMode is null)
+                outputMode = GetDefaultOutputMode(tool, args);
 
-            if (useShell.Value)
+            if (outputMode == OutputMode.keepOpen)
                 return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, cancellationToken, lowPriority);
             else
                 return await Utility.Process.StartProcess(BaseDirectory, tool_path, full_args, cancellationToken, lowPriority);

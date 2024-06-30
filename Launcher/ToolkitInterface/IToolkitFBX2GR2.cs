@@ -11,6 +11,6 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="jsonPath"></param>
         /// <param name="gr2Path"></param>
         /// <returns>A task that will end when the conversion is either completed or has failed</returns>
-        public Task GR2FromFBX(string fbxPath, string jsonPath, string? gr2Path);
+        public abstract Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, bool json_rebuild = false, bool showOutput = true);
     }
 }

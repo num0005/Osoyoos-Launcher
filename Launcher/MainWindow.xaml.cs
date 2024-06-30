@@ -1048,7 +1048,7 @@ namespace ToolkitLauncher
                     disable_asserts.IsChecked ?? false,
                     lightmap_group,
                     instance_count,
-                    instance_cmd.IsChecked ?? false,
+                    (OutputMode)output_mode.SelectedIndex,
                     lightmapper_globals
                     );
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
@@ -56,9 +57,9 @@ namespace ToolkitLauncher.ToolkitInterface
             return lightmapArgs.level_combobox.ToLower();
         }
 
-        public async Task FauxSync(string scenario, string bsp, bool instanceOutput, bool useFast)
+        public async Task FauxSync(string scenario, string bsp, OutputMode mode, bool useFast, CancellationToken cancellationToken = default)
         {
-            await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>() { "faux_data_sync", scenario, bsp }, instanceOutput);
+            await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>() { "faux_data_sync", scenario, bsp }, mode, cancellationToken: cancellationToken);
         }
 
         public static int FauxCalculateJobID(string scenario, string bsp)
@@ -78,13 +79,13 @@ namespace ToolkitLauncher.ToolkitInterface
             MergeFail
         };
 
-        public virtual async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)
+        public virtual async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
         {
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
             // first sync
             progress.Status = "Syncing faux (this might take a while)...";
-            await FauxSync(scenario, bsp, instanceOutput, useFast);
+            await FauxSync(scenario, bsp, mode, useFast, progress.GetCancellationToken());
             progress.Report(1);
 
             int jobID = FauxCalculateJobID(scenario, bsp);
@@ -93,9 +94,9 @@ namespace ToolkitLauncher.ToolkitInterface
             string clientCountStr = clientCount.ToString(); // cache
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
 
-            async Task<Utility.Process.Result?> RunFastool(List<string> arguments, bool useShell)
+            async Task<Utility.Process.Result?> RunFastool(List<string> arguments, OutputMode mode)
             {
-                Utility.Process.Result? result = await RunTool(tool, arguments, useShell, cancellationToken: progress.GetCancellationToken());
+                Utility.Process.Result? result = await RunTool(tool, arguments, outputMode: mode, cancellationToken: progress.GetCancellationToken());
                 progress.Report(1);
                 if (result is not null && result.HasErrorOccured)
                 {
@@ -110,7 +111,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Status = $"Running stage: \"{stage}\" client count: {clientCount}";
                 var instances = new List<Task<Utility.Process.Result?>>();
                 for (int clientIdx = 0; clientIdx < clientCount; clientIdx++)
-                    instances.Add(RunFastool(new() { $"faux_farm_{stage}", blobDirectory, clientIdx.ToString(), clientCountStr }, false));
+                    instances.Add(RunFastool(new() { $"faux_farm_{stage}", blobDirectory, clientIdx.ToString(), clientCountStr }, GetMoreSilentMode(mode)));
                 await Task.WhenAll(instances); // wait till workers exit
 
                 bool worked = instances.TrueForAll(result => result.Result is not null && result.Result.Success);
@@ -123,14 +124,14 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Status = $"Merging results from stage: \"{stage}\"";
                 // todo(num005): handle workers crashing in a better way than just aborting
                 // merge results from workers
-                await RunFastool(new List<string>() { $"faux_farm_{stage}_merge", blobDirectory, clientCountStr }, instanceOutput);
+                await RunFastool(new List<string>() { $"faux_farm_{stage}_merge", blobDirectory, clientCountStr }, mode);
                 return StageResult.Sucesss;
 
             }
 
             // start farm
             progress.Status = "Initializing lightmap farm...";
-            await RunFastool(new List<string>() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString() }, instanceOutput);
+            await RunFastool(new List<string>() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString() }, mode);
 
             // run farm
 
@@ -142,13 +143,13 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // end farm
             progress.Status = "Ending lightmap farm...";
-            await RunFastool(new List<string>() { "faux_farm_finish", blobDirectory }, instanceOutput);
+            await RunFastool(new List<string>() { "faux_farm_finish", blobDirectory }, mode);
 
             // todo(num0005): are all these strictly required?
             progress.Status = "A few final steps...";
-            await RunFastool(new List<string>() { "faux-build-linear-textures-with-intensity-from-quadratic", scenario, bsp }, instanceOutput);
-            await RunFastool(new List<string>() { "faux-compress-scenario-bitmaps-dxt5", scenario, bsp }, instanceOutput);
-            await RunFastool(new List<string>() { "faux-farm-compression-merge", scenario, bsp }, instanceOutput);
+            await RunFastool(new List<string>() { "faux-build-linear-textures-with-intensity-from-quadratic", scenario, bsp }, mode);
+            await RunFastool(new List<string>() { "faux-compress-scenario-bitmaps-dxt5", scenario, bsp }, mode);
+            await RunFastool(new List<string>() { "faux-farm-compression-merge", scenario, bsp }, mode);
         }
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
@@ -163,7 +164,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             try
             {
-                await FauxLocalFarm(scenario, bsp, lightmap_group, quality, args.instanceCount, args.NoAssert, args.instanceOutput, progress);
+                await FauxLocalFarm(scenario, bsp, lightmap_group, quality, args.instanceCount, args.NoAssert, args.outputSetting, progress);
             }
             catch (OperationCanceledException)
             {
@@ -183,19 +184,19 @@ namespace ToolkitLauncher.ToolkitInterface
 
             if (importType.HasFlag(ModelCompile.render))
             {
-                await RunTool(ToolType.Tool, await ImportRenderArgs(genShaders, skyRender, path, accurateRender, renderPRT), true);
+                await RunTool(ToolType.Tool, await ImportRenderArgs(genShaders, skyRender, path, accurateRender, renderPRT));
             }
             if (importType.HasFlag(ModelCompile.collision))
             {
-                await RunTool(ToolType.Tool, new List<string> { "collision", path }, true);
+                await RunTool(ToolType.Tool, new List<string> { "collision", path });
             }
             if (importType.HasFlag(ModelCompile.physics))
             {
-                await RunTool(ToolType.Tool, new List<string> { "physics", path }, true);
+                await RunTool(ToolType.Tool, new List<string> { "physics", path });
             }
             if (importType.HasFlag(ModelCompile.animations))
             {
-                await RunTool(ToolType.Tool, ImportAnimationsArgs(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath), true);
+                await RunTool(ToolType.Tool, ImportAnimationsArgs(FPAnim, verboseAnim, uncompressedAnim, resetCompression, path, characterFPPath, weaponFPPath));
             }
         }
 

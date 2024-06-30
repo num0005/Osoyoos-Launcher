@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static ToolkitLauncher.Documentation.Data;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -48,13 +47,13 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(tool, args);
         }
 
-        override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)
+        override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
         {
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
             // first sync
             progress.Status = "Syncing faux (this might take a while)...";
-            await FauxSync(scenario, bsp, instanceOutput, useFast);
+            await FauxSync(scenario, bsp, mode, useFast, progress.GetCancellationToken());
             progress.Report(1);
 
             int jobID = FauxCalculateJobID(scenario, bsp);
@@ -63,9 +62,9 @@ namespace ToolkitLauncher.ToolkitInterface
             string clientCountStr = clientCount.ToString(); // cache
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
 
-            async Task<Utility.Process.Result?> RunFastool(List<string> arguments, bool useShell)
+            async Task<Utility.Process.Result?> RunFastool(List<string> arguments, OutputMode mode)
             {
-                Utility.Process.Result? result = await RunTool(tool, arguments, useShell, cancellationToken: progress.GetCancellationToken());
+                Utility.Process.Result? result = await RunTool(tool, arguments, outputMode: mode, cancellationToken: progress.GetCancellationToken());
                 progress.Report(1);
                 if (result is not null && result.HasErrorOccured)
                 {
@@ -80,7 +79,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Status = $"Running stage: \"{stage}\" client count: {clientCount}";
                 var instances = new List<Task<Utility.Process.Result?>>();
                 for (int clientIdx = 0; clientIdx < clientCount; clientIdx++)
-                    instances.Add(RunFastool(new() { $"faux_farm_{stage}", blobDirectory, clientIdx.ToString(), clientCountStr }, false));
+                    instances.Add(RunFastool(new() { $"faux_farm_{stage}", blobDirectory, clientIdx.ToString(), clientCountStr }, GetMoreSilentMode(mode)));
                 await Task.WhenAll(instances); // wait till workers exit
 
                 bool worked = instances.TrueForAll(result => result.Result is not null && result.Result.Success);
@@ -93,14 +92,14 @@ namespace ToolkitLauncher.ToolkitInterface
                 progress.Status = $"Merging results from stage: \"{stage}\"";
                 // todo(num005): handle workers crashing in a better way than just aborting
                 // merge results from workers
-                await RunFastool(new() { $"faux_farm_{stage}_merge", blobDirectory, clientCountStr }, instanceOutput);
+                await RunFastool(new() { $"faux_farm_{stage}_merge", blobDirectory, clientCountStr }, mode);
                 return StageResult.Sucesss;
 
             }
 
             // start farm
             progress.Status = "Initializing lightmap farm...";
-            await RunFastool(new() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString(), "true" }, instanceOutput);
+            await RunFastool(new() { "faux_farm_begin", scenario, bsp, lightmapGroup, quality, jobID.ToString(), "true" }, mode);
 
             // run farm
 
@@ -111,12 +110,12 @@ namespace ToolkitLauncher.ToolkitInterface
 
             // end farm
             progress.Status = "Ending lightmap farm...";
-            await RunFastool(new() { "faux_farm_finish", blobDirectory }, instanceOutput);
+            await RunFastool(new() { "faux_farm_finish", blobDirectory }, mode);
 
             // todo(num0005): are all these strictly required?
             progress.Status = "A few final steps...";
-            await RunFastool(new() { "faux-reorganize-mesh-for-analytical-lights", scenario, bsp }, instanceOutput);
-            await RunFastool(new() { "faux-build-vmf-textures-from-quadratic", scenario, bsp, "true", "true" }, instanceOutput);
+            await RunFastool(new() { "faux-reorganize-mesh-for-analytical-lights", scenario, bsp }, mode);
+            await RunFastool(new() { "faux-build-vmf-textures-from-quadratic", scenario, bsp, "true", "true" }, mode);
         }
 
         /// <summary>
@@ -189,24 +188,17 @@ namespace ToolkitLauncher.ToolkitInterface
                 }
             }
 
-            await RunTool(ToolType.Tool, args, true);
+            await RunTool(ToolType.Tool, args);
         }
 
-        /// <summary>
-        /// Create a GR2 from an FBX file
-        /// </summary>
-        /// <param name="fbxPath"></param>
-        /// <param name="jsonPath"></param>
-        /// <param name="gr2Path"></param>
-        /// <returns></returns>
-        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path)
+        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, bool json_rebuild, bool showOutput)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path });
-        }
+            var args = new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path};
 
-        public async Task GR2FromFBX(string fbxPath, string jsonPath, string gr2Path, bool json_rebuild = false, bool showOutput = true)
-        {
-            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-gr2", fbxPath, jsonPath, gr2Path, json_rebuild ? "recreate_json" : "" }, showOutput);
+            if (json_rebuild)
+                args.Add("recreate_json");
+
+            await RunTool(ToolType.Tool, args, showOutput ? OutputMode.keepOpen : OutputMode.slient);
         }
 
         public async Task ImportSidecar(string sidecarPath)

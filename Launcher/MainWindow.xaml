@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xml:lang="en-UK"
         xmlns:local="clr-namespace:ToolkitLauncher"
+        xmlns:toolkit="clr-namespace:ToolkitLauncher.ToolkitInterface"
         xmlns:p="clr-namespace:ToolkitLauncher.Properties"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
@@ -32,6 +33,11 @@
         <ObjectDataProvider x:Key="theme_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="local:ThemeType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="output_mode_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="toolkit:OutputMode"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="BitmapCompressionTypeValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
@@ -336,8 +342,9 @@
                                                         <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + h2|mcc + h1|mcc, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="struct_auto_fbx" Content="Auto FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=9, ElementName=toolkit_selection}"/>
                                                         </Grid>
-                                                        <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
-                                                            <CheckBox x:Name="instance_cmd" Content="Instance Output" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Keeps the instance output windows open if enabled. Disable if you live on the wild side."/>
+                                                        <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2 + h3 + hr + h4, ElementName=toolkit_selection}">
+                                                            <ComboBox x:Name="output_mode" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource output_mode_enum}}" ToolTip="Choose what to do with tool output.">
+                                                            </ComboBox>
                                                         </Grid>
                                                         <Grid Grid.Row="4" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3, ElementName=toolkit_selection}">
                                                             <ComboBox x:Name="structure_import_type" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the level.">

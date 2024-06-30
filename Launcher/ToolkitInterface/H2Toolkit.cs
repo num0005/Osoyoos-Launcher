@@ -78,7 +78,7 @@ namespace ToolkitLauncher.ToolkitInterface
                         index,
                         args.NoAssert,
                         progress.GetCancellationToken(),
-                        args.instanceOutput
+                        args.outputSetting
                         );
                     if (result is not null && result.HasErrorOccured)
                         progress.Cancel($"Tool worker {index} has failed - exit code {result.ReturnCode}");
@@ -141,7 +141,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
         }
 
-        private async Task<Utility.Process.Result> RunLightmapWorker(string scenario, string bsp, string quality, int workerCount, int index, bool useFast, CancellationToken cancelationToken, bool output)
+        private async Task<Utility.Process.Result> RunLightmapWorker(string scenario, string bsp, string quality, int workerCount, int index, bool useFast, CancellationToken cancelationToken, OutputMode output)
         {
             if (Profile.IsMCC)
             {
@@ -157,7 +157,7 @@ namespace ToolkitLauncher.ToolkitInterface
                         quality,
                         index.ToString(),
                         workerCount.ToString()
-                    }, output, index == 0, cancelationToken);
+                    }, outputMode: output, lowPriority: index == 0, cancellationToken: cancelationToken);
                 } finally
                 {
                     Profile.ElevatedToExpert = wereWeExperts;
@@ -174,7 +174,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     workerCount.ToString(),
                     index.ToString()
                 };
-                return await RunTool(ToolType.Tool, args, false, cancellationToken: cancelationToken);
+                return await RunTool(ToolType.Tool, args, outputMode: output, cancellationToken: cancelationToken);
             }
         }
 
