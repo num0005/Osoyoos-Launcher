@@ -72,24 +72,22 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             if (autoFBX) { await AutoFBX.Model(this, path, importType); }
 
-            // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
             if (importType.HasFlag(ModelCompile.render))
-                await RunTool(ToolType.Tool, new List<string>() { "model", path, h2SelectionLogic.ToString() }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "model", path, h2SelectionLogic.ToString() });
             if (importType.HasFlag(ModelCompile.collision))
-                await RunTool(ToolType.Tool, new List<string>() { "collision-geometry", path, phantomFix.ToString() }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "collision-geometry", path, phantomFix.ToString() });
             if (importType.HasFlag(ModelCompile.physics))
-                await RunTool(ToolType.Tool, new List<string>() { "physics", path }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "physics", path });
             if (importType.HasFlag(ModelCompile.animations))
-                await RunTool(ToolType.Tool, new List<string>() { "animations", path }, true);
+                await RunTool(ToolType.Tool, new List<string>() { "animations", path });
         }
 
         public override async Task ImportStructure(StructureType structure_command, string data_file, bool phantom_fix, bool release, bool useFast, bool autoFBX, ImportArgs import_args)
         {
             if (autoFBX) { await AutoFBX.Structure(this, data_file, true); }
 
-            // todo(num0005): detect when the command is done running even when using -pause (and remove the forced shell usage)
-            var info = SplitStructureFilename(data_file);
-            await RunTool(ToolType.Tool, new List<string>() { "structure", info.ScenarioPath, info.BspName, phantom_fix.ToString() }, true);
+            var (ScenarioPath, ScenarioName, BspName) = SplitStructureFilename(data_file);
+            await RunTool(ToolType.Tool, new List<string>() { "structure", ScenarioPath, BspName, phantom_fix.ToString() });
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharing)

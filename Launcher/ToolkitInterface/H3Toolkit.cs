@@ -43,7 +43,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (structure_command == StructureType.structure_seams)
                 data_path = Path.GetDirectoryName(Path.GetDirectoryName(data_file));
 
-            await RunTool(tool, new List<string>() { tool_command, data_path }, true);
+            await RunTool(tool, new List<string>() { tool_command, data_path });
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharinge)

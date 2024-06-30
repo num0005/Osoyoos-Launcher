@@ -37,7 +37,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (import_args.import_farm_bsp)
                 args.Add("farm_bsp");
 
-            await RunTool(tool, args, true);
+            await RunTool(tool, args);
         }
 
         public override async Task BuildCache(string scenario, CacheType cacheType, ResourceMapUsage resourceUsage, bool logTags, string cachePlatform, bool cacheCompress, bool cacheResourceSharing, bool cacheMultilingualSounds, bool cacheRemasteredSupport, bool cacheMPTagSharinge)

@@ -88,7 +88,7 @@ namespace ToolkitLauncher.ToolkitInterface
                 }
             }
 
-            await RunTool(ToolType.Tool, args, true);
+            await RunTool(ToolType.Tool, args);
         }
     }
 }

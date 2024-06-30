@@ -45,7 +45,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (import_args.import_supress_errors_to_vrml)
                 args.Add("supress_errors_to_vrml");
 
-            await RunTool(tool, args, true);
+            await RunTool(tool, args);
         }
 
         override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool instanceOutput, ICancellableProgress<int> progress)

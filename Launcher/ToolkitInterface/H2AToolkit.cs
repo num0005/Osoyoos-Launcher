@@ -74,7 +74,7 @@ namespace ToolkitLauncher.ToolkitInterface
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
             bool is_ass_file = data_file.ToLowerInvariant().EndsWith("ass");
             string command = is_ass_file ? "structure-new-from-ass" : "structure-from-jms";
-            await RunTool(tool, new List<string>() { command, data_file }, true);
+            await RunTool(tool, new List<string>() { command, data_file });
         }
 
         static private string SetFlag(string flag_string, string flag_name)
@@ -192,7 +192,7 @@ namespace ToolkitLauncher.ToolkitInterface
                     path,
                     accurateRender ? "true" : "false",
                     renderPRT ? "true" : "false" };
-                await RunTool(ToolType.Tool, args, true);
+                await RunTool(ToolType.Tool, args);
 
             }
             if (importType.HasFlag(ModelCompile.collision))
@@ -256,7 +256,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (flags != "")
                 args.Add(flags);
 
-            await RunTool(ToolType.Tool, args, true);
+            await RunTool(ToolType.Tool, args);
         }
 
         /// <summary>
