@@ -126,7 +126,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public override async Task ImportModel(string path, ModelCompile importType, bool phantomFix, bool h2SelectionLogic, bool renderPRT, bool FPAnim, string characterFPPath, string weaponFPPath, bool accurateRender, bool verboseAnim, bool uncompressedAnim, bool skyRender, bool PDARender, bool resetCompression, bool autoFBX, bool genShaders)
         {
-            List<string> args = new List<string>();
+            List<string> args = new();
             if (importType.HasFlag(ModelCompile.render))
             {
                 // Generate shaders if requested

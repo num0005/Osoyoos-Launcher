@@ -340,14 +340,14 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task RunCustomToolCommand(string command)
         {
-            await Utility.Process.StartProcessWithShell(BaseDirectory, GetToolExecutable(ToolType.Tool), Utility.Process.EscapeArgList(GetArgsToPrepend()) + " " + command);
+            await Utility.Process.StartProcessWithShell(BaseDirectory, GetToolExecutable(ToolType.Tool), Utility.Process.EscapeArgList(GetArgsToPrepend(noWindow: false)) + " " + command);
         }
 
         /// <summary>
         /// Get the args to prepend to every invokaing of a game tool
         /// </summary>
         /// <returns>List with all the args to add</returns>
-        private List<string> GetArgsToPrepend()
+        private List<string> GetArgsToPrepend(bool noWindow)
         {
             List<string> args = new();
 
@@ -383,7 +383,7 @@ namespace ToolkitLauncher.ToolkitInterface
                         args.Add("-expert_mode");
                     }
 
-                    if (Profile.Batch)
+                    if (Profile.Batch || noWindow)
                     {
                         args.Add("-batch");
                     }
@@ -457,8 +457,63 @@ namespace ToolkitLauncher.ToolkitInterface
             }
         }
 
+        readonly private AsyncLocal<string?> _log_folder = new();
+        readonly private AsyncLocal<string?> _log_file_suffix = new();
+
+        public string? LogFolder
+        {
+            get
+            {
+                return _log_folder.Value;
+            }
+            set
+            {
+                _log_folder.Value = value;
+            }
+        }
+
+        public string? LogFileSuffix
+        {
+            get
+            {
+                return _log_file_suffix.Value;
+            }
+            set
+            {
+                _log_file_suffix.Value = value;
+            }
+        }
+
 
         public Action<Utility.Process.Result>? ToolFailure { get; set; }
+
+        private string GetLogFileName(List<string>? args)
+        {
+            string report_folder = Path.Combine(BaseDirectory, "reports", "Osoyoos");
+            string? log_subfolder = LogFolder;
+            string? log_suffix = LogFileSuffix;
+
+            if (log_subfolder != null)
+                report_folder = Path.Combine(report_folder, log_subfolder);
+
+            string filename;
+
+            if (args is not null && args.Count > 0)
+            {
+                filename = "tool_" + args[0];
+            }
+            else
+            {
+                filename = "tool";
+            }
+
+            if (log_suffix is not null)
+            {
+                filename += log_suffix;
+            }
+
+            return Path.Combine(report_folder, filename) + ".log";
+        }
 
         /// <summary>
         /// Run a tool from the toolkit with arguments
@@ -471,7 +526,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns>Results of running the tool if possible</returns>
         public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, OutputMode? outputMode = null, bool lowPriority = false, CancellationToken cancellationToken = default)
         {
-            Utility.Process.Result? result = await RunToolInternal(tool, args, outputMode, cancellationToken, lowPriority);
+            Utility.Process.Result? result = await RunToolInternal(tool, args, outputMode, lowPriority, cancellationToken);
             if (result is not null && result.ReturnCode != 0 && ToolFailure is not null)
                 ToolFailure(result);
             return result;
@@ -480,10 +535,13 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <summary>
         /// Implementation of <c>RunTool</c>
         /// </summary>
-        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, CancellationToken cancellationToken, bool lowPriority)
+        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, bool lowPriority, CancellationToken cancellationToken)
         {
+            bool has_window = outputMode != OutputMode.slient && outputMode != OutputMode.logToDisk;
+            bool enabled_log = outputMode == OutputMode.logToDisk;
+
             // always include the prepend args
-            List<string> full_args = GetArgsToPrepend();
+            List<string> full_args = GetArgsToPrepend(has_window);
             if (args is not null)
                 full_args.AddRange(args);
 
@@ -491,10 +549,17 @@ namespace ToolkitLauncher.ToolkitInterface
             if (outputMode is null)
                 outputMode = GetDefaultOutputMode(tool, args);
 
+            string? log_path = null;
+
+            if (enabled_log)
+            {
+                log_path = GetLogFileName(args);
+            }
+
             if (outputMode == OutputMode.keepOpen)
-                return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, cancellationToken, lowPriority);
+                return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, lowPriority, cancellationToken);
             else
-                return await Utility.Process.StartProcess(BaseDirectory, tool_path, full_args, cancellationToken, lowPriority);
+                return await Utility.Process.StartProcess(BaseDirectory, executable: tool_path, args: full_args, lowPriority: lowPriority, logFileName: log_path, noWindow: !has_window, cancellationToken: cancellationToken);
         }
 
         /// <summary>

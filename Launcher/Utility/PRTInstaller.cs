@@ -127,7 +127,7 @@ progress, token);
                             await File.WriteAllBytesAsync(redist_executable_path, redist_package, progress.GetCancellationToken());
                             progress.Status = "Installing redist package!";
                             
-                            await Process.StartProcess(temp_folder, redist_executable_path, new(), progress.GetCancellationToken(), admin:true);
+                            await Process.StartProcess(temp_folder, redist_executable_path, new(), admin: true, cancellationToken: progress.GetCancellationToken());
 
                             progress.Complete = true;
                             progress.Status = IsRedistInstalled() ? "Installed redist package!" : "Failed to install redist package!";

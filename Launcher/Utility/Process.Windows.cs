@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using ToolkitLauncher.ToolkitInterface;
 
 namespace ToolkitLauncher.Utility
 {
@@ -33,15 +34,28 @@ namespace ToolkitLauncher.Utility
                         return ProcessPriorityClass.Idle;
                 }
             }
-            static public async Task<Result> StartProcess(string directory, string executable, List<string> args, CancellationToken cancellationToken, bool lowPriority, bool admin)
+            static public async Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority, bool admin, bool noWindow, string? logFileName, CancellationToken cancellationToken)
             {
                 try
                 {
                     string executable_path = Path.Combine(directory, executable);
                     ProcessStartInfo info = new(executable_path);
                     info.WorkingDirectory = directory;
-                    // info.RedirectStandardError = true;
-                    // info.RedirectStandardOutput = true;
+                    info.CreateNoWindow = noWindow;
+
+
+                    bool loggingToDisk = false;
+                    if (!String.IsNullOrWhiteSpace(logFileName))
+                    {
+                        info.RedirectStandardError = true;
+                        info.RedirectStandardOutput = true;
+
+                        string log_folder = Path.GetDirectoryName(logFileName);
+                        Directory.CreateDirectory(log_folder);
+                        loggingToDisk = true;
+                        Debug.Print($"log folder for process {log_folder}");
+                    }
+
                     foreach (string arg in args)
                         info.ArgumentList.Add(arg);
 
@@ -62,14 +76,18 @@ namespace ToolkitLauncher.Utility
                             Debug.Print(ex.ToString());
                         }
                     }
-                    
-                    //proc.StandardOutput.
 
-                    //Task<string> standardOut = proc.StandardOutput.ReadToEndAsync();
-                    //Task<string> standardError = proc.StandardError.ReadToEndAsync();
-                    //await Task.WhenAll(standardOut, standardError, proc.WaitForExitAsync());
+                    Task<string> standardOut = null;
+                    Task<string> standardError = null;
+
                     try
                     {
+                        if (loggingToDisk)
+                        {
+                            standardOut = proc.StandardOutput.ReadToEndAsync();
+                            standardError = proc.StandardError.ReadToEndAsync();
+                        }
+
                         await proc.WaitForExitAsync(cancellationToken);
                     }
                     catch (OperationCanceledException) { };
@@ -84,9 +102,33 @@ namespace ToolkitLauncher.Utility
                             Debug.Print(ex.ToString());
                         }
                     }
+                    
+                    Result results = null;
+
+                    if (loggingToDisk)
+                    {
+                        await Task.WhenAll(standardOut, standardError);
+
+                        using (StreamWriter file = new(logFileName, append: false))
+                        {
+                            await file.WriteAsync("=== Error log == \r\n\r\n");
+                            await file.WriteAsync(standardError.Result);
+                            await file.WriteAsync("\r\n\r\n");
+                            await file.WriteAsync("=== Output log == \r\n\r\n");
+                            await file.WriteAsync(standardOut.Result);
+                        }
+
+                        results = new Result(standardOut.Result, standardError.Result, proc.ExitCode);
+                    }
+                    else
+                    {
+                        results = new Result("", "", proc.ExitCode);
+                    }
+
                     cancellationToken.ThrowIfCancellationRequested();
-                    //return new Result(standardOut.Result, standardError.Result, proc.ExitCode);
-                    return new Result("", "", proc.ExitCode);
+
+                    return results;
+                    
                 }
                 catch (System.ComponentModel.Win32Exception ex)
                 {
@@ -97,7 +139,7 @@ namespace ToolkitLauncher.Utility
                     if (ErrorCode == 2)
                     {
                         // todo(num0005) refactor this and move the exception into the Process
-                        throw new ToolkitInterface.ToolkitBase.MissingFile(executable);
+                        throw new ToolkitBase.MissingFile(executable);
                     }
                     else if (ErrorCode == 1223)
                     {
@@ -111,7 +153,7 @@ namespace ToolkitLauncher.Utility
                 }
             }
 
-            static public async Task<Result?> StartProcessWithShell(string directory, string executable, string args, CancellationToken cancellationToken, bool lowPriority)
+            static public async Task<Result?> StartProcessWithShell(string directory, string executable, string args, bool lowPriority, CancellationToken cancellationToken)
             {
                 // build command line
                 string commnad_line = "/c \"" + escape_arg(executable) + " " + args + " & pause\"";

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static ToolkitLauncher.ToolkitProfiles;
@@ -55,63 +56,73 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
         {
-            string quality = GetLightmapQuality(args);
-
-            if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
+            LogFolder = $"lightmaps_{Path.GetFileNameWithoutExtension(scenario)}";
+            try
             {
-                if (progress is not null)
-                    progress.MaxValue += 1 + args.instanceCount;
+                string quality = GetLightmapQuality(args);
 
-                async Task RunInstance(int index)
+                if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
                 {
-                    if (index == 0 && !Profile.IsH2Codez()) // not needed for H2Codez
+                    if (progress is not null)
+                        progress.MaxValue += 1 + args.instanceCount;
+
+                    async Task RunInstance(int index)
                     {
+                        if (index == 0 && !Profile.IsH2Codez()) // not needed for H2Codez
+                        {
+                            if (progress is not null)
+                                progress.Status = "Delaying launch of zeroth instance";
+                            await Task.Delay(1000 * 70, progress.GetCancellationToken());
+                        }
+                        Utility.Process.Result result = await RunLightmapWorker(
+                            scenario,
+                            bsp,
+                            quality,
+                            args.instanceCount,
+                            index,
+                            args.NoAssert,
+                            progress.GetCancellationToken(),
+                            args.outputSetting
+                            );
+                        if (result is not null && result.HasErrorOccured)
+                            progress.Cancel($"Tool worker {index} has failed - exit code {result.ReturnCode}");
                         if (progress is not null)
-                            progress.Status = "Delaying launch of zeroth instance";
-                        await Task.Delay(1000 * 70, progress.GetCancellationToken());
+                            progress.Report(1);
                     }
-                    Utility.Process.Result result  = await RunLightmapWorker(
-                        scenario,
-                        bsp,
-                        quality,
-                        args.instanceCount,
-                        index,
-                        args.NoAssert,
-                        progress.GetCancellationToken(),
-                        args.outputSetting
-                        );
-                    if (result is not null && result.HasErrorOccured)
-                        progress.Cancel($"Tool worker {index} has failed - exit code {result.ReturnCode}");
+
+                    var instances = new List<Task>();
+                    for (int i = args.instanceCount - 1; i >= 0; i--)
+                    {
+                        instances.Add(RunInstance(i));
+                    }
+                    if (progress is not null)
+                        progress.Status = $"Running {args.instanceCount} instances";
+                    await Task.WhenAll(instances);
+                    if (progress is not null)
+                        progress.Status = "Merging output";
+
+                    if (progress.IsCancelled)
+                        return;
+
+                    await RunMergeLightmap(scenario, bsp, args.instanceCount, args.NoAssert);
                     if (progress is not null)
                         progress.Report(1);
                 }
-
-                var instances = new List<Task>();
-                for (int i = args.instanceCount - 1; i >= 0; i--)
+                else
                 {
-                    instances.Add(RunInstance(i));
+                    Debug.Assert(args.instanceCount == 1); // should be one, otherwise we got bad args
+                    if (progress is not null)
+                    {
+                        progress.DisableCancellation();
+                        progress.MaxValue += 1;
+                    }
+                    await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+                    if (progress is not null)
+                        progress.Report(1);
                 }
-                if (progress is not null)
-                    progress.Status = $"Running {args.instanceCount} instances";
-                await Task.WhenAll(instances);
-                if (progress is not null)
-                    progress.Status = "Merging output";
-
-                await RunMergeLightmap(scenario, bsp, args.instanceCount, args.NoAssert);
-                if (progress is not null)
-                    progress.Report(1);
-            }
-            else
+            } finally
             {
-                Debug.Assert(args.instanceCount == 1); // should be one, otherwise we got bad args
-                if (progress is not null)
-                {
-                    progress.DisableCancellation();
-                    progress.MaxValue += 1;
-                }
-                await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
-                if (progress is not null)
-                    progress.Report(1);
+                LogFolder = null;
             }
         }
 
@@ -143,6 +154,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         private async Task<Utility.Process.Result> RunLightmapWorker(string scenario, string bsp, string quality, int workerCount, int index, bool useFast, CancellationToken cancelationToken, OutputMode output)
         {
+            this.LogFileSuffix = $"_{index}";
             if (Profile.IsMCC)
             {
                 bool wereWeExperts = Profile.ElevatedToExpert;

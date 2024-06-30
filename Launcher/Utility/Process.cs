@@ -33,11 +33,11 @@ namespace ToolkitLauncher.Utility
         /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <param name="lowPriority">Lower priority if possible</param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public Task<Result> StartProcess(string directory, string executable, List<string> args, CancellationToken cancellationToken = default, bool lowPriority = false, bool admin = false)
+        static public Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority = false, bool admin = false, bool noWindow = false, string? logFileName = null, CancellationToken cancellationToken = default)
         {
-            Debug.Print($"starting(): directory: {directory}, executable:{executable}, args:{args}, admin: {admin}, low priority {lowPriority}");
+            Debug.Print($"starting(): directory: {directory}, executable:{executable}, args:{args}, admin: {admin}, low priority {lowPriority}, noWindow {noWindow} log {logFileName}");
             if (OperatingSystem.IsWindows())
-                return Windows.StartProcess(directory, executable, args, cancellationToken, lowPriority, admin);
+                return Windows.StartProcess(directory, executable, args, lowPriority, admin, noWindow, logFileName, cancellationToken);
             throw new PlatformNotSupportedException();
         }
 
@@ -47,14 +47,14 @@ namespace ToolkitLauncher.Utility
         /// <param name="directory">Path containing the executable</param>
         /// <param name="executable">unescaped name</param>
         /// <param name="args">escaped arguments string</param>
-        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <param name="lowPriority">Lower priority if possible</param>
+        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public Task<Result?> StartProcessWithShell(string directory, string executable, string args, CancellationToken cancellationToken = default, bool lowPriority = false)
+        static public Task<Result?> StartProcessWithShell(string directory, string executable, string args, bool lowPriority = false, CancellationToken cancellationToken = default)
         {
             Debug.Print($"starting_with_shell(): directory: {directory}, executable:{executable}, args:{args}");
             if (OperatingSystem.IsWindows())
-                return Windows.StartProcessWithShell(directory, executable, args, cancellationToken, lowPriority);
+                return Windows.StartProcessWithShell(directory, executable, args, lowPriority, cancellationToken);
             throw new PlatformNotSupportedException();
         }
 
@@ -64,12 +64,12 @@ namespace ToolkitLauncher.Utility
         /// <param name="directory">Path containing the executable</param>
         /// <param name="executable">unescaped name</param>
         /// <param name="args">unescaped arguments</param>
-        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <param name="lowPriority">Lower priority if possible</param>
+        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public async Task<Result?> StartProcessWithShell(string directory, string executable, List<string> args, CancellationToken cancellationToken = default, bool lowPriority = false)
+        static public async Task<Result?> StartProcessWithShell(string directory, string executable, List<string> args, bool lowPriority = false, CancellationToken cancellationToken = default)
         {
-            return await StartProcessWithShell(directory, executable, EscapeArgList(args), cancellationToken, lowPriority);
+            return await StartProcessWithShell(directory, executable, EscapeArgList(args), lowPriority, cancellationToken);
         }
 
         /// <summary>
