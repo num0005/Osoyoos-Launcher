@@ -111,7 +111,7 @@ internal class AutoShaders
                 try
                 {
 
-                    await File.WriteAllBytesAsync(shader, default_shader_contents);
+                    await File.WriteAllBytesAsync(shader_file_path, default_shader_contents);
                 } catch
                 {
                     success = false;
