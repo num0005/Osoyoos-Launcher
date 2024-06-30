@@ -340,14 +340,14 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task RunCustomToolCommand(string command)
         {
-            await Utility.Process.StartProcessWithShell(BaseDirectory, GetToolExecutable(ToolType.Tool), Utility.Process.EscapeArgList(GetArgsToPrepend(noWindow: false)) + " " + command);
+            await Utility.Process.StartProcessWithShell(BaseDirectory, GetToolExecutable(ToolType.Tool), Utility.Process.EscapeArgList(GetArgsToPrepend()) + " " + command);
         }
 
         /// <summary>
         /// Get the args to prepend to every invokaing of a game tool
         /// </summary>
         /// <returns>List with all the args to add</returns>
-        private List<string> GetArgsToPrepend(bool noWindow)
+        private List<string> GetArgsToPrepend(bool hasWindow = true)
         {
             List<string> args = new();
 
@@ -383,7 +383,7 @@ namespace ToolkitLauncher.ToolkitInterface
                         args.Add("-expert_mode");
                     }
 
-                    if (Profile.Batch || noWindow)
+                    if (Profile.Batch || !hasWindow)
                     {
                         args.Add("-batch");
                     }

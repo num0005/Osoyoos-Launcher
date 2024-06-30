@@ -154,7 +154,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         private async Task<Utility.Process.Result> RunLightmapWorker(string scenario, string bsp, string quality, int workerCount, int index, bool useFast, CancellationToken cancelationToken, OutputMode output)
         {
-            this.LogFileSuffix = $"_{index}";
+            this.LogFileSuffix = $"-{index}";
             if (Profile.IsMCC)
             {
                 bool wereWeExperts = Profile.ElevatedToExpert;
