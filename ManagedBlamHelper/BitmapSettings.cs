@@ -26,33 +26,33 @@ namespace OsoyoosMB
             // Define bitmap name suffixes for anything non-diffuse
             string[] normal_suffixes =
             {
-                "_normal.bitmap",
-                "_normalmap.bitmap",
-                "_nm.bitmap",
-                "_n.bitmap",
-                "_zbump.bitmap"
+                "_normal",
+                "_normalmap",
+                "_nm",
+                "_n",
+                "_zbump"
             };
 
             string[] bump_suffixes =
             {
-                "_bump.bitmap",
-                "_bmp.bitmap",
-                "_bp.bitmap",
-                "_b.bitmap"
+                "_bump",
+                "_bmp",
+                "_bp",
+                "_b"
             };
 
             string[] material_suffixes =
             {
-                "_material.bitmap",
-                "_materialmap.bitmap",
-                "_mat.bitmap",
-                "_m.bitmap",
-                "_orm.bitmap",
-                "_ormh.bitmap",
-                "_rmo.bitmap",
-                "_rmoh.bitmap",
-                "_mro.bitmap",
-                "_mroh.bitmap"
+                "_material",
+                "_materialmap",
+                "_mat",
+                "_m",
+                "_orm",
+                "_ormh",
+                "_rmo",
+                "_rmoh",
+                "_mro",
+                "_mroh"
             };
 
             void ApplySettingsDiffuse(TagFileBitmap bitmapFile)
@@ -131,11 +131,10 @@ namespace OsoyoosMB
                  * Figure otu of the tag exists, and if it does, if we should modify it
                  */
 
-                string tag_file_on_disk_path = Path.Combine(editingKit.TagDirectory, bitmap) + ".bitmap";
                 TagPath tag_path = TagPath.FromPathAndType(bitmap, "bitm*");
                 using TagFile tagFile = new();
 
-                if (File.Exists(tag_file_on_disk_path))
+                if (File.Exists(tag_path.Filename))
                 {
                     if (!override_existing)
                     {
