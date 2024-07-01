@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System;
 using OsoyoosMB;
+using ToolkitLauncher.Utility;
 
 namespace ToolkitLauncher
 {
@@ -13,6 +14,16 @@ namespace ToolkitLauncher
     /// </summary>
     public partial class App : Application
     {
+        private readonly static string appdata_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private const string save_folder = "Osoyoos";
+        public static string OsoyoosSavePath
+        {
+            get
+            {
+                return Path.Join(appdata_path, save_folder);
+            }
+        }
+
         public static readonly string DeleteOldCommand = "-DeleteOldInternal";
         private static readonly int MAX_DELETE_RETRY = 10;
 
@@ -23,15 +34,15 @@ namespace ToolkitLauncher
                 try
                 {
                     File.Delete(file);
-                    Debug.Print($"Deleted \"{file}\" on attempt {i}");
+                    Trace.WriteLine($"Deleted \"{file}\" on attempt {i}");
                     return;
                 }
                 catch
                 {
-                    Debug.Print($"Failed to delete \"{file}\" on attempt {i}");
+                    Trace.WriteLine($"Failed to delete \"{file}\" on attempt {i}");
                 }
             }
-            Debug.Print($"Gave up attempted to delete \"{file}\" after reaching MAX_DELETE_RETRY ({MAX_DELETE_RETRY})");
+            Trace.WriteLine($"Gave up attempted to delete \"{file}\" after reaching MAX_DELETE_RETRY ({MAX_DELETE_RETRY})");
         }
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -44,6 +55,9 @@ namespace ToolkitLauncher
             }
 
             base.OnStartup(e);
+
+            LogManager.RotateLogs();
+
         }
 
         [STAThread]
@@ -54,11 +68,13 @@ namespace ToolkitLauncher
             // check if we are called by ourselves
             if (args.Length > 0 && args[0] == MBHandler.command_id && OperatingSystem.IsWindows())
             {
+                LogManager.InitializeLogging("ManagedHelper");
                 return_code = MBHandler.Premain(args[1..]);
             }
             else // otherwise just run the launcher
             {
                 // run WPF application
+                LogManager.InitializeLogging("Launcher");
                 ApplicationMain();
             }
 
