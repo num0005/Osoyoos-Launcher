@@ -15,12 +15,12 @@ When you need to debug this code, you need to switch the project reference to th
 will crash at runtime. Don't forget to revert the reference back to version in the "ref" folder
 before committing or release.
 */
+using ManagedBlamHelper;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using static OsoyoosMB.BitmapSettings;
 
 namespace OsoyoosMB
 {
@@ -33,6 +33,8 @@ namespace OsoyoosMB
 
         internal record EditingKitInfo(string Path, bool IsGen4, string TagDirectory, string DataDirectory);
 
+        private static Assembly _managedblam_assembly = null;
+
         /// <summary>
         /// Load assemblies from the bin folder in the working directory
         /// </summary>
@@ -42,7 +44,12 @@ namespace OsoyoosMB
         private static Assembly LoadFromBinFolder(object sender, ResolveEventArgs args)
         {
             AssemblyName assemblyName = new AssemblyName(args.Name);
-            Debug.Write($"{assemblyName}");
+            Debug.WriteLine($"{assemblyName}");
+
+            if (assemblyName.Name == "managedblam")
+            {
+                return _managedblam_assembly;
+            }
 
             string currentPath = Directory.GetCurrentDirectory();
             string assemblyPath = Path.Join(currentPath, "bin", assemblyName.Name) + ".dll";
@@ -58,6 +65,11 @@ namespace OsoyoosMB
             }
         }
 
+        internal static void StartManagedBlam()
+        {
+
+        }
+
         /// <summary>
         /// Preload the managed blam assembly
         /// </summary>
@@ -68,7 +80,7 @@ namespace OsoyoosMB
             string binManagedBlamPath = Path.Join(currentPath, "bin", "ManagedBlam.dll");
             try
             {
-                Assembly.LoadFile(binManagedBlamPath);
+                _managedblam_assembly = Assembly.LoadFile(binManagedBlamPath);
                 return true;
             } catch (FileNotFoundException ex)
             {
@@ -83,6 +95,7 @@ namespace OsoyoosMB
         {
             try
             {
+                EditingKitInfo ek_info = new(args[0], Boolean.Parse(args[1]), args[2], args[3]);
                 // premain setup
                 AppDomain currentDomain = AppDomain.CurrentDomain;
                 currentDomain.AssemblyResolve += new ResolveEventHandler(LoadFromBinFolder);
@@ -91,8 +104,6 @@ namespace OsoyoosMB
                     Trace.WriteLine($"Failed to load managed blam!");
                     return -2;
                 }
-
-                EditingKitInfo ek_info = new(args[0], Boolean.Parse(args[1]), args[2], args[3]);
 
                 return RunCommands(ek_info, args[4..]);
             }
@@ -108,8 +119,10 @@ namespace OsoyoosMB
         {
             if (args[0] == setup_bitmaps_command && args.Length == 3)
             {
+                ManagedBlamInterface.Start(ek_info);
                 Trace.WriteLine("Running setup_bitmap_compression");
                 BitmapSettings.ConfigureCompression(ek_info, args[1], int.Parse(args[2]));
+                ManagedBlamInterface.Stop();
                 return 0;
             }
             else

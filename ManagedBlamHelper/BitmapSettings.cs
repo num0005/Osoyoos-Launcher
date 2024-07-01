@@ -1,5 +1,4 @@
-﻿using Bungie;
-using Bungie.Tags;
+﻿using Bungie.Tags;
 using OsoyoosMB.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +11,6 @@ namespace OsoyoosMB
     {
         public static void ConfigureCompression(EditingKitInfo editingKit, string tag_folder, int compress_value)
         {
-            // Initialize ManagedBlam
-            ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, editingKit.Path);
-
             // Makes "empty" bitmap tags
             MBHelpers.CreateDummyBitmaps(editingKit, tag_folder);
 
