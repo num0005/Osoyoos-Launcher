@@ -548,7 +548,8 @@
                                                             </TransformGroup>
                                                         </Label.RenderTransform>
                                                     </Label>
-                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
+                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
+                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="bitmap_clear_old_settings" Content="Clear old bitmaps overrides" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr, ElementName=toolkit_selection}" ToolTip="Reset the bitmap overrides (set this if you don't know what those are)."/>
                                                 </Grid>
                                             </GroupBox>
                                             <Button Grid.Row="3" Content="Import Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}" ToolTip="Import the bitmap!"/>

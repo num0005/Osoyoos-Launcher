@@ -1,9 +1,7 @@
 ﻿using Bungie.Tags;
 using ManagedBlamHelper;
-using OsoyoosMB.Utils;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,14 +11,17 @@ namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void ConfigureCompression(EditingKitInfo editingKit, string tag_folder, string compress_value)
+        public static void ConfigureCompression(EditingKitInfo editingKit, string tag_folder, string compress_value, bool override_existing)
         {
-            // Makes "empty" bitmap tags
-            MBHelpers.CreateDummyBitmaps(editingKit, tag_folder);
+            // num0005 (2024), I don't think we need to get a list of all the already existing bitmaps if we are just reimporting files
 
+            /*
             // Get all bitmap tags
             string tag_folder_full = Path.Join(editingKit.TagDirectory, tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
+            */
+
+            var bitmaps_to_import = GetBitmapsToImport(editingKit, tag_folder);
 
             // Define bitmap name suffixes for anything non-diffuse
             string[] normal_suffixes =
@@ -54,36 +55,146 @@ namespace OsoyoosMB
                 "_mroh.bitmap"
             };
 
-            List<string> diffuse_bitmaps = new();
-            List<string> normal_bitmaps = new();
-            List<string> bump_bitmaps = new();
-            List<string> material_bitmaps = new();
-
-            foreach (string bitmap in all_bitmaps)
+            void ApplySettingsDiffuse(TagFileBitmap bitmapFile)
             {
-                if (normal_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+                bitmapFile.ResetUsageOverrides();
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = compress_value;
+                bitmapFile.MipMapLevel.Data = -1;
+
+                // 2.2 gamma is fairly standard sRGB curve
+                bitmapFile.Gamma.Data = 2.2f;
+                bitmapFile.BitmapCurveValue = "sRGB";
+
+                // Set ignore curve override flag
+                bitmapFile.UsageOverrideFlags.RawValue = 1;
+
+                bitmapFile.MipLimit.Data = -1;
+                bitmapFile.UsageFormatValue = compress_value;
+            }
+
+            void ApplySettingsNormals(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ResetUsageOverrides();
+
+                bitmapFile.UsageValue = "ZBrush Bump Map (from Bump Map)"; // 17
+
+                bitmapFile.BumpHeight.Data = 5; // use a height of 5 as a default
+
+                bitmapFile.CurveValue = "force PRETTY";
+
+                bitmapFile.BitmapFormatValue = "DXN Compressed Normals (better)";
+                bitmapFile.UsageFormatValue = "DXN Compressed Normals (better)";
+
+                bitmapFile.MipMapLevel.Data = -1;
+
+                // Setup linear gamma
+                bitmapFile.Gamma.Data = 1.0f;
+                bitmapFile.BitmapCurveValue = "linear";
+
+                // Set ignore curve override flag
+                bitmapFile.UsageOverrideFlags.RawValue = 1;
+
+                // Set Unsigned flag
+                bitmapFile.DicerFlags.RawValue = 16;
+                bitmapFile.MipLimit.Data = -1;
+            }
+
+            void ApplySettingsBumps(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ClearUsageOverrides();
+
+                bitmapFile.UsageValue = "Bump Map (from Height Map)"; // 2
+                bitmapFile.BumpHeight.Data = 5; // use 5 as the default value
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = "Best Compressed Bump Format";
+                bitmapFile.MipMapLevel.Data = -1;
+            }
+
+            void ApplySettingsMaterials(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ResetUsageOverrides();
+
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = compress_value;
+                bitmapFile.MipMapLevel.Data = -1;
+                bitmapFile.Gamma.Data = 1.0f;
+                bitmapFile.BitmapCurveValue = "linear";
+                bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
+                bitmapFile.MipLimit.Data = -1;
+                bitmapFile.UsageFormatValue = compress_value;
+            }
+
+            foreach (string bitmap in bitmaps_to_import)
+            {
+                /*
+                 * Figure otu of the tag exists, and if it does, if we should modify it
+                 */
+
+                string tag_file_on_disk_path = Path.Combine(editingKit.TagDirectory, bitmap) + ".bitmap";
+                TagPath tag_path = TagPath.FromPathAndType(bitmap, "bitm*");
+                using TagFile tagFile = new();
+
+                if (File.Exists(tag_file_on_disk_path))
                 {
-                    // Bitmap file is a normal map
-                    normal_bitmaps.Add(bitmap);
-                }
-                else if (bump_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
-                {
-                    // Bitmap file is a bump map
-                    bump_bitmaps.Add(bitmap);
-                }
-                else if (material_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
-                {
-                    // Bitmap file is a material map
-                    material_bitmaps.Add(bitmap);
+                    if (!override_existing)
+                    {
+                        Trace.WriteLine($"Skipping {bitmap} as it already exists, and override_existing is false");
+                        continue;
+                    }
+
+                    tagFile.Load(tag_path);
                 }
                 else
                 {
-                    // Treat bitmap as diffuse
-                    diffuse_bitmaps.Add(bitmap);
+                    tagFile.New(tag_path);
+                }
+
+                using TagFileBitmap tagBitmap = new(tag_path, tagFile);
+
+                /*
+                 * Apply custom settings depending on the bitmap usage (based on filename)
+                 */
+
+                if (normal_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+                {
+                    ApplySettingsNormals(tagBitmap);
+                }
+                else if (bump_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+                {
+                    ApplySettingsBumps(tagBitmap);
+                }
+                else if (material_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+                {
+                    ApplySettingsMaterials(tagBitmap);
+                }
+                else
+                {
+                    // default to treating bitmaps as diffuse
+                    ApplySettingsDiffuse(tagBitmap);
                 }
             }
+        }
 
-            ApplyBitmSettings(editingKit, diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), compress_value);
+        public static IEnumerable<string> GetBitmapsToImport(EditingKitInfo editingKit, string files_path)
+        {
+            // Get all tiffs in data folder
+            string[] extensions = new[] { "*.tif", "*.tiff", "*.dds" };
+            List<string> all_textures = new();
+            string data_folder_full = Path.Join(editingKit.DataDirectory, files_path);
+
+            // exit early if our directories don't exist
+            if (!Directory.Exists(data_folder_full))
+            {
+                return null;
+            }
+
+            foreach (string extension in extensions)
+            {
+                all_textures.AddRange(Directory.GetFiles(data_folder_full, extension));
+            }
+
+            return all_textures.Select(path => Path.GetRelativePath(editingKit.DataDirectory, Path.ChangeExtension(path, null)));
         }
 
         // These are the block/field names within the tag file
@@ -110,6 +221,12 @@ namespace OsoyoosMB
         {
             public readonly TagPath tag_path;
             public readonly TagFile tag = null;
+
+            public TagFileBitmap(TagPath path, TagFile tagFile)
+            {
+                tag_path = path;
+                tag = tagFile;
+            }
 
             public TagFileBitmap(string path)
             {
@@ -325,128 +442,6 @@ namespace OsoyoosMB
                 }
             }
 
-        }
-
-        public static void ApplyBitmSettings(
-            EditingKitInfo editingKit, 
-            List<string> diffuses, 
-            List<string> normals, 
-            List<string> bumps, 
-            List<string> materials, 
-            string compress_value)
-        {
-
-            void ApplySettingsDiffuse(TagFileBitmap bitmapFile)
-            {
-                bitmapFile.ResetUsageOverrides();
-                bitmapFile.CurveValue = "force PRETTY";
-                bitmapFile.BitmapFormatValue = compress_value;
-                bitmapFile.MipMapLevel.Data = -1;
-
-                // 2.2 gamma is fairly standard sRGB curve
-                bitmapFile.Gamma.Data = 2.2f;
-                bitmapFile.BitmapCurveValue = "sRGB";
-
-                // Set ignore curve override flag
-                bitmapFile.UsageOverrideFlags.RawValue = 1;
-
-                bitmapFile.MipLimit.Data = -1;
-                bitmapFile.UsageFormatValue = compress_value;
-            }
-
-            void ApplySettingsNormals(TagFileBitmap bitmapFile)
-            {
-                bitmapFile.ResetUsageOverrides();
-
-                bitmapFile.UsageValue = "ZBrush Bump Map (from Bump Map)"; // 17
-
-                bitmapFile.BumpHeight.Data = 5; // use a height of 5 as a default
-
-                bitmapFile.CurveValue = "force PRETTY";
-
-                bitmapFile.BitmapFormatValue = "DXN Compressed Normals (better)";
-                bitmapFile.UsageFormatValue = "DXN Compressed Normals (better)";
-
-                bitmapFile.MipMapLevel.Data = -1;
-
-                // Setup linear gamma
-                bitmapFile.Gamma.Data = 1.0f;
-                bitmapFile.BitmapCurveValue = "linear";
-
-                // Set ignore curve override flag
-                bitmapFile.UsageOverrideFlags.RawValue = 1;
-
-                // Set Unsigned flag
-                bitmapFile.DicerFlags.RawValue = 16;
-                bitmapFile.MipLimit.Data = -1;
-            }
-
-            void ApplySettingsBumps(TagFileBitmap bitmapFile)
-            {
-                bitmapFile.ClearUsageOverrides();
-
-                bitmapFile.UsageValue = "Bump Map (from Height Map)"; // 2
-                bitmapFile.BumpHeight.Data = 5; // use 5 as the default value
-                bitmapFile.CurveValue = "force PRETTY";
-                bitmapFile.BitmapFormatValue = "Best Compressed Bump Format";
-                bitmapFile.MipMapLevel.Data = -1;
-            }
-
-            void ApplySettingsMaterials(TagFileBitmap bitmapFile)
-            {
-                bitmapFile.ResetUsageOverrides();
-
-                bitmapFile.CurveValue = "force PRETTY";
-                bitmapFile.BitmapFormatValue = compress_value;
-                bitmapFile.MipMapLevel.Data = -1;
-                bitmapFile.Gamma.Data = 1.0f;
-                bitmapFile.BitmapCurveValue = "linear";
-                bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
-                bitmapFile.MipLimit.Data = -1;
-                bitmapFile.UsageFormatValue = compress_value;
-            }
-
-
-            foreach (string bitmap_full in diffuses)
-            {
-                using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
-                {
-                    ApplySettingsDiffuse(bitmapFile);
-
-                    bitmapFile.Save();
-                }
-            }
-
-            foreach (string bitmap_full in normals)
-            {
-                using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
-                {
-                    ApplySettingsNormals(bitmapFile);
-
-                    bitmapFile.Save();
-                }
-            }
-
-            foreach (string bitmap_full in bumps)
-            {
-
-                using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
-                {
-                    ApplySettingsBumps(bitmapFile);
-
-                    bitmapFile.Save();
-                }
-            }
-
-            foreach (string bitmap_full in materials)
-            {
-                using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
-                {
-                    ApplySettingsMaterials(bitmapFile);
-
-                    bitmapFile.Save();
-                }
-            }
         }
     }
 }

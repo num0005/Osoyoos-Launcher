@@ -37,7 +37,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
         }
 
-        override public async Task ImportBitmaps(string path, string type, string compression, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
         {
         }
 

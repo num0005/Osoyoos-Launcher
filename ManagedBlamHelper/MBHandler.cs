@@ -117,11 +117,11 @@ namespace OsoyoosMB
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static int RunCommands(EditingKitInfo ek_info, String[] args)
         {
-            if (args[0] == setup_bitmaps_command && args.Length == 3)
+            if (args[0] == setup_bitmaps_command && args.Length == 4)
             {
                 ManagedBlamInterface.Start(ek_info);
                 Trace.WriteLine("Running setup_bitmap_compression");
-                BitmapSettings.ConfigureCompression(ek_info, args[1], args[2]);
+                BitmapSettings.ConfigureCompression(ek_info, args[1], args[2], Boolean.Parse(args[3]));
                 ManagedBlamInterface.Stop();
                 return 0;
             }

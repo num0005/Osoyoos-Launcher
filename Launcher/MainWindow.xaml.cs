@@ -1108,7 +1108,7 @@ namespace ToolkitLauncher
         {
             string listEntry = BitmapCompile.bitmapType[bitmap_compile_type.SelectedIndex];
             BitmapCompressionType selectedComp = (BitmapCompressionType)bitmap_compression_type.SelectedItem; // Convert selected compression string to enum value
-            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, selectedComp.GetEnumMemberValue(), debug_plate.IsChecked is true);
+            await toolkit.ImportBitmaps(compile_image_path.Text, listEntry, selectedComp.GetEnumMemberValue(), bitmap_clear_old_settings.IsChecked is true, debug_plate.IsChecked is true);
         }
 
         private async void PackageLevel(object sender, RoutedEventArgs e)

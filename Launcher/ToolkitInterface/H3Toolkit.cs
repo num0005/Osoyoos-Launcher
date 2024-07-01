@@ -20,13 +20,18 @@ namespace ToolkitLauncher.ToolkitInterface
             get => "Sapien";
         }
 
-        override public async Task ImportBitmaps(string path, string type, string compression, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
         {
+            Trace.WriteLine($"H3+ ImportBitmaps({path}, {compression}, clear old usage {should_clear_old_usage})");
             // todo fix h4 support
             if (!Profile.IsH4)
             {
                 // Call managedblam import
-                await RunManagedBlamCommand(new() { MBHandler.setup_bitmaps_command, path, compression });
+                await RunManagedBlamCommand(new() { MBHandler.setup_bitmaps_command, path, compression, should_clear_old_usage.ToString() });
+            }
+            else
+            {
+                Trace.WriteLine("Bitmaps helper is not supported for h4!");
             }
             
 

@@ -137,7 +137,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path">Directory containing the bitmaps</param>
         /// <param name="type">The type of bitmap to import it by</param>
         /// <param name="debug_plate">MCC H1A: Whether or not we dump plate data to the data folder for inspection</param>
-        public abstract Task ImportBitmaps(string path, string type, string compression, bool debug_plate = false);
+        public abstract Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate = false);
 
         /// <summary>
         /// How build cache will handle resources
