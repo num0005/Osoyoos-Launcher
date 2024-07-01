@@ -327,26 +327,91 @@ namespace OsoyoosMB
 
         }
 
-        public static void ApplyBitmSettings(EditingKitInfo editingKit, string[] diffuses, string[] normals, string[] bumps, string[] materials, string compress_value)
+        public static void ApplyBitmSettings(
+            EditingKitInfo editingKit, 
+            List<string> diffuses, 
+            List<string> normals, 
+            List<string> bumps, 
+            List<string> materials, 
+            string compress_value)
         {
+
+            void ApplySettingsDiffuse(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ResetUsageOverrides();
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = compress_value;
+                bitmapFile.MipMapLevel.Data = -1;
+
+                // 2.2 gamma is fairly standard sRGB curve
+                bitmapFile.Gamma.Data = 2.2f;
+                bitmapFile.BitmapCurveValue = "sRGB";
+
+                // Set ignore curve override flag
+                bitmapFile.UsageOverrideFlags.RawValue = 1;
+
+                bitmapFile.MipLimit.Data = -1;
+                bitmapFile.UsageFormatValue = compress_value;
+            }
+
+            void ApplySettingsNormals(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ResetUsageOverrides();
+
+                bitmapFile.UsageValue = "ZBrush Bump Map (from Bump Map)"; // 17
+
+                bitmapFile.BumpHeight.Data = 5; // use a height of 5 as a default
+
+                bitmapFile.CurveValue = "force PRETTY";
+
+                bitmapFile.BitmapFormatValue = "DXN Compressed Normals (better)";
+                bitmapFile.UsageFormatValue = "DXN Compressed Normals (better)";
+
+                bitmapFile.MipMapLevel.Data = -1;
+
+                // Setup linear gamma
+                bitmapFile.Gamma.Data = 1.0f;
+                bitmapFile.BitmapCurveValue = "linear";
+
+                // Set ignore curve override flag
+                bitmapFile.UsageOverrideFlags.RawValue = 1;
+
+                // Set Unsigned flag
+                bitmapFile.DicerFlags.RawValue = 16;
+                bitmapFile.MipLimit.Data = -1;
+            }
+
+            void ApplySettingsBumps(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ClearUsageOverrides();
+
+                bitmapFile.UsageValue = "Bump Map (from Height Map)"; // 2
+                bitmapFile.BumpHeight.Data = 5; // use 5 as the default value
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = "Best Compressed Bump Format";
+                bitmapFile.MipMapLevel.Data = -1;
+            }
+
+            void ApplySettingsMaterials(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ResetUsageOverrides();
+
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = compress_value;
+                bitmapFile.MipMapLevel.Data = -1;
+                bitmapFile.Gamma.Data = 1.0f;
+                bitmapFile.BitmapCurveValue = "linear";
+                bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
+                bitmapFile.MipLimit.Data = -1;
+                bitmapFile.UsageFormatValue = compress_value;
+            }
+
+
             foreach (string bitmap_full in diffuses)
             {
                 using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
                 {
-                    bitmapFile.ResetUsageOverrides();
-                    bitmapFile.CurveValue = "force PRETTY";
-                    bitmapFile.BitmapFormatValue = compress_value;
-                    bitmapFile.MipMapLevel.Data = -1;
-
-                    // 2.2 gamma is fairly standard sRGB curve
-                    bitmapFile.Gamma.Data = 2.2f;
-                    bitmapFile.BitmapCurveValue = "sRGB";
-
-                    // Set ignore curve override flag
-                    bitmapFile.UsageOverrideFlags.RawValue = 1;
-
-                    bitmapFile.MipLimit.Data = -1;
-                    bitmapFile.UsageFormatValue = compress_value;
+                    ApplySettingsDiffuse(bitmapFile);
 
                     bitmapFile.Save();
                 }
@@ -356,29 +421,7 @@ namespace OsoyoosMB
             {
                 using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
                 {
-                    bitmapFile.ResetUsageOverrides();
-
-                    bitmapFile.UsageValue = "ZBrush Bump Map (from Bump Map)"; // 17
-
-                    bitmapFile.BumpHeight.Data = 5; // use a height of 5 as a default
-
-                    bitmapFile.CurveValue = "force PRETTY";
-
-                    bitmapFile.BitmapFormatValue = "DXN Compressed Normals (better)";
-                    bitmapFile.UsageFormatValue = "DXN Compressed Normals (better)";
-
-                    bitmapFile.MipMapLevel.Data = -1;
-
-                    // Setup linear gamma
-                    bitmapFile.Gamma.Data = 1.0f;
-                    bitmapFile.BitmapCurveValue = "linear";
-
-                    // Set ignore curve override flag
-                    bitmapFile.UsageOverrideFlags.RawValue = 1;
-
-                    // Set Unsigned flag
-                    bitmapFile.DicerFlags.RawValue = 16;
-                    bitmapFile.MipLimit.Data = -1;
+                    ApplySettingsNormals(bitmapFile);
 
                     bitmapFile.Save();
                 }
@@ -389,13 +432,7 @@ namespace OsoyoosMB
 
                 using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
                 {
-                    bitmapFile.ClearUsageOverrides();
-
-                    bitmapFile.UsageValue = "Bump Map (from Height Map)"; // 2
-                    bitmapFile.BumpHeight.Data = 5; // use 5 as the default value
-                    bitmapFile.CurveValue = "force PRETTY";
-                    bitmapFile.BitmapFormatValue = "Best Compressed Bump Format";
-                    bitmapFile.MipMapLevel.Data = -1;
+                    ApplySettingsBumps(bitmapFile);
 
                     bitmapFile.Save();
                 }
@@ -405,16 +442,7 @@ namespace OsoyoosMB
             {
                 using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
                 {
-                    bitmapFile.ResetUsageOverrides();
-
-                    bitmapFile.CurveValue = "force PRETTY";
-                    bitmapFile.BitmapFormatValue = compress_value;
-                    bitmapFile.MipMapLevel.Data = -1;
-                    bitmapFile.Gamma.Data = 1.0f;
-                    bitmapFile.BitmapCurveValue = "linear";
-                    bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
-                    bitmapFile.MipLimit.Data = -1;
-                    bitmapFile.UsageFormatValue = compress_value;
+                    ApplySettingsMaterials(bitmapFile);
 
                     bitmapFile.Save();
                 }
