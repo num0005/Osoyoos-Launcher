@@ -22,8 +22,12 @@ namespace ToolkitLauncher.ToolkitInterface
 
         override public async Task ImportBitmaps(string path, string type, string compression, bool debug_plate)
         {
-            // Call managedblam import
-            await RunManagedBlamCommand(new() { MBHandler.setup_bitmaps_command, path, compression });
+            // todo fix h4 support
+            if (!Profile.IsH4)
+            {
+                // Call managedblam import
+                await RunManagedBlamCommand(new() { MBHandler.setup_bitmaps_command, path, compression });
+            }
             
 
             // Import bitmaps - run this regardless of managedblam success
