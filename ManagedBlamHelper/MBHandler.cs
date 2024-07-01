@@ -107,7 +107,7 @@ namespace OsoyoosMB
             {
                 Console.WriteLine("Running setup_bitmap_compression");
                 BitmapSettings.ConfigureCompression(ek_info, args[1], int.Parse(args[2]));
-                return 1;
+                return 0;
             }
             else
             {
