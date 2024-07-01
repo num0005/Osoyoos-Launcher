@@ -405,17 +405,19 @@ namespace ToolkitLauncher.ToolkitInterface
         protected async Task<ManagedBlamErrorCode> RunManagedBlamCommand(List<string> arguments)
         {
             string? executable_path = Process.GetCurrentProcess().MainModule?.FileName;
-            Debug.Print($"our path is {executable_path}");
+            Trace.WriteLine($"our path is {executable_path}");
 
             if (executable_path is null)
                 return ManagedBlamErrorCode.InternalError;
 
-            List<string> actual_arguments = new() { MBHandler.command_id };
+            bool is_gen4 = Profile.Generation == GameGen.Gen4;
+
+            List<string> actual_arguments = new() { MBHandler.command_id, BaseDirectory, is_gen4.ToString(), GetTagDirectory(), GetDataDirectory() };
             actual_arguments.AddRange(arguments);
 
             Utility.Process.Result result = await Utility.Process.StartProcess(BaseDirectory, executable_path, actual_arguments);
 
-            Debug.Print($" Managedblam result {result}");
+            Trace.WriteLine($" Managedblam result {result}");
 
             // -2 is the special code for missing assembly
             if (result.ReturnCode == -2)

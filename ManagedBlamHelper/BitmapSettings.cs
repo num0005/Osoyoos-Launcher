@@ -4,21 +4,22 @@ using OsoyoosMB.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static OsoyoosMB.MBHandler;
 
 namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void ConfigureCompression(string ek_path, string tag_folder, string ek_tags_folder_path, int compress_value)
+        public static void ConfigureCompression(EditingKitInfo editingKit, string tag_folder, int compress_value)
         {
             // Initialize ManagedBlam
-            ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, ek_path);
+            ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, editingKit.Path);
 
             // Makes "empty" bitmap tags
-            MBHelpers.CreateDummyBitmaps(ek_path, tag_folder, ek_tags_folder_path);
+            MBHelpers.CreateDummyBitmaps(editingKit, tag_folder);
 
             // Get all bitmap tags
-            string tag_folder_full = Path.Join(ek_path, "tags", tag_folder);
+            string tag_folder_full = Path.Join(editingKit.TagDirectory, tag_folder);
             string[] all_bitmaps = Directory.GetFiles(tag_folder_full, "*.bitmap");
 
             // Define bitmap name suffixes for anything non-diffuse
@@ -53,10 +54,10 @@ namespace OsoyoosMB
                 "_mroh.bitmap"
             };
 
-            List<string> diffuse_bitmaps = new List<string>();
-            List<string> normal_bitmaps = new List<string>();
-            List<string> bump_bitmaps = new List<string>();
-            List<string> material_bitmaps = new List<string>();
+            List<string> diffuse_bitmaps = new();
+            List<string> normal_bitmaps = new();
+            List<string> bump_bitmaps = new();
+            List<string> material_bitmaps = new();
 
             foreach (string bitmap in all_bitmaps)
             {
@@ -82,7 +83,7 @@ namespace OsoyoosMB
                 }
             }
 
-            ApplyBitmSettings(diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), ek_path, compress_value);
+            ApplyBitmSettings(editingKit, diffuse_bitmaps.ToArray(), normal_bitmaps.ToArray(), bump_bitmaps.ToArray(), material_bitmaps.ToArray(), compress_value);
         }
 
         // These are the block/field names within the tag file
@@ -103,15 +104,12 @@ namespace OsoyoosMB
             public const string BumpHeight = "Real:bump map height";
         }
 
-        public static void ApplyBitmSettings(string[] diffuses, string[] normals, string[] bumps, string[] materials, string ek_path, int compress_value)
+        public static void ApplyBitmSettings(EditingKitInfo editingKit, string[] diffuses, string[] normals, string[] bumps, string[] materials, int compress_value)
         {
-            // EK "tags" folder location
-            string base_path = Path.Join(ek_path, "tags");
-
             foreach (string bitmap_full in diffuses)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(editingKit.TagDirectory, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -166,7 +164,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in normals)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(editingKit.TagDirectory, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -233,7 +231,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in bumps)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(editingKit.TagDirectory, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 
@@ -273,7 +271,7 @@ namespace OsoyoosMB
             foreach (string bitmap_full in materials)
             {
                 // Get correctly formatted path by only taking tags-relative path and removing extension
-                string bitmap_path = MBHelpers.GetBitmapRelativePath(base_path, bitmap_full);
+                string bitmap_path = MBHelpers.GetBitmapRelativePath(editingKit.TagDirectory, bitmap_full);
 
                 var tag_path = TagPath.FromPathAndType(bitmap_path, "bitm*");
 

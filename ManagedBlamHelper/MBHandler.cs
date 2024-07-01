@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using static OsoyoosMB.BitmapSettings;
 
 namespace OsoyoosMB
 {
@@ -27,6 +28,11 @@ namespace OsoyoosMB
     {
         // random ID for MBHandler
         public const string command_id = "70512702-FBD6-400F-8398-E96D8EB3D802";
+        // command to setup bitmaps
+        public const string setup_bitmaps_command = "setup_bitmap_compression";
+
+        internal record EditingKitInfo(string Path, bool IsGen4, string TagDirectory, string DataDirectory);
+
         /// <summary>
         /// Load assemblies from the bin folder in the working directory
         /// </summary>
@@ -84,7 +90,9 @@ namespace OsoyoosMB
                     return -2;
                 }
 
-                return RunCommands(args);
+                EditingKitInfo ek_info = new(args[0], Boolean.Parse(args[1]), args[2], args[3]);
+
+                return RunCommands(ek_info, args[4..]);
             }
             catch (Exception)
             {
@@ -93,12 +101,12 @@ namespace OsoyoosMB
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static int RunCommands(String[] args)
+        private static int RunCommands(EditingKitInfo ek_info, String[] args)
         {
-            if (args[0] == "setup_bitmap_compression" && args.Length == 5)
+            if (args[0] == setup_bitmaps_command && args.Length == 3)
             {
                 Console.WriteLine("Running setup_bitmap_compression");
-                BitmapSettings.ConfigureCompression(args[1], args[2], args[3], int.Parse(args[4]));
+                BitmapSettings.ConfigureCompression(ek_info, args[1], int.Parse(args[2]));
                 return 1;
             }
             else
