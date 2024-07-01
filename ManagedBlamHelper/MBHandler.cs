@@ -70,8 +70,9 @@ namespace OsoyoosMB
             {
                 Assembly.LoadFile(binManagedBlamPath);
                 return true;
-            } catch (FileNotFoundException)
+            } catch (FileNotFoundException ex)
             {
+                Trace.WriteLine($"ManagedBlam not found! Expection: {ex}");
                 // bad times
                 return false;
             }
@@ -87,6 +88,7 @@ namespace OsoyoosMB
                 currentDomain.AssemblyResolve += new ResolveEventHandler(LoadFromBinFolder);
                 if (!PreloadManagedBlam())
                 {
+                    Trace.WriteLine($"Failed to load managed blam!");
                     return -2;
                 }
 
@@ -94,8 +96,9 @@ namespace OsoyoosMB
 
                 return RunCommands(ek_info, args[4..]);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Trace.WriteLine($"Error in pre-main: {ex}");
                 return -3;
             }
         }
@@ -105,12 +108,13 @@ namespace OsoyoosMB
         {
             if (args[0] == setup_bitmaps_command && args.Length == 3)
             {
-                Console.WriteLine("Running setup_bitmap_compression");
+                Trace.WriteLine("Running setup_bitmap_compression");
                 BitmapSettings.ConfigureCompression(ek_info, args[1], int.Parse(args[2]));
                 return 0;
             }
             else
             {
+                Trace.WriteLine("Unknown command!");
                 return -1;
             }
         }

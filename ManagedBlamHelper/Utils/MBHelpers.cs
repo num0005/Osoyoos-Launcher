@@ -43,11 +43,11 @@ namespace OsoyoosMB.Utils
                     tagFile.New(tag_path);
                     tagFile.Save();
 
-                    Debug.WriteLine("Created bitmap " + relative_texture_path);
+                    Trace.WriteLine("Created bitmap " + relative_texture_path);
                 }
                 else 
                 {
-                    Debug.WriteLine("Bitmap for texture: " + full_texture_path + " already exists");
+                    Trace.WriteLine("Bitmap for texture: " + full_texture_path + " already exists");
                 }
             }
         }
