@@ -1,7 +1,9 @@
 ﻿using Bungie.Tags;
+using ManagedBlamHelper;
 using OsoyoosMB.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace OsoyoosMB
 {
     internal class BitmapSettings
     {
-        public static void ConfigureCompression(EditingKitInfo editingKit, string tag_folder, int compress_value)
+        public static void ConfigureCompression(EditingKitInfo editingKit, string tag_folder, string compress_value)
         {
             // Makes "empty" bitmap tags
             MBHelpers.CreateDummyBitmaps(editingKit, tag_folder);
@@ -96,8 +98,10 @@ namespace OsoyoosMB
             public const string BitmapCurve = "Block:usage override[0]/LongEnum:bitmap curve";
             public const string Flags = "Block:usage override[0]/ByteFlags:flags";
             public const string MipLimit = "Block:usage override[0]/ShortInteger:mipmap limit";
+            public const string MipLimitHR = "Block:usage override[0]/CharInteger:mipmap limit";
             public const string UsageFormat = "Block:usage override[0]/LongEnum:bitmap format";
             public const string DicerFlags = "Block:usage override[0]/WordFlags:dicer flags";
+            public const string DicerFlagsHr = "Block:usage override[0]/ByteFlags:dicer flags";
             public const string Slicer = "Block:usage override[0]/CharEnum:slicer";
             public const string BumpHeight = "Real:bump map height";
         }
@@ -146,51 +150,70 @@ namespace OsoyoosMB
                     tag.Dispose();
             }
 
-            public TagFieldBlock UsageOverridesBlock
+            private static string GetEnumValue(TagFieldEnum @enum)
+            {
+                return @enum.Items[@enum.Value].EnumName;
+            }
+
+            private static void SetEnumValue(TagFieldEnum @enum, string value)
+            {
+                var index = Array.FindIndex(@enum.Items, e => e.EnumName.StartsWith(value));
+
+                if (index == -1)
+                {
+                    throw new InvalidDataException($"Unknown enum value {value}");
+                }
+
+                @enum.Value = index;
+            }
+
+            public TagFieldBlock UsageOverridesBlock => (TagFieldBlock)tag.SelectField(TagFieldConstants.UsageOverride);
+
+            public TagFieldEnum Usage => (TagFieldEnum)tag.SelectField(TagFieldConstants.Usage);
+
+            public TagFieldElementSingle BumpHeight => (TagFieldElementSingle)tag.SelectField(TagFieldConstants.BumpHeight);
+
+            public TagFieldEnum Curve => (TagFieldEnum)tag.SelectField(TagFieldConstants.CurveMode);
+
+            public TagFieldEnum BitmapFormat => (TagFieldEnum)tag.SelectField(TagFieldConstants.BitmapFormat);
+
+            public TagFieldElementInteger MipMapLevel => (TagFieldElementInteger)tag.SelectField(TagFieldConstants.MipMapLevel);
+            public string UsageValue
             {
                 get
                 {
-                    return (TagFieldBlock)tag.SelectField(TagFieldConstants.UsageOverride);
+                    return GetEnumValue(Usage);
+                }
+
+                set
+                {
+                    SetEnumValue(Usage, value);
                 }
             }
 
-            public TagFieldEnum Usage
+            public string CurveValue
             {
                 get
                 {
-                    return (TagFieldEnum)tag.SelectField(TagFieldConstants.Usage);
+                    return GetEnumValue(Curve);
+                }
+
+                set
+                {
+                    SetEnumValue(Curve, value);
                 }
             }
 
-            public TagFieldElementSingle BumpHeight
+            public string BitmapFormatValue
             {
                 get
                 {
-                    return (TagFieldElementSingle)tag.SelectField(TagFieldConstants.BumpHeight);
+                    return GetEnumValue(BitmapFormat);
                 }
-            }
 
-            public TagFieldEnum Curve
-            {
-                get
+                set
                 {
-                    return (TagFieldEnum)tag.SelectField(TagFieldConstants.CurveMode);
-                }
-            }
-
-            public TagFieldEnum BitmapFormat
-            {
-                get
-                {
-                    return (TagFieldEnum)tag.SelectField(TagFieldConstants.BitmapFormat);
-                }
-            }
-
-            public TagFieldElementInteger MipMapLevel
-            {
-                get
-                {
-                    return (TagFieldElementInteger)tag.SelectField(TagFieldConstants.MipMapLevel);
+                    SetEnumValue(BitmapFormat, value);
                 }
             }
 
@@ -218,12 +241,25 @@ namespace OsoyoosMB
                 }
             }
 
+            public string BitmapCurveValue
+            {
+                get
+                {
+                    return GetEnumValue(BitmapCurve);
+                }
+
+                set
+                {
+                    SetEnumValue(BitmapCurve, value);
+                }
+            }
+
             public TagFieldElementInteger MipLimit
             {
                 get
                 {
                     _checkIsUsageValid();
-                    return (TagFieldElementInteger)tag.SelectField(TagFieldConstants.MipLimit);
+                    return (TagFieldElementInteger)tag.SelectField(ManagedBlamInterface.IsGen4 ? TagFieldConstants.MipLimitHR : TagFieldConstants.MipLimit);
                 }
             }
 
@@ -241,7 +277,7 @@ namespace OsoyoosMB
                 get
                 {
                     _checkIsUsageValid();
-                    return (TagFieldFlags)tag.SelectField(TagFieldConstants.DicerFlags);
+                    return (TagFieldFlags)tag.SelectField(ManagedBlamInterface.IsGen4 ? TagFieldConstants.DicerFlagsHr : TagFieldConstants.DicerFlags);
                 }
             }
 
@@ -254,6 +290,19 @@ namespace OsoyoosMB
                 }
             }
 
+            public string UsageFormatValue
+            {
+                get
+                {
+                    return GetEnumValue(UsageFormat);
+                }
+
+                set
+                {
+                    SetEnumValue(UsageFormat, value);
+                }
+            }
+
             public TagFieldEnum Slicer
             {
                 get
@@ -263,39 +312,41 @@ namespace OsoyoosMB
                 }
             }
 
+            public string SlicerValue
+            {
+                get
+                {
+                    return GetEnumValue(Slicer);
+                }
+
+                set
+                {
+                    SetEnumValue(Slicer, value);
+                }
+            }
+
         }
 
-        public static void ApplyBitmSettings(EditingKitInfo editingKit, string[] diffuses, string[] normals, string[] bumps, string[] materials, int compress_value)
+        public static void ApplyBitmSettings(EditingKitInfo editingKit, string[] diffuses, string[] normals, string[] bumps, string[] materials, string compress_value)
         {
             foreach (string bitmap_full in diffuses)
             {
                 using (var bitmapFile = TagFileBitmap.FromFullPath(editingKit, bitmap_full))
                 {
                     bitmapFile.ResetUsageOverrides();
-
-                    // Set curve mode to pretty
-                    bitmapFile.Curve.Value = 2;
-
-                    // Set compression to UI-selected value
-                    bitmapFile.BitmapFormat.Value = compress_value;
-
-                    // Set max mipmap to -1
+                    bitmapFile.CurveValue = "force PRETTY";
+                    bitmapFile.BitmapFormatValue = compress_value;
                     bitmapFile.MipMapLevel.Data = -1;
 
-                    // 2.2 gamma is fairly standard
+                    // 2.2 gamma is fairly standard sRGB curve
                     bitmapFile.Gamma.Data = 2.2f;
-
-                    // Set bitmap curve to sRGB
-                    bitmapFile.BitmapCurve.Value = 5;
+                    bitmapFile.BitmapCurveValue = "sRGB";
 
                     // Set ignore curve override flag
                     bitmapFile.UsageOverrideFlags.RawValue = 1;
 
-                    // Set mipmap limit
                     bitmapFile.MipLimit.Data = -1;
-
-                    // Set compression to UI-selected value
-                    bitmapFile.UsageFormat.Value = compress_value;
+                    bitmapFile.UsageFormatValue = compress_value;
 
                     bitmapFile.Save();
                 }
@@ -307,38 +358,27 @@ namespace OsoyoosMB
                 {
                     bitmapFile.ResetUsageOverrides();
 
-                    // Set usage to zbump
-                    bitmapFile.Usage.Value = 17;
+                    bitmapFile.UsageValue = "ZBrush Bump Map (from Bump Map)"; // 17
 
-                    // Set bump height to default of 5
-                    bitmapFile.BumpHeight.Data = 5;
+                    bitmapFile.BumpHeight.Data = 5; // use a height of 5 as a default
 
-                    // Set curve mode to pretty
-                    bitmapFile.Curve.Value = 2;
+                    bitmapFile.CurveValue = "force PRETTY";
 
-                    // Set compression to DXN
-                    bitmapFile.BitmapFormat.Value = 49;
+                    bitmapFile.BitmapFormatValue = "DXN Compressed Normals (better)";
+                    bitmapFile.UsageFormatValue = "DXN Compressed Normals (better)";
 
-                    // Set max mipmap to -1
                     bitmapFile.MipMapLevel.Data = -1;
 
-                    // 1.0 works better for normals or something?
+                    // Setup linear gamma
                     bitmapFile.Gamma.Data = 1.0f;
-
-                    // Set bitmap curve to linear
-                    bitmapFile.BitmapCurve.Value = 3;
+                    bitmapFile.BitmapCurveValue = "linear";
 
                     // Set ignore curve override flag
                     bitmapFile.UsageOverrideFlags.RawValue = 1;
 
                     // Set Unsigned flag
                     bitmapFile.DicerFlags.RawValue = 16;
-
-                    // Set mipmap limit
                     bitmapFile.MipLimit.Data = -1;
-
-                    // Set compression to DXN
-                    bitmapFile.UsageFormat.Value = 49;
 
                     bitmapFile.Save();
                 }
@@ -351,20 +391,10 @@ namespace OsoyoosMB
                 {
                     bitmapFile.ClearUsageOverrides();
 
-
-                    // Set usage to bump
-                    bitmapFile.Usage.Value = 2;
-
-                    // Set bump height to default of 5
-                    bitmapFile.BumpHeight.Data = 5;
-
-                    // Set curve mode to pretty
-                    bitmapFile.Curve.Value = 2;
-
-                    // Set compression to best compressed bump
-                    bitmapFile.BitmapFormat.Value = 3;
-
-                    // Set max mipmap to -1
+                    bitmapFile.UsageValue = "Bump Map (from Height Map)"; // 2
+                    bitmapFile.BumpHeight.Data = 5; // use 5 as the default value
+                    bitmapFile.CurveValue = "force PRETTY";
+                    bitmapFile.BitmapFormatValue = "Best Compressed Bump Format";
                     bitmapFile.MipMapLevel.Data = -1;
 
                     bitmapFile.Save();
@@ -377,29 +407,14 @@ namespace OsoyoosMB
                 {
                     bitmapFile.ResetUsageOverrides();
 
-                    // Set curve mode to pretty
-                    bitmapFile.Curve.Value = 2;
-
-                    // Set compression to UI-selected value
-                    bitmapFile.BitmapFormat.Value = compress_value;
-
-                    // Set max mipmap to -1
+                    bitmapFile.CurveValue = "force PRETTY";
+                    bitmapFile.BitmapFormatValue = compress_value;
                     bitmapFile.MipMapLevel.Data = -1;
-
-                    // Set gamma
                     bitmapFile.Gamma.Data = 1.0f;
-
-                    // Set bitmap curve to linear
-                    bitmapFile.BitmapCurve.Value = 3;
-
-                    // Set slicer to no slicing
-                    bitmapFile.Slicer.Value = 1;
-
-                    // Set mipmap limit
+                    bitmapFile.BitmapCurveValue = "linear";
+                    bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
                     bitmapFile.MipLimit.Data = -1;
-
-                    // Set compression to UI-selected value
-                    bitmapFile.UsageFormat.Value = compress_value;
+                    bitmapFile.UsageFormatValue = compress_value;
 
                     bitmapFile.Save();
                 }

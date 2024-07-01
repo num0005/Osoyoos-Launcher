@@ -418,22 +418,27 @@ namespace ToolkitLauncher
     public enum BitmapCompressionType
     {
         [Description("Default")]
-        [EnumMember(Value = "0")]
+        [EnumMember(Value = "Use Default (defined by usage)")]
         Default,
-        [Description("DXT5")]
-        [EnumMember(Value = "15")]
-        DXT5,
-        [Description("DXT1")]
-        [EnumMember(Value = "13")]
+
+        [Description("DXT1 (Color-key Alpha)")]
+        [EnumMember(Value = "DXT1 (Compressed Color + Color-Key Alpha)")]
         DXT1,
+        [Description("DXT3 (4-bit alpha)")]
+        [EnumMember(Value = "DXT3 (Compressed Color + 4-bit Alpha)")]
+        DXT3,
+        [Description("DXT5 (8-bit compressed alpha)")]
+        [EnumMember(Value = "DXT5 (Compressed Color + Compressed 8-bit Alpha)")]
+        DXT5,
+
         [Description("24-bit Color + 8-bit Alpha")]
-        [EnumMember(Value = "16")]
+        [EnumMember(Value = "24-bit Color + 8-bit Alpha")]
         Color24BitAlpha8Bit,
         [Description("Best Compressed Color")]
-        [EnumMember(Value = "1")]
+        [EnumMember(Value = "Best Compressed Color Format")]
         BestCompressedColor,
         [Description("Uncompressed")]
-        [EnumMember(Value = "2")]
+        [EnumMember(Value = "Best Uncompressed Color Format")]
         Uncompressed
     }
 

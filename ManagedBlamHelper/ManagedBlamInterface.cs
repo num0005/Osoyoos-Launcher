@@ -15,6 +15,8 @@ namespace ManagedBlamHelper
 
         private static bool is_gen4;
 
+        public static bool IsGen4 => is_gen4;
+
         public static void Start(EditingKitInfo info)
         {
             Trace.WriteLine($"Starting ManagedBlam: {info}");
