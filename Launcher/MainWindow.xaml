@@ -481,7 +481,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Bitmap" Margin="-2,2,0,-6">
+                            <TabItem Header="Import Bitmaps" Margin="-2,2,0,-6">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -513,7 +513,7 @@
                                                         <ColumnDefinition Width="2"/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image to import." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                                    <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image import folder." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                                 </Grid>
                                                 <TextBox Grid.Column="2" Name="compile_image_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                             </Grid>

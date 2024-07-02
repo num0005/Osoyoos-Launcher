@@ -1388,54 +1388,39 @@ namespace ToolkitLauncher
             picker.Prompt();
         }
 
-        readonly FilePicker.Options gen1BitmapOptions = FilePicker.Options.FileSelect(
-           "Select Image File",
-           "Supported image files|*.tif",
-           FilePicker.Options.PathRoot.Data,
-           parent: true
-        );
-
-        readonly FilePicker.Options gen2BitmapOptions = FilePicker.Options.FileSelect(
-           "Select Image File",
-           "Supported image files|*.tif;*.tiff;*.tga;*.jpg;*.bmp",
-           FilePicker.Options.PathRoot.Data,
-           parent: true
-        );
-
-        readonly FilePicker.Options gen2H2CodezBitmapOptions = FilePicker.Options.FileSelect(
-           "Select Image File",
-           "Supported image files|*.tif;*.tiff;*.tga;*.jpg;*.bmp;*.png",
-           FilePicker.Options.PathRoot.Data,
-           parent: true
-        );
-
-        readonly FilePicker.Options MCCBitmapOptions = FilePicker.Options.FileSelect(
-           "Select Image File",
-           "Supported image files|*.tif;*.tiff",
-           FilePicker.Options.PathRoot.Data,
-           parent: true
-        );
-
         private void browse_bitmap_Click(object sender, RoutedEventArgs e)
         {
-            bool tag_dir = false;
-            bool is_file = false;
-            string default_path = get_default_path(compile_image_path.Text, tag_dir, is_file);
-            var bitmapOptions = gen1BitmapOptions;
-            if (halo_2_standalone_stock)
+            const string gen1BitmapOptions = "*.tif";
+            const string gen2BitmapOptions = "*.tif;*.tiff;*.tga;*.jpg;*.bmp";
+            const string MCCBitmapOptions = "*.tif;*.tiff";
+
+            string bitmap_file_types = gen1BitmapOptions;
+            if (halo_2_standalone)
             {
-                bitmapOptions = gen2BitmapOptions;
-            }
-            else if (halo_2_standalone_community)
-            {
-                bitmapOptions = gen2H2CodezBitmapOptions;
+                bitmap_file_types = gen2BitmapOptions;
+                if (halo_community)
+                {
+                    bitmap_file_types += ";*.png";
+                }
             }
             else if (halo_mcc)
             {
-                bitmapOptions = MCCBitmapOptions;
+                bitmap_file_types = MCCBitmapOptions;
             }
 
-            var picker = new FilePicker(compile_image_path, toolkit, bitmapOptions, default_path);
+            FilePicker.Options BitmapOptions = FilePicker.Options.FileSelect(
+               "Select any source image file to choose folder",
+               "Supported image files|" + bitmap_file_types,
+               FilePicker.Options.PathRoot.Data,
+               parent: true
+            );
+
+            bool tag_dir = false;
+            bool is_file = false;
+            string default_path = get_default_path(compile_image_path.Text, tag_dir, is_file);
+
+
+            var picker = new FilePicker(compile_image_path, toolkit, BitmapOptions, default_path);
             picker.Prompt();
         }
 
