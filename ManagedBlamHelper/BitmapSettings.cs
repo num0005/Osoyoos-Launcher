@@ -172,6 +172,8 @@ namespace OsoyoosMB
                     // default to treating bitmaps as diffuse
                     ApplySettingsDiffuse(tagBitmap);
                 }
+
+                tagBitmap.Save();
             }
         }
 
