@@ -1393,6 +1393,7 @@ namespace ToolkitLauncher
             const string gen1BitmapOptions = "*.tif";
             const string gen2BitmapOptions = "*.tif;*.tiff;*.tga;*.jpg;*.bmp";
             const string MCCBitmapOptions = "*.tif;*.tiff";
+            const string H3BitmapOptions = "*.tif;*.tiff;.dds";
 
             string bitmap_file_types = gen1BitmapOptions;
             if (halo_2_standalone)
@@ -1402,6 +1403,10 @@ namespace ToolkitLauncher
                 {
                     bitmap_file_types += ";*.png";
                 }
+            }
+            else if (halo_3)
+            {
+                bitmap_file_types = H3BitmapOptions;
             }
             else if (halo_mcc)
             {
