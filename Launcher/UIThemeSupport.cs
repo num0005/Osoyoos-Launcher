@@ -65,42 +65,11 @@ namespace ToolkitLauncher
 
         private static readonly ARGB light_accent_1 = new ARGB(255, 172, 172, 172);
 
-        /*
-        readonly IDictionary<ThemeType, SolidColorTheme> themes = new Dictionary<ThemeType, SolidColorTheme>
-        {
-            /*
-            { ThemeType.light,
-                new SolidColorTheme(
-                    TextColor: black,
+        private static readonly ARGB blue_accent_1 = new ARGB(255, 173, 216, 230); // LightBlue
+        private static readonly ARGB blue_accent_2 = new ARGB(255, 0, 0, 255); // Blue
 
-                    WindowPrimaryColor: white,
-                    WindowSecondaryColor: new ARGB(255, 229, 229, 229),
-
-                    ButtonPrimaryColor: new ARGB(255, 221, 221, 221),
-                    ButtonSecondaryColor: new ARGB(255, 112, 112, 112),
-                    ButtonHoverPrimaryColor: new ARGB(255, 190, 230, 253),
-                    ButtonHoverSecondaryColor: new ARGB(255, 60, 127, 177),
-                    ButtonIsEnabledPrimaryColor: new ARGB(255, 244, 244, 244),
-                    ButtonIsEnabledSecondaryColor: new ARGB(255, 173, 178, 181),
-
-                    GroupboxPrimaryColor: new ARGB(255, 213, 223, 229),
-                    GroupboxSecondaryColor: white,
-
-                    TabControlPrimaryColor: white,
-                    TabControlSecondaryColor: light_accent_1,
-
-                    TabItemBackground: new() { new ARGB(255, 240, 240, 240), new ARGB(255, 229, 229, 229) },
-                    TabItemTertiaryColor: new ARGB(255, 140, 142, 148),
-
-                    TabItemHoverBackground: new() { new ARGB(255, 236, 244, 252), new ARGB(255, 220, 236, 252) },
-                    TabItemSelectedPrimaryColor: white,
-                    TabItemSelectedSecondaryColor: new ARGB(255, 172, 172, 172),
-                    )
-            }
-
-
-    };
-         */
+        private static readonly ARGB red_accent_1 = new ARGB(255, 255, 182, 193); // LightPink
+        private static readonly ARGB red_accent_2 = new ARGB(255, 255, 0, 0); // Red
 
         readonly IDictionary<ThemeType, SolidColorTheme> themes = new Dictionary<ThemeType, SolidColorTheme>
     {
@@ -200,6 +169,106 @@ namespace ToolkitLauncher
                 ComboBoxListSecondaryColor: new ARGB(255, 150, 150, 150),
                 ComboBoxIsEnabledPrimaryColor: new ARGB(255, 50, 50, 50),
                 ComboBoxIsEnabledSecondaryColor: new ARGB(255, 20, 30, 40)
+            )
+        },
+         { ThemeType.blue,
+            new SolidColorTheme(
+                TextColor: white,
+
+                WindowPrimaryColor: new ARGB(255, 0, 0, 128), // Navy
+                WindowSecondaryColor: new ARGB(255, 25, 25, 112), // MidnightBlue
+
+                ButtonPrimaryColor: new ARGB(255, 70, 130, 180), // SteelBlue
+                ButtonSecondaryColor: new ARGB(255, 30, 144, 255), // DodgerBlue
+                ButtonHoverPrimaryColor: new ARGB(255, 100, 149, 237), // CornflowerBlue
+                ButtonHoverSecondaryColor: new ARGB(255, 65, 105, 225), // RoyalBlue
+                ButtonIsEnabledPrimaryColor: new ARGB(255, 135, 206, 235), // SkyBlue
+                ButtonIsEnabledSecondaryColor: new ARGB(255, 112, 128, 144), // SlateGray
+
+                GroupboxPrimaryColor: new ARGB(255, 72, 61, 139), // DarkSlateBlue
+                GroupboxSecondaryColor: blue_accent_1,
+
+                TabControlPrimaryColor: blue_accent_1,
+                TabControlSecondaryColor: blue_accent_2,
+
+                TabItemBackground: new() { new ARGB(255, 100, 149, 237), new ARGB(255, 65, 105, 225) },
+                TabItemTertiaryColor: new ARGB(255, 0, 0, 128),
+
+                TabItemHoverBackground: new() { new ARGB(255, 173, 216, 230), new ARGB(255, 135, 206, 250) },
+                TabItemSelectedPrimaryColor: blue_accent_1,
+                TabItemSelectedSecondaryColor: blue_accent_2,
+                TabItemIsEnabledPrimaryColor: new ARGB(255, 135, 206, 250),
+                TabItemIsEnabledSecondaryColor: new ARGB(255, 70, 130, 180),
+
+                SliderThumbPrimaryColor: new ARGB(255, 135, 206, 250),
+                SliderThumbSecondaryColor: blue_accent_2,
+                SliderThumbHoverPrimaryColor: new ARGB(255, 100, 149, 237),
+                SliderThumbHoverSecondaryColor: new ARGB(255, 65, 105, 225),
+                SliderThumbHeldPrimaryColor: new ARGB(255, 30, 144, 255),
+                SliderThumbHeldSecondaryColor: new ARGB(255, 0, 0, 255),
+                SliderThumbIsEnabledSecondaryColor: new ARGB(255, 70, 130, 180),
+                SliderTrackPrimaryColor: new ARGB(255, 112, 128, 144),
+                SliderTrackSecondaryColor: new ARGB(255, 95, 158, 160),
+
+                ComboBoxPrimaryColor: new() { new ARGB(255, 135, 206, 250), new ARGB(255, 70, 130, 180) },
+                ComboBoxSecondaryColor: blue_accent_2,
+                ComboBoxHoverPrimaryColor: new() { new ARGB(255, 100, 149, 237), new ARGB(255, 65, 105, 225) },
+                ComboBoxHoverSecondaryColor: new ARGB(255, 0, 0, 255),
+                ComboBoxListPrimaryColor: blue_accent_1,
+                ComboBoxListSecondaryColor: blue_accent_2,
+                ComboBoxIsEnabledPrimaryColor: new ARGB(255, 135, 206, 250),
+                ComboBoxIsEnabledSecondaryColor: new ARGB(255, 70, 130, 180)
+            )
+        },
+
+
+         { ThemeType.red,
+            new SolidColorTheme(
+                TextColor: black,
+
+                WindowPrimaryColor: new ARGB(255, 139, 0, 0), // DarkRed
+                WindowSecondaryColor: new ARGB(255, 165, 42, 42), // Brown
+
+                ButtonPrimaryColor: new ARGB(255, 205, 92, 92), // IndianRed
+                ButtonSecondaryColor: new ARGB(255, 220, 20, 60), // Crimson
+                ButtonHoverPrimaryColor: new ARGB(255, 255, 99, 71), // Tomato
+                ButtonHoverSecondaryColor: new ARGB(255, 255, 69, 0), // OrangeRed
+                ButtonIsEnabledPrimaryColor: new ARGB(255, 255, 160, 122), // LightSalmon
+                ButtonIsEnabledSecondaryColor: new ARGB(255, 178, 34, 34), // FireBrick
+
+                GroupboxPrimaryColor: new ARGB(255, 139, 0, 0), // DarkRed
+                GroupboxSecondaryColor: red_accent_1,
+
+                TabControlPrimaryColor: red_accent_1,
+                TabControlSecondaryColor: red_accent_2,
+
+                TabItemBackground: new() { new ARGB(255, 255, 182, 193), new ARGB(255, 255, 105, 180) },
+                TabItemTertiaryColor: new ARGB(255, 139, 0, 0),
+
+                TabItemHoverBackground: new() { new ARGB(255, 255, 160, 122), new ARGB(255, 255, 127, 80) },
+                TabItemSelectedPrimaryColor: red_accent_1,
+                TabItemSelectedSecondaryColor: red_accent_2,
+                TabItemIsEnabledPrimaryColor: new ARGB(255, 255, 160, 122),
+                TabItemIsEnabledSecondaryColor: new ARGB(255, 205, 92, 92),
+
+                SliderThumbPrimaryColor: new ARGB(255, 255, 160, 122),
+                SliderThumbSecondaryColor: red_accent_2,
+                SliderThumbHoverPrimaryColor: new ARGB(255, 255, 69, 0),
+                SliderThumbHoverSecondaryColor: new ARGB(255, 220, 20, 60),
+                SliderThumbHeldPrimaryColor: new ARGB(255, 205, 92, 92),
+                SliderThumbHeldSecondaryColor: new ARGB(255, 178, 34, 34),
+                SliderThumbIsEnabledSecondaryColor: new ARGB(255, 255, 99, 71),
+                SliderTrackPrimaryColor: new ARGB(255, 139, 0, 0),
+                SliderTrackSecondaryColor: new ARGB(255, 165, 42, 42),
+
+                ComboBoxPrimaryColor: new() { new ARGB(255, 255, 160, 122), new ARGB(255, 205, 92, 92) },
+                ComboBoxSecondaryColor: red_accent_2,
+                ComboBoxHoverPrimaryColor: new() { new ARGB(255, 255, 69, 0), new ARGB(255, 220, 20, 60) },
+                ComboBoxHoverSecondaryColor: new ARGB(255, 139, 0, 0),
+                ComboBoxListPrimaryColor: red_accent_1,
+                ComboBoxListSecondaryColor: red_accent_2,
+                ComboBoxIsEnabledPrimaryColor: new ARGB(255, 255, 160, 122),
+                ComboBoxIsEnabledSecondaryColor: new ARGB(255, 205, 92, 92)
             )
         }
     };

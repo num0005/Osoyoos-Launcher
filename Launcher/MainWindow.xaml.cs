@@ -62,6 +62,12 @@ namespace ToolkitLauncher
         light,
         [Description("Dark")]
         dark,
+        [Description("Red")]
+        red,
+        [Description("Blue")]
+        blue,
+        [Description("Rainbow")]
+        rainbow
     }
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
