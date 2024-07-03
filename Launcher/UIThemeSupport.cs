@@ -242,10 +242,10 @@ namespace ToolkitLauncher
                 TabControlPrimaryColor: red_accent_1,
                 TabControlSecondaryColor: red_accent_2,
 
-                TabItemBackground: new() { new ARGB(255, 255, 182, 193), new ARGB(255, 255, 105, 180) },
-                TabItemTertiaryColor: new ARGB(255, 139, 0, 0),
+                TabItemBackground: new() { new ARGB(255, 255, 160, 122), new ARGB(255, 205, 92, 92) },
+                TabItemTertiaryColor: red_accent_2,
 
-                TabItemHoverBackground: new() { new ARGB(255, 255, 160, 122), new ARGB(255, 255, 127, 80) },
+                TabItemHoverBackground: new() { new ARGB(255, 255, 69, 0), new ARGB(255, 220, 20, 60) },
                 TabItemSelectedPrimaryColor: red_accent_1,
                 TabItemSelectedSecondaryColor: red_accent_2,
                 TabItemIsEnabledPrimaryColor: new ARGB(255, 255, 160, 122),
