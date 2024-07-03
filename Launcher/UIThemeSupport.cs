@@ -12,7 +12,7 @@ namespace ToolkitLauncher
          ARGB TextColor,
 
          //Window Colors - Grids need Background set for this to work
-         ARGB WindowPrimaryColor,
+         List<ARGB> WindowPrimaryColor,
          ARGB WindowSecondaryColor,
 
          ARGB ButtonPrimaryColor,
@@ -67,6 +67,12 @@ namespace ToolkitLauncher
         private static readonly ARGB green = new ARGB(255, 0,   255, 0);
         private static readonly ARGB blue =  new ARGB(255, 0,   0,   255);
 
+        private static readonly ARGB orange = new ARGB(255, 255, 165, 0);
+        private static readonly ARGB yellow = new ARGB(255, 255, 255, 0);
+        private static readonly ARGB indigo = new ARGB(255, 75, 0, 130);
+        private static readonly ARGB violet = new ARGB(255, 238, 130, 238);
+
+
         private static readonly ARGB light_accent_1 = new ARGB(255, 172, 172, 172);
         private static readonly ARGB blue_accent_1 = new ARGB(255, 173, 216, 230); // LightBlue
         private static readonly ARGB red_accent_1 = new ARGB(255, 255, 182, 193); // LightPink
@@ -88,7 +94,7 @@ namespace ToolkitLauncher
             new SolidColorTheme(
                 TextColor: black,
 
-                WindowPrimaryColor: white,
+                WindowPrimaryColor: new() {white},
                 WindowSecondaryColor: new ARGB(255, 229, 229, 229),
 
                 ButtonPrimaryColor: new ARGB(255, 221, 221, 221),
@@ -137,7 +143,7 @@ namespace ToolkitLauncher
             new SolidColorTheme(
                 TextColor: white,
 
-                WindowPrimaryColor: new ARGB(255, 54, 53, 57),
+                WindowPrimaryColor: new(){ new ARGB(255, 54, 53, 57) },
                 WindowSecondaryColor: new ARGB(255, 32, 32, 32),
 
                 ButtonPrimaryColor: new ARGB(255, 85, 85, 85),
@@ -186,7 +192,7 @@ namespace ToolkitLauncher
             new SolidColorTheme(
                 TextColor: white,
 
-                WindowPrimaryColor: new ARGB(255, 0, 0, 128), // Navy
+                WindowPrimaryColor: new() { new ARGB(255, 0, 0, 128) }, // Navy
                 WindowSecondaryColor: new ARGB(255, 25, 25, 112), // MidnightBlue
 
                 ButtonPrimaryColor: new ARGB(255, 70, 130, 180), // SteelBlue
@@ -237,7 +243,7 @@ namespace ToolkitLauncher
             new SolidColorTheme(
                 TextColor: black,
 
-                WindowPrimaryColor: new ARGB(255, 139, 0, 0), // DarkRed
+                WindowPrimaryColor: new() {new ARGB(255, 139, 0, 0) }, // DarkRed
                 WindowSecondaryColor: new ARGB(255, 165, 42, 42), // Brown
 
                 ButtonPrimaryColor: new ARGB(255, 205, 92, 92), // IndianRed
@@ -287,7 +293,7 @@ namespace ToolkitLauncher
             new SolidColorTheme(
                 TextColor: black,
 
-                WindowPrimaryColor: new ARGB(255, 240, 255, 240), // Honeydew
+                WindowPrimaryColor: new() { new ARGB(255, 240, 255, 240) }, // Honeydew
                 WindowSecondaryColor: new ARGB(255, 245, 255, 250), // MintCream
 
                 ButtonPrimaryColor: green_1,
@@ -337,7 +343,7 @@ namespace ToolkitLauncher
             new SolidColorTheme(
                 TextColor: black,
 
-                WindowPrimaryColor: new ARGB(255, 245, 245, 255), // LightLavender
+                WindowPrimaryColor: new() {new ARGB(255, 245, 245, 255) }, // LightLavender
                 WindowSecondaryColor: lavender,
 
                 ButtonPrimaryColor: purple_1,
@@ -381,6 +387,56 @@ namespace ToolkitLauncher
                 ComboBoxIsEnabledPrimaryColor: new() { purple_1, lilac, purple_2 },
                 ComboBoxIsEnabledSecondaryColor: new() { new ARGB(255, 147, 112, 219) }
             )
+        },
+
+         { ThemeType.rainbow,
+            new SolidColorTheme(
+                TextColor: black,
+
+                WindowPrimaryColor: new() { red, orange, yellow, green, violet },
+                WindowSecondaryColor: new ARGB(255, 224, 224, 224), // Gainsboro
+
+                ButtonPrimaryColor: red,
+                ButtonSecondaryColor: orange,
+                ButtonHoverPrimaryColor: yellow,
+                ButtonHoverSecondaryColor: green,
+                ButtonIsEnabledPrimaryColor: blue,
+                ButtonIsEnabledSecondaryColor: violet,
+
+                GroupboxPrimaryColor: indigo,
+                GroupboxSecondaryColor: violet,
+
+                TabControlPrimaryColor: red,
+                TabControlSecondaryColor: orange,
+
+                TabItemBackground: new() { red, orange, yellow, green, violet },
+                TabItemTertiaryColor: new ARGB(255, 200, 200, 200),
+
+                TabItemHoverBackground: new() { new ARGB(255, 255, 192, 203), new ARGB(255, 255, 160, 122) },
+                TabItemSelectedPrimaryColor: yellow,
+                TabItemSelectedSecondaryColor: green,
+                TabItemIsEnabledPrimaryColor: blue,
+                TabItemIsEnabledSecondaryColor: indigo,
+
+                SliderThumbPrimaryColor: red,
+                SliderThumbSecondaryColor: orange,
+                SliderThumbHoverPrimaryColor: yellow,
+                SliderThumbHoverSecondaryColor: green,
+                SliderThumbHeldPrimaryColor: blue,
+                SliderThumbHeldSecondaryColor: violet,
+                SliderThumbIsEnabledSecondaryColor: indigo,
+                SliderTrackPrimaryColor: new ARGB(255, 200, 200, 200),
+                SliderTrackSecondaryColor: new ARGB(255, 224, 224, 224),
+
+                ComboBoxPrimaryColor: new() { red, orange, yellow, green, violet },
+                ComboBoxSecondaryColor: new() { green, blue, indigo },
+                ComboBoxHoverPrimaryColor: new() { new ARGB(255, 255, 192, 203), new ARGB(255, 255, 160, 122) },
+                ComboBoxHoverSecondaryColor: new ARGB(255, 238, 130, 238),
+                ComboBoxListPrimaryColor: new() { red, orange, yellow, green, violet },
+                ComboBoxListSecondaryColor: new() { green, blue, indigo },
+                ComboBoxIsEnabledPrimaryColor: new() { red, orange, yellow },
+                ComboBoxIsEnabledSecondaryColor: new() { green, blue, indigo }
+            )
         }
     };
 
@@ -422,7 +478,7 @@ namespace ToolkitLauncher
             }
 
             //Window Colors - Grids need Background set for this to work
-            Application.Current.Resources["WindowPrimaryColor"] = MakeSolidColorBrush(theme.WindowPrimaryColor);
+            Application.Current.Resources["WindowPrimaryColor"] = MakeLinearGradientBrush(theme.WindowPrimaryColor);
             Application.Current.Resources["WindowSecondaryColor"] = MakeSolidColorBrush(theme.WindowSecondaryColor);
 
             // Button Colors - Set in style. Will work across all buttons automatically
