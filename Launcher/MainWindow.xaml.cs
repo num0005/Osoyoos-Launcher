@@ -66,6 +66,10 @@ namespace ToolkitLauncher
         red,
         [Description("Blue")]
         blue,
+        [Description("Green")]
+        green,
+        [Description("Purple")]
+        purple,
         [Description("Rainbow")]
         rainbow
     }

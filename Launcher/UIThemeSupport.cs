@@ -50,26 +50,31 @@ namespace ToolkitLauncher
 
 
          List<ARGB> ComboBoxPrimaryColor,
-         ARGB ComboBoxSecondaryColor,
+         List<ARGB> ComboBoxSecondaryColor,
          List<ARGB> ComboBoxHoverPrimaryColor,
          ARGB ComboBoxHoverSecondaryColor,
-         ARGB ComboBoxListPrimaryColor,
-         ARGB ComboBoxListSecondaryColor,
-         ARGB ComboBoxIsEnabledPrimaryColor,
-         ARGB ComboBoxIsEnabledSecondaryColor
+         List<ARGB> ComboBoxListPrimaryColor,
+         List<ARGB> ComboBoxListSecondaryColor,
+         List<ARGB> ComboBoxIsEnabledPrimaryColor,
+         List<ARGB> ComboBoxIsEnabledSecondaryColor
     );
     public class LauncherThemeSettings
     {
         private static readonly ARGB white = new ARGB(255, 255, 255, 255);
         private static readonly ARGB black = new ARGB(255, 0, 0, 0);
 
+        private static readonly ARGB red =   new ARGB(255, 255, 0,   0);
+        private static readonly ARGB green = new ARGB(255, 0,   255, 0);
+        private static readonly ARGB blue =  new ARGB(255, 0,   0,   255);
+
         private static readonly ARGB light_accent_1 = new ARGB(255, 172, 172, 172);
-
         private static readonly ARGB blue_accent_1 = new ARGB(255, 173, 216, 230); // LightBlue
-        private static readonly ARGB blue_accent_2 = new ARGB(255, 0, 0, 255); // Blue
-
         private static readonly ARGB red_accent_1 = new ARGB(255, 255, 182, 193); // LightPink
-        private static readonly ARGB red_accent_2 = new ARGB(255, 255, 0, 0); // Red
+
+        private static readonly ARGB purple_1 = new ARGB(255, 128, 0, 128); // Purple
+        private static readonly ARGB purple_2 = new ARGB(255, 75, 0, 130); // Indigo
+        private static readonly ARGB lilac = new ARGB(255, 200, 162, 200); // Lilac
+        private static readonly ARGB lavender = new ARGB(255, 230, 230, 250); // Lavender
 
         readonly IDictionary<ThemeType, SolidColorTheme> themes = new Dictionary<ThemeType, SolidColorTheme>
     {
@@ -113,13 +118,13 @@ namespace ToolkitLauncher
                 SliderTrackSecondaryColor: new ARGB(255, 214, 214, 214),
 
                 ComboBoxPrimaryColor: new() { new ARGB(255, 240, 240, 240), new ARGB(255, 229, 229, 229) },
-                ComboBoxSecondaryColor: light_accent_1,
+                ComboBoxSecondaryColor: new() { light_accent_1 },
                 ComboBoxHoverPrimaryColor: new() { new ARGB(255, 236, 244, 252), new ARGB(255, 220, 236, 252) },
                 ComboBoxHoverSecondaryColor: new ARGB(255, 126, 180, 234),
-                ComboBoxListPrimaryColor: white,
-                ComboBoxListSecondaryColor: new ARGB(255, 100, 100, 100),
-                ComboBoxIsEnabledPrimaryColor: new ARGB(255, 240, 240, 240),
-                ComboBoxIsEnabledSecondaryColor: new ARGB(255, 217, 217, 217)
+                ComboBoxListPrimaryColor: new() { white },
+                ComboBoxListSecondaryColor: new() { new ARGB(255, 100, 100, 100) },
+                ComboBoxIsEnabledPrimaryColor:new() { new ARGB(255, 240, 240, 240) },
+                ComboBoxIsEnabledSecondaryColor:new() { new ARGB(255, 217, 217, 217) }
             )
         },
         { ThemeType.dark,
@@ -162,13 +167,13 @@ namespace ToolkitLauncher
                 SliderTrackSecondaryColor: new ARGB(255, 114, 114, 114),
 
                 ComboBoxPrimaryColor: new() { new ARGB(255, 85, 85, 85), new ARGB(255, 70, 70, 70) },
-                ComboBoxSecondaryColor: new ARGB(255, 51, 51, 51),
+                ComboBoxSecondaryColor: new() { new ARGB(255, 51, 51, 51) },
                 ComboBoxHoverPrimaryColor: new() { new ARGB(255, 136, 144, 152), new ARGB(255, 120, 136, 152) },
                 ComboBoxHoverSecondaryColor: new ARGB(255, 26, 80, 134),
-                ComboBoxListPrimaryColor: black,
-                ComboBoxListSecondaryColor: new ARGB(255, 150, 150, 150),
-                ComboBoxIsEnabledPrimaryColor: new ARGB(255, 50, 50, 50),
-                ComboBoxIsEnabledSecondaryColor: new ARGB(255, 20, 30, 40)
+                ComboBoxListPrimaryColor: new() { black },
+                ComboBoxListSecondaryColor: new() { new ARGB(255, 150, 150, 150) },
+                ComboBoxIsEnabledPrimaryColor: new() { new ARGB(255, 50, 50, 50) },
+                ComboBoxIsEnabledSecondaryColor: new() { new ARGB(255, 20, 30, 40) }
             )
         },
          { ThemeType.blue,
@@ -189,19 +194,19 @@ namespace ToolkitLauncher
                 GroupboxSecondaryColor: blue_accent_1,
 
                 TabControlPrimaryColor: blue_accent_1,
-                TabControlSecondaryColor: blue_accent_2,
+                TabControlSecondaryColor: blue,
 
                 TabItemBackground: new() { new ARGB(255, 100, 149, 237), new ARGB(255, 65, 105, 225) },
                 TabItemTertiaryColor: new ARGB(255, 0, 0, 128),
 
                 TabItemHoverBackground: new() { new ARGB(255, 173, 216, 230), new ARGB(255, 135, 206, 250) },
                 TabItemSelectedPrimaryColor: blue_accent_1,
-                TabItemSelectedSecondaryColor: blue_accent_2,
+                TabItemSelectedSecondaryColor: blue,
                 TabItemIsEnabledPrimaryColor: new ARGB(255, 135, 206, 250),
                 TabItemIsEnabledSecondaryColor: new ARGB(255, 70, 130, 180),
 
                 SliderThumbPrimaryColor: new ARGB(255, 135, 206, 250),
-                SliderThumbSecondaryColor: blue_accent_2,
+                SliderThumbSecondaryColor: blue,
                 SliderThumbHoverPrimaryColor: new ARGB(255, 100, 149, 237),
                 SliderThumbHoverSecondaryColor: new ARGB(255, 65, 105, 225),
                 SliderThumbHeldPrimaryColor: new ARGB(255, 30, 144, 255),
@@ -211,13 +216,13 @@ namespace ToolkitLauncher
                 SliderTrackSecondaryColor: new ARGB(255, 95, 158, 160),
 
                 ComboBoxPrimaryColor: new() { new ARGB(255, 135, 206, 250), new ARGB(255, 70, 130, 180) },
-                ComboBoxSecondaryColor: blue_accent_2,
+                ComboBoxSecondaryColor: new() { blue },
                 ComboBoxHoverPrimaryColor: new() { new ARGB(255, 100, 149, 237), new ARGB(255, 65, 105, 225) },
                 ComboBoxHoverSecondaryColor: new ARGB(255, 0, 0, 255),
-                ComboBoxListPrimaryColor: blue_accent_1,
-                ComboBoxListSecondaryColor: blue_accent_2,
-                ComboBoxIsEnabledPrimaryColor: new ARGB(255, 135, 206, 250),
-                ComboBoxIsEnabledSecondaryColor: new ARGB(255, 70, 130, 180)
+                ComboBoxListPrimaryColor: new() { blue_accent_1 },
+                ComboBoxListSecondaryColor: new() { blue },
+                ComboBoxIsEnabledPrimaryColor:new() { new ARGB(255, 135, 206, 250) },
+                ComboBoxIsEnabledSecondaryColor: new() {new ARGB(255, 70, 130, 180)}
             )
         },
 
@@ -240,19 +245,19 @@ namespace ToolkitLauncher
                 GroupboxSecondaryColor: red_accent_1,
 
                 TabControlPrimaryColor: red_accent_1,
-                TabControlSecondaryColor: red_accent_2,
+                TabControlSecondaryColor: red,
 
                 TabItemBackground: new() { new ARGB(255, 255, 160, 122), new ARGB(255, 205, 92, 92) },
-                TabItemTertiaryColor: red_accent_2,
+                TabItemTertiaryColor: red,
 
                 TabItemHoverBackground: new() { new ARGB(255, 255, 69, 0), new ARGB(255, 220, 20, 60) },
                 TabItemSelectedPrimaryColor: red_accent_1,
-                TabItemSelectedSecondaryColor: red_accent_2,
+                TabItemSelectedSecondaryColor: red,
                 TabItemIsEnabledPrimaryColor: new ARGB(255, 255, 160, 122),
                 TabItemIsEnabledSecondaryColor: new ARGB(255, 205, 92, 92),
 
                 SliderThumbPrimaryColor: new ARGB(255, 255, 160, 122),
-                SliderThumbSecondaryColor: red_accent_2,
+                SliderThumbSecondaryColor: red,
                 SliderThumbHoverPrimaryColor: new ARGB(255, 255, 69, 0),
                 SliderThumbHoverSecondaryColor: new ARGB(255, 220, 20, 60),
                 SliderThumbHeldPrimaryColor: new ARGB(255, 205, 92, 92),
@@ -262,13 +267,63 @@ namespace ToolkitLauncher
                 SliderTrackSecondaryColor: new ARGB(255, 165, 42, 42),
 
                 ComboBoxPrimaryColor: new() { new ARGB(255, 255, 160, 122), new ARGB(255, 205, 92, 92) },
-                ComboBoxSecondaryColor: red_accent_2,
+                ComboBoxSecondaryColor: new() { red },
                 ComboBoxHoverPrimaryColor: new() { new ARGB(255, 255, 69, 0), new ARGB(255, 220, 20, 60) },
                 ComboBoxHoverSecondaryColor: new ARGB(255, 139, 0, 0),
-                ComboBoxListPrimaryColor: red_accent_1,
-                ComboBoxListSecondaryColor: red_accent_2,
-                ComboBoxIsEnabledPrimaryColor: new ARGB(255, 255, 160, 122),
-                ComboBoxIsEnabledSecondaryColor: new ARGB(255, 205, 92, 92)
+                ComboBoxListPrimaryColor: new() { red_accent_1 },
+                ComboBoxListSecondaryColor: new() { red },
+                ComboBoxIsEnabledPrimaryColor: new() { new ARGB(255, 255, 160, 122) },
+                ComboBoxIsEnabledSecondaryColor:new() { new ARGB(255, 205, 92, 92) }
+            )
+        },
+
+         { ThemeType.purple,
+            new SolidColorTheme(
+                TextColor: black,
+
+                WindowPrimaryColor: new ARGB(255, 245, 245, 255), // LightLavender
+                WindowSecondaryColor: lavender,
+
+                ButtonPrimaryColor: purple_1,
+                ButtonSecondaryColor: purple_2,
+                ButtonHoverPrimaryColor: lilac,
+                ButtonHoverSecondaryColor: new ARGB(255, 186, 85, 211), // MediumOrchid
+                ButtonIsEnabledPrimaryColor: new ARGB(255, 147, 112, 219), // MediumPurple
+                ButtonIsEnabledSecondaryColor: new ARGB(255, 138, 43, 226), // BlueViolet
+
+                GroupboxPrimaryColor: new ARGB(255, 216, 191, 216), // Thistle
+                GroupboxSecondaryColor: purple_1,
+
+                TabControlPrimaryColor: purple_1,
+                TabControlSecondaryColor: lilac,
+
+                TabItemBackground: new() { purple_1, lavender, purple_2 },
+                TabItemTertiaryColor: new ARGB(255, 75, 0, 130), // Indigo
+
+                TabItemHoverBackground: new() { new ARGB(255, 218, 112, 214), new ARGB(255, 186, 85, 211) },
+                TabItemSelectedPrimaryColor: lilac,
+                TabItemSelectedSecondaryColor: new ARGB(255, 138, 43, 226), // BlueViolet
+                TabItemIsEnabledPrimaryColor: new ARGB(255, 147, 112, 219), // MediumPurple
+                TabItemIsEnabledSecondaryColor: new ARGB(255, 186, 85, 211), // MediumOrchid
+
+                SliderThumbPrimaryColor: purple_1,
+                SliderThumbSecondaryColor: lilac,
+                SliderThumbHoverPrimaryColor: new ARGB(255, 138, 43, 226), // BlueViolet
+                SliderThumbHoverSecondaryColor: new ARGB(255, 186, 85, 211), // MediumOrchid
+                SliderThumbHeldPrimaryColor: new ARGB(255, 147, 112, 219), // MediumPurple
+                SliderThumbHeldSecondaryColor: new ARGB(255, 218, 112, 214), // Orchid
+                SliderThumbIsEnabledSecondaryColor: new ARGB(255, 230, 230, 250), // Lavender
+                SliderTrackPrimaryColor: new ARGB(255, 216, 191, 216), // Thistle
+                SliderTrackSecondaryColor: new ARGB(255, 230, 230, 250), // Lavender
+
+                ComboBoxPrimaryColor: new() { purple_1, lilac },
+                ComboBoxSecondaryColor: new() { new ARGB(255, 147, 112, 219) },
+                ComboBoxHoverPrimaryColor: new() { new ARGB(255, 218, 112, 214), new ARGB(255, 230, 230, 250) },
+                ComboBoxHoverSecondaryColor: new ARGB(255, 216, 191, 216), // Thistle
+                ComboBoxListPrimaryColor: new() { purple_1, lilac, purple_2 },
+                ComboBoxListSecondaryColor: new() { new ARGB(255, 147, 112, 219) },
+                ComboBoxIsEnabledPrimaryColor: new() { purple_1, lilac, purple_2 },
+                ComboBoxIsEnabledSecondaryColor: new() { new ARGB(255, 147, 112, 219) }
             )
         }
     };
@@ -360,13 +415,13 @@ namespace ToolkitLauncher
             // (General_101) I'm replacing the gradient instead of using Dynamic colors in the gradient to work around an issue.
             // (General_101) This should work fine for comboboxes. 
             Application.Current.Resources["ComboBoxPrimaryColor"] = MakeLinearGradientBrush(theme.ComboBoxPrimaryColor);
-            Application.Current.Resources["ComboBoxSecondaryColor"] = MakeSolidColorBrush(theme.ComboBoxSecondaryColor);
+            Application.Current.Resources["ComboBoxSecondaryColor"] = MakeLinearGradientBrush(theme.ComboBoxSecondaryColor);
             Application.Current.Resources["ComboBoxHoverPrimaryColor"] = MakeLinearGradientBrush(theme.ComboBoxHoverPrimaryColor);
             Application.Current.Resources["ComboBoxHoverSecondaryColor"] = MakeSolidColorBrush(theme.ComboBoxHoverSecondaryColor);
-            Application.Current.Resources["ComboBoxListPrimaryColor"] = MakeSolidColorBrush(theme.ComboBoxListPrimaryColor);
-            Application.Current.Resources["ComboBoxListSecondaryColor"] = MakeSolidColorBrush(theme.ComboBoxListSecondaryColor);
-            Application.Current.Resources["ComboBoxIsEnabledPrimaryColor"] = MakeSolidColorBrush(theme.ComboBoxIsEnabledPrimaryColor);
-            Application.Current.Resources["ComboBoxIsEnabledSecondaryColor"] = MakeSolidColorBrush(theme.ComboBoxIsEnabledSecondaryColor);
+            Application.Current.Resources["ComboBoxListPrimaryColor"] = MakeLinearGradientBrush(theme.ComboBoxListPrimaryColor);
+            Application.Current.Resources["ComboBoxListSecondaryColor"] = MakeLinearGradientBrush(theme.ComboBoxListSecondaryColor);
+            Application.Current.Resources["ComboBoxIsEnabledPrimaryColor"] = MakeLinearGradientBrush(theme.ComboBoxIsEnabledPrimaryColor);
+            Application.Current.Resources["ComboBoxIsEnabledSecondaryColor"] = MakeLinearGradientBrush(theme.ComboBoxIsEnabledSecondaryColor);
         }
 
         public void SetLauncherTheme(ThemeType theme_index)
