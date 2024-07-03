@@ -76,6 +76,12 @@ namespace ToolkitLauncher
         private static readonly ARGB lilac = new ARGB(255, 200, 162, 200); // Lilac
         private static readonly ARGB lavender = new ARGB(255, 230, 230, 250); // Lavender
 
+
+        private static readonly ARGB green_1 = new ARGB(255, 34, 139, 34); // ForestGreen
+        private static readonly ARGB green_2 = new ARGB(255, 60, 179, 113); // MediumSeaGreen
+        private static readonly ARGB light_green = new ARGB(255, 144, 238, 144); // LightGreen
+        private static readonly ARGB pale_green = new ARGB(255, 152, 251, 152); // PaleGreen
+
         readonly IDictionary<ThemeType, SolidColorTheme> themes = new Dictionary<ThemeType, SolidColorTheme>
     {
         { ThemeType.light,
@@ -274,6 +280,56 @@ namespace ToolkitLauncher
                 ComboBoxListSecondaryColor: new() { red },
                 ComboBoxIsEnabledPrimaryColor: new() { new ARGB(255, 255, 160, 122) },
                 ComboBoxIsEnabledSecondaryColor:new() { new ARGB(255, 205, 92, 92) }
+            )
+        },
+
+                 { ThemeType.green,
+            new SolidColorTheme(
+                TextColor: black,
+
+                WindowPrimaryColor: new ARGB(255, 240, 255, 240), // Honeydew
+                WindowSecondaryColor: new ARGB(255, 245, 255, 250), // MintCream
+
+                ButtonPrimaryColor: green_1,
+                ButtonSecondaryColor: green_2,
+                ButtonHoverPrimaryColor: light_green,
+                ButtonHoverSecondaryColor: new ARGB(255, 34, 139, 34), // ForestGreen
+                ButtonIsEnabledPrimaryColor: new ARGB(255, 46, 139, 87), // SeaGreen
+                ButtonIsEnabledSecondaryColor: new ARGB(255, 107, 142, 35), // OliveDrab
+
+                GroupboxPrimaryColor: new ARGB(255, 152, 251, 152), // PaleGreen
+                GroupboxSecondaryColor: green_1,
+
+                TabControlPrimaryColor: green_1,
+                TabControlSecondaryColor: light_green,
+
+                TabItemBackground: new() { green_1, light_green, green_2 },
+                TabItemTertiaryColor: new ARGB(255, 0, 100, 0), // DarkGreen
+
+                TabItemHoverBackground: new() { new ARGB(255, 143, 188, 143), new ARGB(255, 144, 238, 144) },
+                TabItemSelectedPrimaryColor: light_green,
+                TabItemSelectedSecondaryColor: new ARGB(255, 107, 142, 35), // OliveDrab
+                TabItemIsEnabledPrimaryColor: new ARGB(255, 46, 139, 87), // SeaGreen
+                TabItemIsEnabledSecondaryColor: new ARGB(255, 107, 142, 35), // OliveDrab
+
+                SliderThumbPrimaryColor: green_1,
+                SliderThumbSecondaryColor: light_green,
+                SliderThumbHoverPrimaryColor: new ARGB(255, 107, 142, 35), // OliveDrab
+                SliderThumbHoverSecondaryColor: new ARGB(255, 60, 179, 113), // MediumSeaGreen
+                SliderThumbHeldPrimaryColor: new ARGB(255, 46, 139, 87), // SeaGreen
+                SliderThumbHeldSecondaryColor: new ARGB(255, 143, 188, 143), // DarkSeaGreen
+                SliderThumbIsEnabledSecondaryColor: new ARGB(255, 240, 255, 240), // Honeydew
+                SliderTrackPrimaryColor: new ARGB(255, 152, 251, 152), // PaleGreen
+                SliderTrackSecondaryColor: new ARGB(255, 245, 255, 250), // MintCream
+
+                ComboBoxPrimaryColor: new() { green_1, light_green, green_2 },
+                ComboBoxSecondaryColor: new() { new ARGB(255, 46, 139, 87), new ARGB(255, 143, 188, 143) },
+                ComboBoxHoverPrimaryColor: new() { new ARGB(255, 143, 188, 143), new ARGB(255, 240, 255, 240) },
+                ComboBoxHoverSecondaryColor: new ARGB(255, 152, 251, 152), // PaleGreen
+                ComboBoxListPrimaryColor: new() { green_1, light_green, green_2 },
+                ComboBoxListSecondaryColor: new() { new ARGB(255, 46, 139, 87), new ARGB(255, 143, 188, 143) },
+                ComboBoxIsEnabledPrimaryColor: new() { green_1, light_green, green_2 },
+                ComboBoxIsEnabledSecondaryColor: new() { new ARGB(255, 46, 139, 87), new ARGB(255, 143, 188, 143) }
             )
         },
 
