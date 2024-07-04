@@ -39,7 +39,7 @@ public class FilePicker
 			return opt;
 		}
 
-        internal bool IsFolderSelect() { return filter is null; }
+		internal bool IsFolderSelect() { return filter is null; }
 
 		internal string? title;
 		internal string? filter;
@@ -85,8 +85,8 @@ public class FilePicker
         
     }
 
-    public bool Prompt()
-    {
+	public bool Prompt()
+	{
 		if (folderDialog is null && fileDialog is null)
 			throw new InvalidOperationException("No valid dialog");
 		if (folderDialog is not null && folderDialog.ShowDialog() == DialogResult.OK)
