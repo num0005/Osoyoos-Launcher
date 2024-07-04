@@ -344,6 +344,13 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         /// <summary>
+        /// Extract import info from a tag
+        /// </summary>
+        /// <param name="path">The path of the tag to extract</param>
+        /// <returns></returns>
+        public abstract Task ExtractTags(string path);
+
+        /// <summary>
         /// Get the args to prepend to every invokaing of a game tool
         /// </summary>
         /// <returns>List with all the args to add</returns>

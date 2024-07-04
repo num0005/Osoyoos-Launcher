@@ -1113,6 +1113,73 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
+                            <TabItem Header="Extract Tags" Margin="-2,15,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="1" Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto" MinHeight="180"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Button x:Name="browse_extract_tag" Content="Browse" VerticalAlignment="Center" Padding="4" Click="browse_extract_tag_Click" MinWidth="75" MinHeight="26" ToolTip="Select a tag to extract."/>
+                                        </Grid>
+                                        <Grid Grid.Row="2">
+                                            <GroupBox>
+                                                <GroupBox.Header>
+                                                    <TextBlock Text="Extract List" Foreground="{DynamicResource TextColor}"/>
+                                                </GroupBox.Header>
+                                                <Grid Grid.Row="2">
+                                                    <ListBox x:Name="extract_tag_list" MaxHeight="155"  HorizontalContentAlignment="Stretch" Background="{DynamicResource WindowPrimaryColor}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Grid Background="{DynamicResource WindowSecondaryColor}">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*"/>
+                                                                        <ColumnDefinition Width="4"/>
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid Grid.Column="0" HorizontalAlignment="Stretch">
+                                                                        <TextBlock Text="{Binding}" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}"/>
+                                                                    </Grid>
+                                                                    <Button Grid.Column="2" Click="extract_tag_remove_Click" HorizontalAlignment="Right">
+                                                                        <Button.Content>
+                                                                            <TextBlock Text="x" TextAlignment="Center"/>
+                                                                        </Button.Content>
+                                                                    </Button>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+                                                </Grid>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox  x:Name="keep_extract_list" Content="Keep Extract List" Grid.Column="0" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Center" ToolTip="Check this to keep the Extract List after extracting"/>
+                                            <Button Content="Clear Extract List" Grid.Column="1" HorizontalAlignment="Center" Foreground="{DynamicResource TextColor}" Click="extract_tag_clear_all_Click" Margin="0,-4,0,0" VerticalAlignment="Top"/>
+                                        </Grid>
+                                        <Button Grid.Row="6" Content="Extract Tags" Foreground="{DynamicResource TextColor}" VerticalAlignment="Bottom" Click="ExtractTags" IsEnabled="{Binding Items.Count, ElementName=extract_tag_list, Mode=OneWay}" ToolTip="Extract the tag!"/>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
                         </TabControl>
                     </Grid>
                 </Grid>
