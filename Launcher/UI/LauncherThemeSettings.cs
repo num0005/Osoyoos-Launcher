@@ -93,6 +93,10 @@ namespace ToolkitLauncher.UI
                     Application.Current.Resources["ComboBoxIsEnabledSecondaryColor"] = new SolidColorBrush(Color.FromArgb(255, 217, 217, 217));
                     break;
                 case ThemeType.dark:
+                case ThemeType.darkblue:
+                case ThemeType.darkpurple:
+                case ThemeType.darkorange:
+                case ThemeType.darkgreen:
                     // Dark Theme
 
                     //Window Colors - Grids need Background set for this to work

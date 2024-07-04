@@ -63,6 +63,14 @@ namespace ToolkitLauncher
         light,
         [Description("Dark")]
         dark,
+        [Description("Dark Blue")]
+        darkblue,
+        [Description("Dark Purple")]
+        darkpurple,
+        [Description("Dark Orange")]
+        darkorange,
+        [Description("Dark Green")]
+        darkgreen,
         [Description("Red")]
         red,
         [Description("Blue")]
