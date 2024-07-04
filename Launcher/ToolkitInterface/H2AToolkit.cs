@@ -309,7 +309,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "fbx-to-ass", fbxPath, assPath });
         }
 
-        public override async Task ExtractTags(string path, bool h2MoveDir)
+        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
             string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
             string dataPath = String.IsNullOrEmpty(Profile.DataPath) ? Path.GetDirectoryName(Profile.ToolPath) + "\\data" : Profile.DataPath;
@@ -341,7 +341,10 @@ namespace ToolkitLauncher.ToolkitInterface
                 case ".bitmap":
                     string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
                     Directory.CreateDirectory(bitmapsDir);
-                    await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                    if (bitmapsAsTGA)
+                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                    else
+                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-tga", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
                     break;
                 case ".multilingual_unicode_string_list":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);

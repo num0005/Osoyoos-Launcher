@@ -349,7 +349,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path">The path of the tag to extract</param>
         /// <param name="h2MoveDir">Whether or not to move files from the !extracted folder to their correct directory</param>
         /// <returns></returns>
-        public abstract Task ExtractTags(string path, bool h2MoveDir);
+        public abstract Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA);
 
         /// <summary>
         /// Get the args to prepend to every invokaing of a game tool

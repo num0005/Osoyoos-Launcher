@@ -42,7 +42,7 @@ namespace ToolkitLauncher.ToolkitInterface
         {
         }
 
-        public override async Task ExtractTags(string path, bool h2MoveDir)
+        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
         }
 

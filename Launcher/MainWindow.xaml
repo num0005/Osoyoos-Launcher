@@ -1183,8 +1183,13 @@
                                                             <RowDefinition/>
                                                             <RowDefinition/>
                                                         </Grid.RowDefinitions>
-                                                        <CheckBox x:Name="keep_extract_list" Grid.Row="0" Content="Keep Extract List" Foreground="{DynamicResource TextColor}" ToolTip="Keep the Extract List after extracting"/>
-                                                        <CheckBox x:Name="halo2_move_directory" Grid.Row="1" Content="Move Extracted Files" Foreground="{DynamicResource TextColor}" ToolTip="Move extracted files from the !extracted directory to their correct directory (H2 only)" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}"/>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox x:Name="keep_extract_list" Grid.Row="0" Grid.Column="0" Content="Keep Extract List" Foreground="{DynamicResource TextColor}" ToolTip="Keep the Extract List after extracting"/>
+                                                        <CheckBox x:Name="extract_bitmaps_tga" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Content="TGA Bitmaps" Foreground="{DynamicResource TextColor}" ToolTip="Extract bitmaps as TGA instead of DDS"/>
+                                                        <CheckBox x:Name="halo2_move_directory" Grid.Row="1" Grid.Column="0" Content="Move Extracted Files" Foreground="{DynamicResource TextColor}" ToolTip="Move extracted files from the !extracted directory to their correct directory (H2 only)" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}"/>
                                                     </Grid>
                                                 </GroupBox>
                                             </Grid>
