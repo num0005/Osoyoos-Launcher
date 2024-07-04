@@ -213,6 +213,11 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "import-lipsync", path, ltf_path });
         }
 
+        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
+        {
+            await RunTool(ToolType.Tool, new List<string>() { "export-structure-mesh-obj", path });
+        }
+
         public override bool IsMutexLocked(ToolType tool)
         {
             // todo(num0005) implement this

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ToolkitLauncher.Utility;
@@ -321,6 +322,32 @@ namespace ToolkitLauncher.ToolkitInterface
         public async Task ASSFromFBX(string fbxPath, string assPath)
         {
             await RunTool(ToolType.Tool, new List<string>() { "fbx-to-ass", fbxPath, assPath });
+        }
+
+        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
+        {
+            string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
+            string dataPath = String.IsNullOrEmpty(Profile.DataPath) ? Path.GetDirectoryName(Profile.ToolPath) + "\\data" : Profile.DataPath;
+            switch (pathandExtension[1])
+            {
+                case ".scenario_structure_bsp":
+                case ".render_model":
+                case ".physics_model":
+                case ".collision_model":
+                    await RunTool(ToolType.Tool, new List<string>() { "extract-import-info", "tags\\" + path }, OutputMode.closeShell);
+                    break;
+                case ".bitmap":
+                    string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
+                    Directory.CreateDirectory(bitmapsDir);
+                    if (bitmapsAsTGA)
+                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                    else
+                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-tga", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                    break;
+                case ".multilingual_unicode_string_list":
+                    await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);
+                    break;
+            }
         }
 
         public override bool IsMutexLocked(ToolType tool)

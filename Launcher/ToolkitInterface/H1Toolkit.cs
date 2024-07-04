@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -80,6 +80,11 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
         {
             await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
+        }
+
+        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
+        {
+            await RunTool(ToolType.Tool, new List<string>() { "export-structure-mesh-obj", path });
         }
 
         protected virtual string sapienWindowClass

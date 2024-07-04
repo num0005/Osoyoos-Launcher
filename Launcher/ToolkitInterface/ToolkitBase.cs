@@ -1,4 +1,4 @@
-﻿using OsoyoosMB;
+using OsoyoosMB;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -342,6 +342,14 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             await Utility.Process.StartProcessWithShell(BaseDirectory, GetToolExecutable(ToolType.Tool), Utility.Process.EscapeArgList(GetArgsToPrepend()) + " " + command);
         }
+
+        /// <summary>
+        /// Extract import info from a tag
+        /// </summary>
+        /// <param name="path">The path of the tag to extract</param>
+        /// <param name="h2MoveDir">Whether or not to move files from the !extracted folder to their correct directory</param>
+        /// <returns></returns>
+        public abstract Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA);
 
         /// <summary>
         /// Get the args to prepend to every invokaing of a game tool
