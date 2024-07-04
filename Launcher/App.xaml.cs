@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System;
 using OsoyoosMB;
 using ToolkitLauncher.Utility;
+using System.Collections.Generic;
 
 namespace ToolkitLauncher
 {
@@ -15,6 +16,7 @@ namespace ToolkitLauncher
     public partial class App : Application
     {
         private readonly static string appdata_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private readonly static string appdata_local_path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         private const string save_folder = "Osoyoos";
         public static string OsoyoosSavePath
         {
@@ -23,6 +25,8 @@ namespace ToolkitLauncher
                 return Path.Join(appdata_path, save_folder);
             }
         }
+
+        static public string TempFolder => Path.Combine(appdata_local_path, save_folder, "Temp");
 
         public static readonly string DeleteOldCommand = "-DeleteOldInternal";
         private static readonly int MAX_DELETE_RETRY = 10;
@@ -46,6 +50,15 @@ namespace ToolkitLauncher
         }
         protected override void OnStartup(StartupEventArgs e)
         {
+            try
+            {
+                Directory.CreateDirectory(TempFolder);
+            } catch (Exception ex)
+            {
+                Trace.WriteLine("Failed to create temporary folder:");
+                Trace.WriteLine(ex);
+            }
+
             Documentation.Contents.GetHashCode(); // touch
             // check startup commands
             if (e.Args.Length >= 2)
@@ -57,7 +70,37 @@ namespace ToolkitLauncher
             base.OnStartup(e);
 
             LogManager.RotateLogs();
+            ClearTemporaryFolder();
 
+        }
+
+        private static void ClearTemporaryFolder()
+        {
+            Trace.WriteLine($"Clearing old temporary files....");
+            try
+            {
+                IEnumerable<FileInfo> files = new DirectoryInfo(TempFolder).EnumerateFiles();
+                int deletedCount = 0;
+                // delete selected files
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        file.Delete();
+                        deletedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine($"Failed to delete old temporary file {file.FullName} \r\n {ex}");
+                    }
+                }
+
+                Trace.WriteLine($"Deleted {deletedCount} temporary files.");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Failed to enumerate temporary files {ex}");
+            }
         }
 
         [STAThread]

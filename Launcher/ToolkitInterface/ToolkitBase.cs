@@ -412,12 +412,33 @@ namespace ToolkitLauncher.ToolkitInterface
 
             bool is_gen4 = Profile.Generation == GameGen.Gen4;
 
-            List<string> actual_arguments = new() { MBHandler.command_id, BaseDirectory, is_gen4.ToString(), GetTagDirectory(), GetDataDirectory() };
+            List<string> actual_arguments = new() { MBHandler.command_id, BaseDirectory, is_gen4.ToString(), GetTagDirectory(), GetDataDirectory(), Profile.IsH4.ToString() };
+
+            string? temporary_dll_path = null;
+            if (Profile.IsH4)
+            {
+                Directory.CreateDirectory(App.TempFolder);
+                temporary_dll_path = Path.Combine(App.TempFolder, $"{Guid.NewGuid()}.patched.managedblam.dll");
+                actual_arguments.Add(temporary_dll_path);
+            }
+
             actual_arguments.AddRange(arguments);
 
             Utility.Process.Result result = await Utility.Process.StartProcess(BaseDirectory, executable_path, actual_arguments);
 
             Trace.WriteLine($" Managedblam result {result}");
+
+            if (temporary_dll_path is not null)
+            {
+                try
+                {
+                    File.Delete(temporary_dll_path);
+                } catch (Exception ex)
+                {
+                    Trace.WriteLine($"Failed to delete temporary managedblam dll \"{temporary_dll_path}\":");
+                    Trace.WriteLine(ex);
+                }
+            }
 
             // -2 is the special code for missing assembly
             if (result.ReturnCode == -2)

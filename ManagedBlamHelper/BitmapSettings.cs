@@ -149,7 +149,7 @@ namespace OsoyoosMB
                     tagFile.New(tag_path);
                 }
 
-                using TagFileBitmap tagBitmap = new(tag_path, tagFile);
+                TagFileBitmap tagBitmap = new(tag_path, tagFile);
 
                 /*
                  * Apply custom settings depending on the bitmap usage (based on filename)
