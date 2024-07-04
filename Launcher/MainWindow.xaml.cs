@@ -1,4 +1,4 @@
-﻿using Octokit;
+using Octokit;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -2723,14 +2723,12 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
 
         private async void ExtractTags(object sender, RoutedEventArgs e)
         {
-            bool moveExtractedFiles = false;
-            if (halo2_move_directory.IsChecked == true)
-            {
-                moveExtractedFiles = true;
-            }
+            bool moveExtractedFiles = halo2_move_directory.IsChecked == true;
+            bool extractBitmapsAsTGA = extract_bitmaps_tga.IsChecked == true;
+
             foreach (string tag in extract_tag_list.Items)
             {
-                await toolkit.ExtractTags(tag, moveExtractedFiles);
+                await toolkit.ExtractTags(tag, moveExtractedFiles, extractBitmapsAsTGA);
             }
             if (keep_extract_list.IsChecked != true)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -82,7 +82,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
         }
 
-        public override async Task ExtractTags(string path, bool h2MoveDir)
+        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
             await RunTool(ToolType.Tool, new List<string>() { "export-structure-mesh-obj", path });
         }
