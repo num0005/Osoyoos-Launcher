@@ -339,7 +339,9 @@ namespace ToolkitLauncher.ToolkitInterface
                     newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\collision\\";
                     break;
                 case ".bitmap":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-bitmap-dds", pathandExtension[0] }, OutputMode.closeShell);
+                    string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
+                    Directory.CreateDirectory(bitmapsDir);
+                    await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
                     break;
                 case ".multilingual_unicode_string_list":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);
