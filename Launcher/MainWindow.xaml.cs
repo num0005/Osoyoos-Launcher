@@ -2714,7 +2714,6 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             var options = FilePicker.Options.FileSelect("Select Tag Files", filter, FilePicker.Options.PathRoot.Tag, false, false);
             var picker = new FilePicker(extract_tag_list, toolkit, options , default_path);
             picker.Prompt();
-
         }
 
         private void extract_tag_remove_Click(object sender, RoutedEventArgs e)
@@ -2724,9 +2723,14 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
 
         private async void ExtractTags(object sender, RoutedEventArgs e)
         {
+            bool moveExtractedFiles = false;
+            if (halo2_move_directory.IsChecked == true)
+            {
+                moveExtractedFiles = true;
+            }
             foreach (string tag in extract_tag_list.Items)
             {
-                await toolkit.ExtractTags(tag);
+                await toolkit.ExtractTags(tag, moveExtractedFiles);
             }
             if (keep_extract_list.IsChecked != true)
             {

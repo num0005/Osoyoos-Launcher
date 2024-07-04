@@ -82,7 +82,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
         }
 
-        public override async Task ExtractTags(string path)
+        public override async Task ExtractTags(string path, bool h2MoveDir)
         {
             await RunTool(ToolType.Tool, new List<string>() { "export-structure-mesh-obj", path });
         }

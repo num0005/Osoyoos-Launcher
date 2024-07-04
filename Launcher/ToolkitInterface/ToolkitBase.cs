@@ -347,8 +347,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// Extract import info from a tag
         /// </summary>
         /// <param name="path">The path of the tag to extract</param>
+        /// <param name="h2MoveDir">Whether or not to move files from the !extracted folder to their correct directory</param>
         /// <returns></returns>
-        public abstract Task ExtractTags(string path);
+        public abstract Task ExtractTags(string path, bool h2MoveDir);
 
         /// <summary>
         /// Get the args to prepend to every invokaing of a game tool

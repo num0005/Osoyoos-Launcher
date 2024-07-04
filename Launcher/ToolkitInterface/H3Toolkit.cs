@@ -332,7 +332,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "fbx-to-ass", fbxPath, assPath });
         }
 
-        public override async Task ExtractTags(string path)
+        public override async Task ExtractTags(string path, bool h2MoveDir)
         {
             string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
             switch (pathandExtension[1])
