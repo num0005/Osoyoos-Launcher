@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using static ToolkitLauncher.ToolkitProfiles;
 
@@ -38,6 +39,10 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
+        {
+        }
+
+        public override async Task ExtractTags(string path)
         {
         }
 

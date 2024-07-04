@@ -332,6 +332,26 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "fbx-to-ass", fbxPath, assPath });
         }
 
+        public override async Task ExtractTags(string path)
+        {
+            string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
+            switch (pathandExtension[1])
+            {
+                case ".scenario_structure_bsp":
+                case ".render_model":
+                case ".physics_model":
+                case ".collision_model":
+                    await RunTool(ToolType.Tool, new List<string>() { "extract-import-info", "tags\\" + path }, OutputMode.closeShell);
+                    break;
+                case ".bitmap":
+                    await RunTool(ToolType.Tool, new List<string>() { "extract-bitmap-dds", pathandExtension[0] }, OutputMode.closeShell);
+                    break;
+                case ".multilingual_unicode_string_list":
+                    await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);
+                    break;
+            }
+        }
+
         public override bool IsMutexLocked(ToolType tool)
         {
             // todo(num0005) implement this

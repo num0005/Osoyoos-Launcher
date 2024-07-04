@@ -39,7 +39,7 @@ public class FilePicker
 			return opt;
 		}
 
-		internal bool IsFolderSelect() { return filter is null; }
+        internal bool IsFolderSelect() { return filter is null; }
 
 		internal string? title;
 		internal string? filter;
@@ -69,7 +69,23 @@ public class FilePicker
 			fileDialog.InitialDirectory = InitialDirectory;
 		}
 	}
-	public bool Prompt()
+
+    public FilePicker(System.Windows.Controls.ListBox box, ToolkitBase toolkit, Options options, string InitialDirectory)
+    {
+        if (toolkit is not null && !Path.IsPathRooted(InitialDirectory))
+            InitialDirectory = Path.Join(toolkit.BaseDirectory, InitialDirectory);
+		this.listBox = box;
+        this.toolkitInterface = toolkit;
+        this.options = options;
+        fileDialog = new OpenFileDialog();
+        fileDialog.Title = options.title;
+        fileDialog.Filter = options.filter;
+        fileDialog.InitialDirectory = InitialDirectory;
+		fileDialog.Multiselect = true;
+        
+    }
+
+    public bool Prompt()
     {
 		if (folderDialog is null && fileDialog is null)
 			throw new InvalidOperationException("No valid dialog");
@@ -79,7 +95,14 @@ public class FilePicker
 		}
 		if (fileDialog is not null && fileDialog.ShowDialog() == DialogResult.OK)
 		{
-			return ProcessInput(fileDialog.FileName);
+			if (fileDialog.Multiselect)
+			{
+				return ProcessInput(fileDialog.FileNames);
+			}
+			else
+			{
+                return ProcessInput(fileDialog.FileName);
+            }			
 		}
 		return false;
     }
@@ -102,13 +125,32 @@ public class FilePicker
 		return true;
 	}
 
-	/// <summary>
-	///
-	/// </summary>
-	/// <param name="path"></param>
-	/// <param name="root"></param>
-	/// <returns></returns>
-	string? ConvertFSPathToLocalPath(string path, Options.PathRoot root)
+    bool ProcessInput(string[] paths)
+    {
+		for (int i = 0; i < paths.Length; i++)
+		{
+            string? local_path = ConvertFSPathToLocalPath(paths[i], options.pathRoot);
+            if (local_path is null)
+            {
+                MessageBox.Show("File path \"" + paths[i] + "\" was not within the current toolkit directory", "Error!");
+                return false;
+            }
+            if (options.strip_extension)
+                local_path = local_path.Substring(0, local_path.Length - Path.GetExtension(local_path).Length);
+            if (options.parent)
+                local_path = local_path.Substring(0, local_path.Length - Path.GetFileName(local_path).Length);
+			listBox.Items.Add(local_path);
+        }
+        return true;
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    string? ConvertFSPathToLocalPath(string path, Options.PathRoot root)
 	{
 		if (root == Options.PathRoot.FileSystem)
 			return Path.GetFullPath(path);
@@ -141,4 +183,5 @@ public class FilePicker
 	private System.Windows.Controls.TextBox textBox;
 	private ToolkitBase toolkitInterface;
 	private Options options;
+	private System.Windows.Controls.ListBox listBox;
 }

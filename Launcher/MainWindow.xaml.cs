@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Octokit;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -2696,6 +2697,38 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             {
 
             }
+        }
+
+        private void browse_extract_tag_Click(object sender, RoutedEventArgs e)
+        {
+            string default_path = get_default_path(extract_tag_list.Items.Count > 0 ? extract_tag_list.Items[extract_tag_list.Items.Count - 1].ToString() : "", true, true);
+            string filter = "Tag Files (*.scenario_structure_bsp;*.render_model;*.collision_model;*.physics_model;*.bitmap;*.multilingual_unicode_string_list)|*.scenario_structure_bsp;*.render_model;*.collision_model;*.physics_model;*.bitmap;*.multilingual_unicode_string_list";
+            var options = FilePicker.Options.FileSelect("Select Tag Files", filter, FilePicker.Options.PathRoot.Tag, false, false);
+            var picker = new FilePicker(extract_tag_list, toolkit, options , default_path);
+            picker.Prompt();
+
+        }
+
+        private void extract_tag_remove_Click(object sender, RoutedEventArgs e)
+        {
+            extract_tag_list.Items.RemoveAt(extract_tag_list.Items.IndexOf((sender as Button).DataContext));
+        }
+
+        private async void ExtractTags(object sender, RoutedEventArgs e)
+        {
+            foreach (string tag in extract_tag_list.Items)
+            {
+                await toolkit.ExtractTags(tag);
+            }
+            if (keep_extract_list.IsChecked != true)
+            {
+                extract_tag_list.Items.Clear();
+            }
+        }
+
+        private void extract_tag_clear_all_Click(object sender, RoutedEventArgs e)
+        {
+            extract_tag_list.Items.Clear();
         }
     }
 }

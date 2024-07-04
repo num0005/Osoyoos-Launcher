@@ -82,6 +82,11 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
         }
 
+        public override async Task ExtractTags(string path)
+        {
+            await RunTool(ToolType.Tool, new List<string>() { "export-structure-mesh-obj", path });
+        }
+
         protected virtual string sapienWindowClass
         {
             get => "halo";
