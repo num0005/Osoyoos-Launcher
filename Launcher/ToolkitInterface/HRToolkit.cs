@@ -267,7 +267,7 @@ namespace ToolkitLauncher.ToolkitInterface
             await Task.WhenAll(dispatchedTasks);
         }
 
-        public override async Task ExtractTags(string path)
+        public override async Task ExtractTags(string path, bool h2MoveDir)
         {
             string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
             switch (pathandExtension[1])

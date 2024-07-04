@@ -1173,10 +1173,24 @@
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <CheckBox  x:Name="keep_extract_list" Content="Keep Extract List" Grid.Column="0" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Center" ToolTip="Check this to keep the Extract List after extracting"/>
-                                            <Button Content="Clear Extract List" Grid.Column="1" HorizontalAlignment="Center" Foreground="{DynamicResource TextColor}" Click="extract_tag_clear_all_Click" Margin="0,-4,0,0" VerticalAlignment="Top"/>
+                                            <Grid Grid.Column="0">
+                                                <GroupBox Grid.Row="0">
+                                                    <GroupBox.Header>
+                                                        <TextBlock Text="Settings"/>
+                                                    </GroupBox.Header>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition/>
+                                                        </Grid.RowDefinitions>
+                                                        <CheckBox x:Name="keep_extract_list" Grid.Row="0" Content="Keep Extract List" Foreground="{DynamicResource TextColor}" ToolTip="Keep the Extract List after extracting"/>
+                                                        <CheckBox x:Name="halo2_move_directory" Grid.Row="1" Content="Move Extracted Files" Foreground="{DynamicResource TextColor}" ToolTip="Move extracted files from the !extracted directory to their correct directory (H2 only)" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}"/>
+                                                    </Grid>
+                                                </GroupBox>
+                                            </Grid>
+                                            <Button Content="Clear Extract List" Grid.Column="1" HorizontalAlignment="Right" Foreground="{DynamicResource TextColor}" Click="extract_tag_clear_all_Click" Margin="0,-4,0,0" VerticalAlignment="Top"/>
                                         </Grid>
-                                        <Button Grid.Row="6" Content="Extract Tags" Foreground="{DynamicResource TextColor}" VerticalAlignment="Bottom" Click="ExtractTags" IsEnabled="{Binding Items.Count, ElementName=extract_tag_list, Mode=OneWay}" ToolTip="Extract the tag!"/>
+                                        <Button Grid.Row="6" Content="Extract Tags" Foreground="{DynamicResource TextColor}" VerticalAlignment="Bottom" Click="ExtractTags" IsEnabled="{Binding Items.Count, ElementName=extract_tag_list, Mode=OneWay}" ToolTip="Extract the tags!"/>
                                     </Grid>
                                 </Grid>
                             </TabItem>

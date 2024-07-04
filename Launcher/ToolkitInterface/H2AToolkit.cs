@@ -309,22 +309,34 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new() { "fbx-to-ass", fbxPath, assPath });
         }
 
-        public override async Task ExtractTags(string path)
+        public override async Task ExtractTags(string path, bool h2MoveDir)
         {
             string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
+            string dataPath = String.IsNullOrEmpty(Profile.DataPath) ? Path.GetDirectoryName(Profile.ToolPath) + "\\data" : Profile.DataPath;
+            string fileName = pathandExtension[0].Substring(pathandExtension[0].LastIndexOf('\\') + 1);
+            string extractedFolderPath = "";
+            string newFolderPath = "";
             switch (pathandExtension[1])
             {
                 case ".scenario_structure_bsp":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-structure-data", pathandExtension[0] }, OutputMode.closeShell);
+                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\structure\\";
+                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\structure\\";
                     break;
                 case ".render_model":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-render-data", pathandExtension[0] }, OutputMode.closeShell);
+                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\render\\";
+                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\render\\";
                     break;
                 case ".physics_model":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-physics-data", pathandExtension[0] }, OutputMode.closeShell);
+                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\physics\\";
+                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\physics\\";
                     break;
                 case ".collision_model":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-collision-data", pathandExtension[0] }, OutputMode.closeShell);
+                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\collision\\";
+                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\collision\\";
                     break;
                 case ".bitmap":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-bitmap-dds", pathandExtension[0] }, OutputMode.closeShell);
@@ -332,6 +344,19 @@ namespace ToolkitLauncher.ToolkitInterface
                 case ".multilingual_unicode_string_list":
                     await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);
                     break;
+            }
+            if (String.IsNullOrEmpty(extractedFolderPath) || String.IsNullOrEmpty(newFolderPath)) 
+                return;
+            if (pathandExtension[1] == ".bitmap" || pathandExtension[1] == ".multilingual_unicode_string_list")
+                return;
+            if (h2MoveDir && Directory.Exists(extractedFolderPath))
+            {
+                Directory.CreateDirectory(newFolderPath);
+                foreach (string newFilePath in Directory.GetFiles(extractedFolderPath))
+                {
+                    File.Copy(newFilePath, newFolderPath + Path.GetFileName(newFilePath));
+                    File.Delete(newFilePath);
+                }
             }
         }
 
