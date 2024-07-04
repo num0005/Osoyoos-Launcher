@@ -142,8 +142,10 @@ progress, token);
 
         private async void license_info_open_Click(object sender, RoutedEventArgs e)
         {
-            string license_file_name = Path.Join(Path.GetTempPath(), $"launcher_copyright_{Guid.NewGuid()}.txt");
+            Directory.CreateDirectory(App.TempFolder);
+            string license_file_name = Path.Join(App.TempFolder, $"launcher_copyright_{Guid.NewGuid()}.txt");
             Assembly assembly = Assembly.GetExecutingAssembly();
+            var test = assembly.GetManifestResourceNames();
             string resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("LicenseInfoFull.txt"));
             using Stream stream = assembly.GetManifestResourceStream(resourceName);
             using (StreamWriter fileStream = File.CreateText(license_file_name))
