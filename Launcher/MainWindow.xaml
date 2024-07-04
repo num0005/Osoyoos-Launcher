@@ -1129,7 +1129,7 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="8"/>
-                                            <RowDefinition Height="Auto" MinHeight="180"/>
+                                            <RowDefinition Height="*" MinHeight="180"/>
                                             <RowDefinition Height="8"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="8"/>
@@ -1143,8 +1143,8 @@
                                                 <GroupBox.Header>
                                                     <TextBlock Text="Extract List" Foreground="{DynamicResource TextColor}"/>
                                                 </GroupBox.Header>
-                                                <Grid Grid.Row="2">
-                                                    <ListBox x:Name="extract_tag_list" MaxHeight="155"  HorizontalContentAlignment="Stretch" Background="{DynamicResource WindowPrimaryColor}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                                <Grid x:Name="extract_tag_list_grid" Grid.Row="2">
+                                                    <ListBox x:Name="extract_tag_list" Height="{Binding Path=ActualHeight, ElementName=extract_tag_list_grid}"  HorizontalContentAlignment="Stretch" Background="{DynamicResource WindowPrimaryColor}" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                                         <ListBox.ItemTemplate>
                                                             <DataTemplate>
                                                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
