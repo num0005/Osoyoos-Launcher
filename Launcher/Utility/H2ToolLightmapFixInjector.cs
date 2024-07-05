@@ -89,6 +89,11 @@ namespace ToolkitLauncher.Utility
 				Trace.WriteLine($"[H2 LM Patcher] Done patching");
 
 				return Task.FromResult(true);
+			} catch(Exception ex)
+			{
+				Trace.WriteLine($"[H2 LM Patcher] Unexpected expection, bailing out: {ex}");
+
+				return Task.FromResult(false);
 			} finally
 			{
 				NtResumeProcess(process.Handle);
