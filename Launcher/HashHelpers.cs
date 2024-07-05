@@ -50,14 +50,21 @@ namespace ToolkitLauncher
             List<(string, string)> result = new();
             foreach (string fileName in GetExecutableNames(directory))
             {
-                using var md5 = System.Security.Cryptography.MD5.Create();
-                using var stream = File.OpenRead(fileName);
-                string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "");
+                string hash = GetMD5Hash(fileName);
 
-                result.Add((fileName, hash));
+				result.Add((fileName, hash));
             }
 
             return result;
         }
+
+        public static string GetMD5Hash(string fileName)
+        {
+			using var md5 = System.Security.Cryptography.MD5.Create();
+			using var stream = File.OpenRead(fileName);
+			string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "");
+
+            return hash;
+		}
     }
 }

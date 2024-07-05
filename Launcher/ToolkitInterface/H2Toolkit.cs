@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ToolkitLauncher;
+using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -54,79 +57,210 @@ namespace ToolkitLauncher.ToolkitInterface
             return lightmapArgs.level_combobox.ToLower();
         }
 
-        public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
+        private record NopFillFormat(uint BaseAddress, List<uint> CallsToPatch);
+
+
+        readonly static Dictionary<string, NopFillFormat> _calls_to_patch_md5 = new()
         {
-            LogFolder = $"lightmaps_{Path.GetFileNameWithoutExtension(scenario)}";
-            try
+            // tool regular, latest MCC build
+            { "C2011BB9B07A7325492D7A804BD939EB", 
+                new NopFillFormat(0x400000, new() {0x4F833F, 0x4F867B}) }, // tag_save lightmap_tag, tag_save scenario_editable
+                        // tool_fast, latest MCC build
+            { "3A889D370A7BE537AF47FF8035ACD201",
+				new NopFillFormat(0x400000, new() {0x4ADD50, 0x4ADFF5}) }  // tag_save lightmap_tag, tag_save scenario_editable
+		};
+
+		private H2ToolLightmapFixInjector? GetInjector(LightmapArgs args)
+        {
+            if (!Profile.IsMCC)
+                return null;
+
+			ToolType tool = args.NoAssert ? ToolType.ToolFast: ToolType.Tool;
+
+
+            string tool_Path = GetToolExecutable(tool);
+            if (!Path.IsPathRooted(tool_Path))
             {
-                string quality = GetLightmapQuality(args);
-
-                if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
-                {
-                    if (progress is not null)
-                        progress.MaxValue += 1 + args.instanceCount;
-
-                    async Task RunInstance(int index)
-                    {
-                        if (index == 0 && !Profile.IsH2Codez()) // not needed for H2Codez
-                        {
-                            if (progress is not null)
-                                progress.Status = "Delaying launch of zeroth instance";
-                            await Task.Delay(1000 * 70, progress.GetCancellationToken());
-                        }
-                        Utility.Process.Result result = await RunLightmapWorker(
-                            scenario,
-                            bsp,
-                            quality,
-                            args.instanceCount,
-                            index,
-                            args.NoAssert,
-                            progress.GetCancellationToken(),
-                            args.outputSetting
-                            );
-                        if (result is not null && result.HasErrorOccured)
-                            progress.Cancel($"Tool worker {index} has failed - exit code {result.ReturnCode}");
-                        if (progress is not null)
-                            progress.Report(1);
-                    }
-
-                    var instances = new List<Task>();
-                    for (int i = args.instanceCount - 1; i >= 0; i--)
-                    {
-                        instances.Add(RunInstance(i));
-                    }
-                    if (progress is not null)
-                        progress.Status = $"Running {args.instanceCount} instances";
-                    await Task.WhenAll(instances);
-                    if (progress is not null)
-                        progress.Status = "Merging output";
-
-                    if (progress.IsCancelled)
-                        return;
-
-                    await RunMergeLightmap(scenario, bsp, args.instanceCount, args.NoAssert);
-                    if (progress is not null)
-                        progress.Report(1);
-                }
-                else
-                {
-                    Debug.Assert(args.instanceCount == 1); // should be one, otherwise we got bad args
-                    if (progress is not null)
-                    {
-                        progress.DisableCancellation();
-                        progress.MaxValue += 1;
-                    }
-                    await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
-                    if (progress is not null)
-                        progress.Report(1);
-                }
-            } finally
-            {
-                LogFolder = null;
+				tool_Path = Path.Join(BaseDirectory, tool_Path);
             }
-        }
 
-        private async Task RunMergeLightmap(string scenario, string bsp, int workerCount, bool useFast)
+            string tool_hash = HashHelpers.GetMD5Hash(tool_Path).ToUpper();
+
+            if (_calls_to_patch_md5.ContainsKey(tool_hash))
+            {
+                NopFillFormat config = _calls_to_patch_md5[tool_hash];
+
+                IEnumerable<H2ToolLightmapFixInjector.NopFill> nopFills = config.CallsToPatch.Select(offset => new H2ToolLightmapFixInjector.NopFill(offset, 5));
+
+                return new H2ToolLightmapFixInjector(config.BaseAddress, nopFills);
+
+			}
+            else
+            {
+                return null;
+            }
+		}
+
+		public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
+		{
+			LogFolder = $"lightmaps_{Path.GetFileNameWithoutExtension(scenario)}";
+			try
+			{
+				string quality = GetLightmapQuality(args);
+
+				if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
+				{
+					if (progress is not null)
+						progress.Status = $"Running {args.instanceCount} instances";
+
+					if (progress is not null)
+						progress.MaxValue += 1 + args.instanceCount;
+
+
+					Utility.H2ToolLightmapFixInjector? injector = null;
+                    Dictionary<int, Utility.Process.InjectionConfig> injectionState = new();
+                    if (Profile.IsMCC)
+                        injector = GetInjector(args);
+
+					async Task RunInstance(int index)
+					{
+						bool delayZerothInstance = true;
+						if (index == 0 && !Profile.IsH2Codez()) // not needed for H2Codez
+						{
+                            Trace.WriteLine("Launcher worker zero, checking patch success, etc");
+                            if (injector is not null)
+                            {
+                                for (int i = 0; i < 20; i++)
+                                {
+									await Task.Delay(200);
+                                    if (injectionState.Values.Any(c => c.Success))
+                                    {
+                                        Trace.WriteLine("fix injection succeeded for all processes!");
+										delayZerothInstance = false;
+                                        break;
+                                    }
+								}
+
+                                if (delayZerothInstance)
+                                {
+                                    Trace.WriteLine("Failed to inject the fix into some processes");
+									Trace.Indent();
+									foreach (var entry in injectionState)
+                                    {
+                                        if (!entry.Value.Success)
+											Trace.WriteLine($"{entry.Key} worker injection failed");
+									}
+                                    Trace.Unindent();
+                                }
+                                
+                            }
+
+                            if (delayZerothInstance)
+                            {
+                                Trace.WriteLine("Unable to patch workers, worker zero will be delayed to compensate");
+                                if (progress is not null)
+                                    progress.Status = "Delaying launch of zeroth instance";
+                                await Task.Delay(1000 * 70, progress.GetCancellationToken());
+                                progress.Status = $"Running {args.instanceCount} instances";
+                            }
+						}
+
+						Utility.Process.Result result;
+
+						LogFileSuffix = $"-{index}";
+						if (Profile.IsMCC)
+						{
+							bool wereWeExperts = Profile.ElevatedToExpert;
+							Profile.ElevatedToExpert = true;
+
+							Utility.Process.InjectionConfig? config = null;
+                            if (injector is not null && index != 0)
+                            {
+                                Trace.WriteLine($"Configuring injector for worker {index}");
+                                config = new(injector);
+                                injectionState[index] = config;
+
+							}
+
+							try
+							{
+								result = await RunTool(args.NoAssert ? ToolType.ToolFast : ToolType.Tool,
+									new List<string>(){
+										"lightmaps-farm-worker",
+										scenario,
+										bsp,
+										quality,
+										index.ToString(),
+										args.instanceCount.ToString(),
+									},
+									outputMode: args.outputSetting, 
+									lowPriority: index == 0 && delayZerothInstance,
+                                    injectionOptions: config,
+									cancellationToken: progress.GetCancellationToken());
+							}
+							finally
+							{
+								Profile.ElevatedToExpert = wereWeExperts;
+							}
+						}
+						else
+						{
+							// todo: Remove this code
+							result = await RunTool(ToolType.Tool,
+							new List<string>(){
+								"lightmaps-slave",// the long legacy of h2codez
+								scenario,
+								bsp,
+								quality,
+								args.instanceCount.ToString(),
+								index.ToString()
+							},
+							outputMode: args.outputSetting,
+							cancellationToken: progress.GetCancellationToken());
+						}
+
+						if (result is not null && result.HasErrorOccured)
+							progress.Cancel($"Tool worker {index} has failed - exit code {result.ReturnCode}");
+						if (progress is not null)
+							progress.Report(1);
+					}
+
+					var instances = new List<Task>();
+					for (int i = args.instanceCount - 1; i >= 0; i--)
+					{
+						instances.Add(RunInstance(i));
+					}
+					await Task.WhenAll(instances);
+					if (progress is not null)
+						progress.Status = "Merging output";
+
+					if (progress.IsCancelled)
+						return;
+
+					await RunMergeLightmap(scenario, bsp, args.instanceCount, args.NoAssert);
+					if (progress is not null)
+						progress.Report(1);
+				}
+				else
+				{
+					Debug.Assert(args.instanceCount == 1); // should be one, otherwise we got bad args
+					if (progress is not null)
+					{
+						progress.DisableCancellation();
+						progress.MaxValue += 1;
+					}
+					await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+					if (progress is not null)
+						progress.Report(1);
+				}
+			}
+			finally
+			{
+				LogFolder = null;
+			}
+		}
+
+		private async Task RunMergeLightmap(string scenario, string bsp, int workerCount, bool useFast)
         {
 
             if (Profile.IsMCC)

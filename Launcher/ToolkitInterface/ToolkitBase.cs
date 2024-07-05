@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using static ToolkitLauncher.ToolkitProfiles;
+using static ToolkitLauncher.Utility.Process;
 
 #nullable enable
 
@@ -555,9 +556,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="lowPriority">Lower priority if possible</param>
         /// <param name="cancellationToken">Kill the tool before it exits</param>
         /// <returns>Results of running the tool if possible</returns>
-        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, OutputMode? outputMode = null, bool lowPriority = false, CancellationToken cancellationToken = default)
+        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, OutputMode? outputMode = null, bool lowPriority = false, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
         {
-            Utility.Process.Result? result = await RunToolInternal(tool, args, outputMode, lowPriority, cancellationToken);
+            Utility.Process.Result? result = await RunToolInternal(tool, args, outputMode, lowPriority, injectionOptions, cancellationToken);
             if (result is not null && result.ReturnCode != 0 && ToolFailure is not null)
                 ToolFailure(result);
             return result;
@@ -566,7 +567,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <summary>
         /// Implementation of <c>RunTool</c>
         /// </summary>
-        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, bool lowPriority, CancellationToken cancellationToken)
+        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, bool lowPriority, InjectionConfig? injectionOptions, CancellationToken cancellationToken)
         {
             bool has_window = outputMode != OutputMode.slient && outputMode != OutputMode.logToDisk;
             bool enabled_log = outputMode == OutputMode.logToDisk;
@@ -588,9 +589,9 @@ namespace ToolkitLauncher.ToolkitInterface
             }
 
             if (outputMode == OutputMode.keepOpen)
-                return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, lowPriority, cancellationToken);
+                return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, lowPriority, injectionOptions, cancellationToken: cancellationToken);
             else
-                return await Utility.Process.StartProcess(BaseDirectory, executable: tool_path, args: full_args, lowPriority: lowPriority, logFileName: log_path, noWindow: !has_window, cancellationToken: cancellationToken);
+                return await Utility.Process.StartProcess(BaseDirectory, executable: tool_path, args: full_args, lowPriority: lowPriority, logFileName: log_path, noWindow: !has_window, injectionOptions: injectionOptions, cancellationToken: cancellationToken);
         }
 
         /// <summary>

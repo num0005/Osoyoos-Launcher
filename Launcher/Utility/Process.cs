@@ -24,6 +24,18 @@ namespace ToolkitLauncher.Utility
                 get => ReturnCode == 0;
             }
         }
+
+        public record InjectionConfig
+        {
+            public InjectionConfig(IProcessInjector injector)
+            {
+                Injector = injector;
+			}
+
+			public IProcessInjector Injector { get; set; }
+			public bool Success { get; set; } = false;
+        }
+
         /// <summary>
         /// Run an executable and wait for it to exit
         /// </summary>
@@ -33,11 +45,11 @@ namespace ToolkitLauncher.Utility
         /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
         /// <param name="lowPriority">Lower priority if possible</param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority = false, bool admin = false, bool noWindow = false, string? logFileName = null, CancellationToken cancellationToken = default)
+        static public Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority = false, bool admin = false, bool noWindow = false, string? logFileName = null, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
         {
             Trace.WriteLine($"starting(): directory: {directory}, executable:{executable}, args:{args}, admin: {admin}, low priority {lowPriority}, noWindow {noWindow} log {logFileName}");
             if (OperatingSystem.IsWindows())
-                return Windows.StartProcess(directory, executable, args, lowPriority, admin, noWindow, logFileName, cancellationToken);
+                return Windows.StartProcess(directory, executable, args, lowPriority, admin, noWindow, logFileName, injectionOptions, cancellationToken);
             throw new PlatformNotSupportedException();
         }
 
@@ -48,13 +60,14 @@ namespace ToolkitLauncher.Utility
         /// <param name="executable">unescaped name</param>
         /// <param name="args">escaped arguments string</param>
         /// <param name="lowPriority">Lower priority if possible</param>
-        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
+        /// <param name="injectionOptions"></param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public Task<Result?> StartProcessWithShell(string directory, string executable, string args, bool lowPriority = false, CancellationToken cancellationToken = default)
+        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
+        static public Task<Result?> StartProcessWithShell(string directory, string executable, string args, bool lowPriority = false, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
         {
             Trace.WriteLine($"starting_with_shell(): directory: {directory}, executable:{executable}, args:{args}");
             if (OperatingSystem.IsWindows())
-                return Windows.StartProcessWithShell(directory, executable, args, lowPriority, cancellationToken);
+                return Windows.StartProcessWithShell(directory, executable, args, lowPriority, injectionOptions, cancellationToken);
             throw new PlatformNotSupportedException();
         }
 
@@ -65,11 +78,12 @@ namespace ToolkitLauncher.Utility
         /// <param name="executable">unescaped name</param>
         /// <param name="args">unescaped arguments</param>
         /// <param name="lowPriority">Lower priority if possible</param>
-        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
+        /// <param name="injectionOptions"></param>
         /// <returns>A task that will complete when the executable exits</returns>
-        static public async Task<Result?> StartProcessWithShell(string directory, string executable, List<string> args, bool lowPriority = false, CancellationToken cancellationToken = default)
+        /// <param name="cancellationToken"> Cancellation token for canceling the process before it exists</param>
+        static public async Task<Result?> StartProcessWithShell(string directory, string executable, List<string> args, bool lowPriority = false, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
         {
-            return await StartProcessWithShell(directory, executable, EscapeArgList(args), lowPriority, cancellationToken);
+            return await StartProcessWithShell(directory, executable, EscapeArgList(args), lowPriority, injectionOptions, cancellationToken: cancellationToken);
         }
 
         /// <summary>

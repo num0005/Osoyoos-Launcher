@@ -34,7 +34,7 @@ namespace ToolkitLauncher.Utility
                         return ProcessPriorityClass.Idle;
                 }
             }
-            static public async Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority, bool admin, bool noWindow, string? logFileName, CancellationToken cancellationToken)
+            static public async Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority, bool admin, bool noWindow, string? logFileName, InjectionConfig? injectionOptions, CancellationToken cancellationToken)
             {
                 try
                 {
@@ -43,6 +43,11 @@ namespace ToolkitLauncher.Utility
                     info.WorkingDirectory = directory;
                     info.CreateNoWindow = noWindow;
 
+                    Guid injector_id = Guid.Empty;
+                    if (injectionOptions is not null)
+                    {
+                        injector_id = injectionOptions.Injector.SetupEnviroment(info);
+                    }
 
                     bool loggingToDisk = false;
                     if (!String.IsNullOrWhiteSpace(logFileName))
@@ -66,6 +71,12 @@ namespace ToolkitLauncher.Utility
                     }
 
                     System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
+
+                    if (injectionOptions is not null)
+                    {
+                        injectionOptions.Success = await injectionOptions.Injector.Inject(injector_id, proc);
+                    }
+
                     if (lowPriority)
                     {
                         try
@@ -153,7 +164,7 @@ namespace ToolkitLauncher.Utility
                 }
             }
 
-            static public async Task<Result?> StartProcessWithShell(string directory, string executable, string args, bool lowPriority, CancellationToken cancellationToken)
+            static public async Task<Result?> StartProcessWithShell(string directory, string executable, string args, bool lowPriority, InjectionConfig? injectionOptions, CancellationToken cancellationToken)
             {
                 // build command line
                 string commnad_line = "/c \"" + escape_arg(executable) + " " + args + " & pause\"";
@@ -161,6 +172,13 @@ namespace ToolkitLauncher.Utility
                 // run shell process
                 ProcessStartInfo info = new("cmd", commnad_line);
                 info.WorkingDirectory = directory;
+
+                Guid injector_id = Guid.Empty;
+                if (injectionOptions is not null)
+                {
+                    injector_id = injectionOptions.Injector.SetupEnviroment(info);
+                }
+
                 System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
 
                 // TODO: find a way to do this without System.Management or P/invoke
@@ -177,6 +195,12 @@ namespace ToolkitLauncher.Utility
                             if (lowPriority)
                                 process.PriorityClass = LowerPriority(process.PriorityClass);
                             Trace.WriteLine($"final priority: {process.PriorityClass}");
+
+                            if (injectionOptions is not null)
+                            {
+                                injectionOptions.Success = await injectionOptions.Injector.Inject(injector_id, process);
+                            }
+
                             await process.WaitForExitAsync(cancellationToken);
                         }
                         catch (OperationCanceledException) { };
