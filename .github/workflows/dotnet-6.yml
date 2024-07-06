@@ -67,5 +67,5 @@ jobs:
         prerelease: true
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: Launcher_win64/*
-        tag: ${{ jobs.build.outputs.product_version }}
+        tag: ${{ needs.build.outputs.product_version }}
         
