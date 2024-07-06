@@ -57,10 +57,13 @@ jobs:
         name: launcher
         path: Launcher_win64
 
+    - shell: pwsh
+      run: echo "PRODUCT=$((Get-Item -Path 'Launcher_win64/Osoyoos.exe').VersionInfo.ProductVersion)"
+
     - name: Get release name
       shell: pwsh
       id: get_release_name
-      run: echo "PRODUCT=$((Get-Item -Path 'Launcher_win64/Osoyoos.exe').VersionInfo.ProductVersion)" > GITHUB_OUTPUT
+      run: echo "PRODUCT=$((Get-Item -Path 'Launcher_win64/Osoyoos.exe').VersionInfo.ProductVersion)" >> GITHUB_OUTPUT
         
     - uses: ncipollo/release-action@v1
       with:
