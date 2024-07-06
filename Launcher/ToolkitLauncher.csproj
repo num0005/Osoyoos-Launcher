@@ -96,8 +96,10 @@
     <PackageReference Include="TlshSharp" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\H2ToolHooks\H2ToolHooks.vcxproj" />
     <ProjectReference Include="..\ManagedBlamHelper\ManagedBlamHelper.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == true">
+      <ProjectReference Include="..\H2ToolHooks\H2ToolHooks.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Credits.xaml.cs">

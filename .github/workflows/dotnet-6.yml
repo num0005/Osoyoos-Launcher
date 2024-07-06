@@ -31,11 +31,11 @@ jobs:
     - name: Build native binaries
       run: msbuild ToolkitLauncher.sln -target:H2ToolHooks -property:Configuration=Release -maxCpuCount
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build .\Launcher\ToolkitLauncher.csproj --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test .\Launcher\ToolkitLauncher.csproj --no-restore --verbosity normal
     - name: Publish
-      run: dotnet publish -c Release -r win-x64 -P:PublishSingleFile=true -p:PublishTrimmed=false --self-contained false
+      run: dotnet publish .\Launcher\ToolkitLauncher.csproj -c Release -r win-x64 -P:PublishSingleFile=true -p:PublishTrimmed=false --self-contained false
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
