@@ -10,8 +10,9 @@
 #include <memory>
 #include <array>
 #include <optional>
+#include "Debug.h"
 
-inline static uint32_t get_function_address(uint32_t call) {
+inline static uint32_t get_function_address_from_call(uint32_t call) {
 	return *reinterpret_cast<uint32_t*>(call + 1) + (call + 5);
 }
 
@@ -25,9 +26,6 @@ class PatternEntryBase
 {
 public:
 	virtual size_t entry_size() const = 0;
-	virtual size_t entry_size_upper() const {
-		return entry_size();
-	};
 	virtual bool matches(const PatternScanner& scanner, const uint8_t* data) const = 0;
 	virtual size_t size_required() const {
 		return entry_size();
@@ -83,39 +81,21 @@ private:
 	bool find_pattern_in_range_internal(std::vector<Match>& instances, uint32_t range_start, uint32_t range_end, const std::array<pattern_entry, pattern_size>& pattern, size_t max_count = 0) const
 	{
 		for (auto address = range_start; address < range_end; address++) {
-			uint32_t offset_low = 0;
-			uint32_t offset_high = 0;
+			uint32_t offset = 0;
 			for (auto pat_idx = 0u; pat_idx < pattern.size(); pat_idx++) {
-				bool matched = false;
-				for (uint32_t offset = offset_low; offset < offset_high && !matched; offset++)
-				{
-					auto element_end = address + offset + pattern[pat_idx]->size_required();
-					if (element_end > range_end)
-						continue;
-					if (!pattern[pat_idx]->matches(*this, reinterpret_cast<const uint8_t*>(offset + address)))
-						continue;
-
-					offset_low = offset;
-					offset_high = offset;
-
-					offset_low += pattern[pat_idx]->entry_size();
-					offset_high += pattern[pat_idx]->entry_size_upper();
-
-
-					if (pat_idx == pattern.size() - 1)
-					{
-						instances.push_back(Match{ address, offset });
-
-						if (max_count != 0 && instances.size() >= max_count)
-							return true;
-					}
-
-					matched = true;
-				}
-
-				// if we didn't match, cancel this match
-				if (!matched)
+				auto element_end = address + offset + pattern[pat_idx]->size_required();
+				if (element_end > range_end)
 					break;
+				if (!pattern[pat_idx]->matches(*this, reinterpret_cast<uint8_t*>(offset + address)))
+					break;
+				offset += pattern[pat_idx]->entry_size();
+				if (pat_idx == pattern.size() - 1)
+				{
+					instances.push_back({ address, offset });
+
+					if (max_count != 0 && instances.size() >= max_count)
+						return true;
+				}
 			}
 		}
 
@@ -232,29 +212,6 @@ private:
 	size_t size;
 };
 
-class PatternEntryAnyRange : public PatternEntryBase
-{
-public:
-	PatternEntryAnyRange(size_t lower_bound_size, size_t upper_bound_size) :
-		lower_bound(lower_bound_size),
-		upper_bound(upper_bound_size)
-	{}
-
-	bool matches(const PatternScanner& scanner, const uint8_t* data) const {
-		return true;
-	}
-
-	size_t entry_size() const {
-		return lower_bound;
-	}
-
-
-
-private:
-	size_t lower_bound;
-	size_t upper_bound;
-};
-
 class PatternEntryStringXREF : public PatternEntryBase
 {
 public:
@@ -286,11 +243,11 @@ public:
 	PatternEntryIntegerRange(T lower, T upper) :
 		lower_bound(lower),
 		upper_bound(upper)
-	{}
+	{
+	}
 
 	bool matches(const PatternScanner& scanner, const uint8_t* data) const {
 		const T value = *reinterpret_cast<const T*>(data);
-
 		return lower_bound <= value && value <= upper_bound;
 	}
 
@@ -306,8 +263,6 @@ private:
 	PAT_UNI(PatternEntryBytes<size>, ##__VA_ARGS__)
 #define PAT_ANY(size) \
 	PAT_UNI(PatternEntryAny, size)
-#define PAT_ANY_RANGE(lower_size_bound, upper_size_bound) \
-	PAT_UNI(PatternEntryAnyRange, lower_size_bound, upper_size_bound)
 #define PAT_BYTE(byte) \
 	PAT_UNI(PatternEntryByte, byte)
 #define PAT_CALL(call_target) \

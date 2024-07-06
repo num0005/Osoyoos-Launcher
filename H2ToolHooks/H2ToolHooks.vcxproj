@@ -86,6 +86,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="H2ToolHooks.h" />
     <ClInclude Include="patches.h" />
     <ClInclude Include="PatternScanner.h" />

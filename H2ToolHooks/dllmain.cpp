@@ -7,6 +7,7 @@
 
 #include "platform.h"
 #include "H2ToolHooks.h"
+#include "Debug.h"
 #include <cstdio>
 
 static void attach_to_console()
@@ -29,8 +30,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         attach_to_console();
         if (!H2ToolHooks::hook())
         {
-            OutputDebugStringA("[DLL FIX] FAILURE!\n");
-            printf("[DLL FIX] Failed to apply launcher hooks to tool. This is quite bad.\n");
+            DebugPrintf("[DLL FIX] FAILURE?");
+            DebugPrintf("[DLL FIX] Failed to apply launcher hooks to tool. This is quite bad.");
 
         }
         else
@@ -42,22 +43,22 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                 if (event != 0)
                 {
 #if _DEBUG
-                    printf("[DLL FIX] Injected successfully!");
+                    DebugPrintf("[DLL FIX] Injected successfully!");
 #endif
                     if (!SetEvent(event))
                     {
-                        printf("[DLL FIX] Failed to communicate back to launcher!");
+                        DebugPrintf("[DLL FIX] Failed to communicate back to launcher!");
                     }
                     CloseHandle(event);
                 }
                 else
                 {
-                    printf("[DLL FIX] Failed to open event!\n");
+                    DebugPrintf("[DLL FIX] Failed to open event");
                 }
             }
             else
             {
-                printf("[DLL FIX] Failed to get injector event name!\n");
+                DebugPrintf("[DLL FIX] Failed to get injector event name!");
             }
         }
         break;
