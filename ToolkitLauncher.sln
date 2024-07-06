@@ -26,6 +26,7 @@ Global
 		{9E3D9759-C348-4558-ABD7-41C5342C08B4}.Debug|x64.ActiveCfg = Debug|Win32
 		{9E3D9759-C348-4558-ABD7-41C5342C08B4}.Debug|x64.Build.0 = Debug|Win32
 		{9E3D9759-C348-4558-ABD7-41C5342C08B4}.Release|x64.ActiveCfg = Release|Win32
+		{9E3D9759-C348-4558-ABD7-41C5342C08B4}.Release|x64.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
