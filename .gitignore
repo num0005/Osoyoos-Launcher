@@ -1,6 +1,8 @@
 /Launcher/bin/*
 */obj/*
 *.vs/*
+*.vcxproj.user
+*.vsproj.user
 *.zip
 *.exe
 *.dll
@@ -10,3 +12,8 @@
 /icon_assets.7z
 /Launcher/Properties/launchSettings.json
 /ManagedBlamHelper/bin/*
+H2ToolHooks/x64/*
+H2ToolHooks/Debug/*
+H2ToolHooks/Release/*
+/Debug/*
+/Release/*

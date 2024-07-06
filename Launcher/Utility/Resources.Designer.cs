@@ -89,5 +89,15 @@ namespace ToolkitLauncher.Utility {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] H2ToolHooks {
+            get {
+                object obj = ResourceManager.GetObject("H2ToolHooks", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
