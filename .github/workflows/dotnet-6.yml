@@ -10,7 +10,8 @@ on:
 
 jobs:
   build:
-
+    outputs:
+      product_version: ${{ steps.get_release_name.outputs.PRODUCT }}
     runs-on: windows-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT : true
@@ -41,6 +42,10 @@ jobs:
       with:
         name: launcher
         path: Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\
+    - name: Get release name
+      shell: pwsh
+      id: get_release_name
+      run: echo "PRODUCT=$((Get-Item -Path 'Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\Osoyoos.exe').VersionInfo.ProductVersion)" >> GITHUB_OUTPUT
     
         
   release:
@@ -56,19 +61,11 @@ jobs:
       with:
         name: launcher
         path: Launcher_win64
-
-    - shell: pwsh
-      run: echo "PRODUCT=$((Get-Item -Path 'Launcher_win64/Osoyoos.exe').VersionInfo.ProductVersion)"
-
-    - name: Get release name
-      shell: pwsh
-      id: get_release_name
-      run: echo "PRODUCT=$((Get-Item -Path 'Launcher_win64/Osoyoos.exe').VersionInfo.ProductVersion)" >> GITHUB_OUTPUT
-        
+     
     - uses: ncipollo/release-action@v1
       with:
         prerelease: true
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: Launcher_win64/*
-        tag: ${{ steps.get_release_name.outputs.PRODUCT }}
+        tag: ${{ jobs.build.outputs.product_version }}
         
