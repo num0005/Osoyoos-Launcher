@@ -42,10 +42,13 @@ jobs:
       with:
         name: launcher
         path: Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\
+    - name: test
+      shell: pwsh
+      run: echo "PRODUCT=$((Get-Item -Path 'Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\Osoyoos.exe').VersionInfo.ProductVersion)"
     - name: Get release name
       shell: pwsh
       id: get_release_name
-      run: echo "PRODUCT=$((Get-Item -Path 'Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\Osoyoos.exe').VersionInfo.ProductVersion)" >> GITHUB_OUTPUT
+      run: echo "PRODUCT=$((Get-Item -Path 'Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\Osoyoos.exe').VersionInfo.ProductVersion)" > GITHUB_OUTPUT
     
         
   release:
