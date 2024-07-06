@@ -28,6 +28,8 @@ jobs:
       run: dotnet restore
     - name: Enable developer command prompt
       uses: ilammy/msvc-dev-cmd@v1
+    - name: Build native binaries
+      run: msbuild ToolkitLauncher.sln -target:H2ToolHooks -property:Configuration=Release -maxCpuCount
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
