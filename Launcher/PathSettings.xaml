@@ -11,7 +11,6 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
         <toolkit_local:ProfileSettingsVisibility x:Key="ProfileSettingsVisibility" />
-        <toolkit_local:ProfileSettingsToSpace x:Key="ProfileSettingsToSpace" />
         <toolkit_local:ProfiletoContent x:Key="ProfiletoContent" />
         <ObjectDataProvider x:Key="built_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
@@ -62,27 +61,9 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition>
-                    <RowDefinition.Height>
-                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                            <Binding ElementName="community_tools" Path="IsChecked" />
-                            <Binding Source="3" />
-                        </MultiBinding>
-                    </RowDefinition.Height>
-                </RowDefinition>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition>
-                    <RowDefinition.Height>
-                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                            <Binding ElementName="community_tools" Path="IsChecked" />
-                            <Binding Source="0" />
-                        </MultiBinding>
-                    </RowDefinition.Height>
-                </RowDefinition>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
@@ -103,30 +84,12 @@
                     <TextBox Grid.Column="1" Name="profile_name" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="Transparent" Height="26" TextChanged="profile_dataChangedEventHandler" CaretBrush="{DynamicResource TextColor}"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="4" x:Name="hek_box" Header="HEK Paths" IsEnabled="False" ToolTip="Paths to the HEK tools.">
+            <GroupBox Grid.Row="4" x:Name="hek_box" Header="HEK Paths" IsEnabled="False" ToolTip="Paths to the HEK tools." Margin="0,4,0,4">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition>
-                            <RowDefinition.Height>
-                                <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                    <Binding ElementName="is_mcc" Path="IsChecked" />
-                                    <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                    <Binding ElementName="community_tools" Path="IsChecked" />
-                                    <Binding Source="5" />
-                                </MultiBinding>
-                            </RowDefinition.Height>
-                        </RowDefinition>
-                        <RowDefinition>
-                            <RowDefinition.Height>
-                                <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                    <Binding ElementName="is_mcc" Path="IsChecked" />
-                                    <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                    <Binding ElementName="community_tools" Path="IsChecked" />
-                                    <Binding Source="5" />
-                                </MultiBinding>
-                            </RowDefinition.Height>
-                        </RowDefinition>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="8"/>
@@ -234,7 +197,7 @@
                     </GroupBox>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="6" x:Name="asset_dir" Header="Asset Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
+            <GroupBox Grid.Row="6" x:Name="asset_dir" Header="Asset Paths" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False" Margin="0,4,0,4">
                 <GroupBox.Visibility>
                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -317,7 +280,7 @@
                     </GroupBox>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="8" x:Name="h2codez_update_groupbox" Header="H2Codez Update" IsEnabled="False">
+            <GroupBox Grid.Row="8" x:Name="h2codez_update_groupbox" Header="H2Codez Update" IsEnabled="False" Margin="0,4,0,4">
                 <GroupBox.Visibility>
                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -336,7 +299,7 @@
                     <Button x:Name="update_h2codez" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="update_h2codez_Click" ToolTip="No regrets.">Update!</Button>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="9" x:Name="prt_sim_update_groupbox" Header="PRT Simulator Update" IsEnabled="True">
+            <GroupBox Grid.Row="9" x:Name="prt_sim_update_groupbox" Header="PRT Simulator Update" IsEnabled="True" Margin="0,4,0,4">
                 <GroupBox.Visibility>
                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -355,7 +318,7 @@
                     <Button x:Name="update_prt" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" ToolTip="Prophet." Click="update_prt_Click">Update!</Button>
                 </Grid>
             </GroupBox>
-            <Grid Grid.Row="11">
+            <Grid Grid.Row="11" Margin="0,4,0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="8"/>
@@ -375,7 +338,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="5"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -386,53 +349,13 @@
                         <Grid Grid.Column="1" Grid.Row="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition>
-                                    <RowDefinition.Height>
-                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                            <Binding ElementName="community_tools" Path="IsChecked" />
-                                            <Binding Source="0" />
-                                        </MultiBinding>
-                                    </RowDefinition.Height>
-                                </RowDefinition>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition>
-                                    <RowDefinition.Height>
-                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                            <Binding ElementName="community_tools" Path="IsChecked" />
-                                            <Binding Source="1" />
-                                        </MultiBinding>
-                                    </RowDefinition.Height>
-                                </RowDefinition>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition>
-                                    <RowDefinition.Height>
-                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                            <Binding ElementName="community_tools" Path="IsChecked" />
-                                            <Binding Source="2" />
-                                        </MultiBinding>
-                                    </RowDefinition.Height>
-                                </RowDefinition>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition>
-                                    <RowDefinition.Height>
-                                        <MultiBinding Converter="{StaticResource ProfileSettingsToSpace}">
-                                            <Binding ElementName="is_mcc" Path="IsChecked" />
-                                            <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                            <Binding ElementName="community_tools" Path="IsChecked" />
-                                            <Binding Source="2" />
-                                        </MultiBinding>
-                                    </RowDefinition.Height>
-                                </RowDefinition>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <CheckBox x:Name="is_mcc" Foreground="{DynamicResource TextColor}" Grid.Row="0" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=8, ElementName=gen_type}" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=7, ElementName=gen_type}"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="22" Click="profile_data_Click" />
-                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)">
+                            <CheckBox Grid.Row="1" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -442,7 +365,7 @@
                                     </MultiBinding>
                                 </CheckBox.Visibility>
                             </CheckBox>
-                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Include more tool output.">
+                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Include more tool output.">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -452,7 +375,7 @@
                                     </MultiBinding>
                                 </CheckBox.Visibility>
                             </CheckBox>
-                            <CheckBox Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="expert_mode" Content="Expert Mode" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables saftey checks for some commands.&#x0a;An example is allowing animation commands to import CE verion range files. You're on your own beyond this point.">
+                            <CheckBox Grid.Row="3" Foreground="{DynamicResource TextColor}" x:Name="expert_mode" Content="Expert Mode" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables saftey checks for some commands.&#x0a;An example is allowing animation commands to import CE verion range files. You're on your own beyond this point.">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -462,7 +385,7 @@
                                     </MultiBinding>
                                 </CheckBox.Visibility>
                             </CheckBox>
-                            <CheckBox Grid.Row="8" Foreground="{DynamicResource TextColor}" x:Name="batch" Content="Batch" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables lightmap progress updates and reduces build-cache-file output.">
+                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="batch" Content="Batch" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables lightmap progress updates and reduces build-cache-file output.">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                                         <Binding ElementName="is_mcc" Path="IsChecked" />
