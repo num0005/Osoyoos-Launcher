@@ -1,22 +1,19 @@
-﻿using System;
-using System.ComponentModel;
+﻿using Palit.TLSHSharp;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Palit.TLSHSharp;
-using System.Runtime.CompilerServices;
 using ToolkitLauncher.Utility;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.Windows.Documents;
-using System.Xml.Linq;
 
 namespace ToolkitLauncher
 {
-    public enum build_type
+	public enum build_type
     {
         release_standalone,
         release_mcc
@@ -297,6 +294,7 @@ namespace ToolkitLauncher
                 gen_type.SelectedIndex = (int)ToolkitProfiles.SettingsList[profile_index].Generation - 1;
                 is_mcc.IsChecked = ToolkitProfiles.SettingsList[profile_index].IsAlternativeBuild;
                 community_tools.IsChecked = ToolkitProfiles.SettingsList[profile_index].CommunityTools;
+				disable_assertions.IsChecked = ToolkitProfiles.SettingsList[profile_index].DisableAssertions;
                 verbose.IsChecked = ToolkitProfiles.SettingsList[profile_index].Verbose;
                 expert_mode.IsChecked = ToolkitProfiles.SettingsList[profile_index].ExpertMode;
                 batch.IsChecked = ToolkitProfiles.SettingsList[profile_index].Batch;
@@ -349,6 +347,7 @@ namespace ToolkitLauncher
                 Generation = (ToolkitProfiles.GameGen)(gen_type.SelectedIndex + 1),
                 IsAlternativeBuild = (bool)is_mcc.IsChecked,
                 CommunityTools = (bool)community_tools.IsChecked,
+                DisableAssertions = (bool)disable_assertions.IsChecked,
                 Verbose = (bool)verbose.IsChecked,
                 ExpertMode = (bool)expert_mode.IsChecked,
                 Batch = (bool)batch.IsChecked,

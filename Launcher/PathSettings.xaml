@@ -334,7 +334,7 @@
                         </ComboBox>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
+                <GroupBox Grid.Column="2" x:Name="build_type_box" Header="Build Options" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="False">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="5"/>
@@ -353,6 +353,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <CheckBox x:Name="is_mcc" Foreground="{DynamicResource TextColor}" Grid.Row="0" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=8, ElementName=gen_type}" Content="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=7, ElementName=gen_type}"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="22" Click="profile_data_Click" />
                             <CheckBox Grid.Row="1" Foreground="{DynamicResource TextColor}" x:Name="community_tools" Content="Community Extensions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Are community extensions used? (H2Codez, OpenSauce, etc)">
@@ -365,17 +366,7 @@
                                     </MultiBinding>
                                 </CheckBox.Visibility>
                             </CheckBox>
-                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Include more tool output.">
-                                <CheckBox.Visibility>
-                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
-                                        <Binding ElementName="is_mcc" Path="IsChecked" />
-                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
-                                        <Binding ElementName="community_tools" Path="IsChecked" />
-                                        <Binding Source="0" />
-                                    </MultiBinding>
-                                </CheckBox.Visibility>
-                            </CheckBox>
-                            <CheckBox Grid.Row="3" Foreground="{DynamicResource TextColor}" x:Name="expert_mode" Content="Expert Mode" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables saftey checks for some commands.&#x0a;An example is allowing animation commands to import CE verion range files. You're on your own beyond this point.">
+                            <CheckBox Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="disable_assertions" Content="Disable Assertions" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disable assertions for Sapien and standalone using DLL injection.">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                                         <Binding ElementName="is_mcc" Path="IsChecked" />
@@ -385,7 +376,27 @@
                                     </MultiBinding>
                                 </CheckBox.Visibility>
                             </CheckBox>
-                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="batch" Content="Batch" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables lightmap progress updates and reduces build-cache-file output.">
+                            <CheckBox Grid.Row="3" Foreground="{DynamicResource TextColor}" x:Name="verbose" Content="Verbose Tool Output" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Include more tool output.">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="is_mcc" Path="IsChecked" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="0" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
+                            <CheckBox Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="expert_mode" Content="Expert Mode" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables saftey checks for some commands.&#x0a;An example is allowing animation commands to import CE verion range files. You're on your own beyond this point.">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="is_mcc" Path="IsChecked" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="3" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
+                            <CheckBox Grid.Row="5" Foreground="{DynamicResource TextColor}" x:Name="batch" Content="Batch" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Disables lightmap progress updates and reduces build-cache-file output.">
                                 <CheckBox.Visibility>
                                     <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
                                         <Binding ElementName="is_mcc" Path="IsChecked" />

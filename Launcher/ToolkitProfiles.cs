@@ -113,10 +113,13 @@ namespace ToolkitLauncher
             [JsonPropertyName("prt_tool_version")]
             public int? LatestPRTToolVersion { get; set; }
 
-            /// <summary>
-            /// Whatever we should temporarily be experts
-            /// </summary>
-            [JsonIgnore]
+            [JsonPropertyName("disable_assertions")]
+            public bool DisableAssertions { get; set; } = false;
+
+			/// <summary>
+			/// Whatever we should temporarily be experts
+			/// </summary>
+			[JsonIgnore]
             public bool ElevatedToExpert;
 
             [JsonIgnore]

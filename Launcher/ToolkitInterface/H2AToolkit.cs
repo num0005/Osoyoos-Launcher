@@ -375,5 +375,17 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             return "H2MCC";
         }
-    }
+
+		protected override Utility.Process.InjectionConfig? ModifyInjectionSettings(ToolType tool, Utility.Process.InjectionConfig? requestedConfig)
+		{
+            bool is_game_engine_build = tool == ToolType.Sapien || tool == ToolType.Game;
+			if (is_game_engine_build && requestedConfig is null && Profile.IsMCC && Profile.DisableAssertions)
+            {
+				DLLInjector injector = new(Resources.H2ToolHooks, "h2.asserts.disable.dll");
+                return new(injector);
+			}
+
+            return requestedConfig;
+		}
+	}
 }

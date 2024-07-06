@@ -517,7 +517,7 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
 
-        public Action<Utility.Process.Result>? ToolFailure { get; set; }
+        public Action<Result>? ToolFailure { get; set; }
 
         private string GetLogFileName(List<string>? args)
         {
@@ -547,18 +547,23 @@ namespace ToolkitLauncher.ToolkitInterface
             return Path.Combine(report_folder, filename) + ".log";
         }
 
-        /// <summary>
-        /// Run a tool from the toolkit with arguments
-        /// </summary>
-        /// <param name="tool">Tool to run</param>
-        /// <param name="args">Arguments to pass to the tool</param>
-        /// <param name="useShell">Force either use shell or not use it</param>
-        /// <param name="lowPriority">Lower priority if possible</param>
-        /// <param name="cancellationToken">Kill the tool before it exits</param>
-        /// <returns>Results of running the tool if possible</returns>
-        public async Task<Utility.Process.Result?> RunTool(ToolType tool, List<string>? args = null, OutputMode? outputMode = null, bool lowPriority = false, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
+        protected virtual InjectionConfig? ModifyInjectionSettings(ToolType tool, InjectionConfig? requestedConfig)
         {
-            Utility.Process.Result? result = await RunToolInternal(tool, args, outputMode, lowPriority, injectionOptions, cancellationToken);
+            return requestedConfig;
+        }
+
+		/// <summary>
+		/// Run a tool from the toolkit with arguments
+		/// </summary>
+		/// <param name="tool">Tool to run</param>
+		/// <param name="args">Arguments to pass to the tool</param>
+		/// <param name="useShell">Force either use shell or not use it</param>
+		/// <param name="lowPriority">Lower priority if possible</param>
+		/// <param name="cancellationToken">Kill the tool before it exits</param>
+		/// <returns>Results of running the tool if possible</returns>
+		public async Task<Result?> RunTool(ToolType tool, List<string>? args = null, OutputMode? outputMode = null, bool lowPriority = false, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
+        {
+            Result? result = await RunToolInternal(tool, args, outputMode, lowPriority, injectionOptions, cancellationToken);
             if (result is not null && result.ReturnCode != 0 && ToolFailure is not null)
                 ToolFailure(result);
             return result;
@@ -567,7 +572,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <summary>
         /// Implementation of <c>RunTool</c>
         /// </summary>
-        private async Task<Utility.Process.Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, bool lowPriority, InjectionConfig? injectionOptions, CancellationToken cancellationToken)
+        private async Task<Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, bool lowPriority, InjectionConfig? injectionOptions, CancellationToken cancellationToken)
         {
             bool has_window = outputMode != OutputMode.slient && outputMode != OutputMode.logToDisk;
             bool enabled_log = outputMode == OutputMode.logToDisk;
@@ -588,7 +593,9 @@ namespace ToolkitLauncher.ToolkitInterface
                 log_path = GetLogFileName(args);
             }
 
-            if (outputMode == OutputMode.keepOpen)
+            injectionOptions = ModifyInjectionSettings(tool, injectionOptions);
+
+			if (outputMode == OutputMode.keepOpen)
                 return await Utility.Process.StartProcessWithShell(BaseDirectory, tool_path, full_args, lowPriority, injectionOptions, cancellationToken: cancellationToken);
             else
                 return await Utility.Process.StartProcess(BaseDirectory, executable: tool_path, args: full_args, lowPriority: lowPriority, logFileName: log_path, noWindow: !has_window, injectionOptions: injectionOptions, cancellationToken: cancellationToken);
