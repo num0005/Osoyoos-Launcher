@@ -312,7 +312,7 @@ namespace ToolkitLauncher.ToolkitInterface
         public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
             string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
-            string dataPath = String.IsNullOrEmpty(Profile.DataPath) ? Path.GetDirectoryName(Profile.ToolPath) + "\\data" : Profile.DataPath;
+            string dataPath = GetDataDirectory();
             string fileName = pathandExtension[0].Substring(pathandExtension[0].LastIndexOf('\\') + 1);
             string extractedFolderPath = "";
             string newFolderPath = "";

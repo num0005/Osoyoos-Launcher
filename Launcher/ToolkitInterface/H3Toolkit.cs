@@ -327,8 +327,9 @@ namespace ToolkitLauncher.ToolkitInterface
         public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
             string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
-            string dataPath = String.IsNullOrEmpty(Profile.DataPath) ? Path.GetDirectoryName(Profile.ToolPath) + "\\data" : Profile.DataPath;
-            switch (pathandExtension[1])
+            string dataPath = GetDataDirectory();
+
+			switch (pathandExtension[1])
             {
                 case ".scenario_structure_bsp":
                 case ".render_model":
