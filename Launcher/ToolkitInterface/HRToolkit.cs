@@ -268,36 +268,6 @@ namespace ToolkitLauncher.ToolkitInterface
             await Task.WhenAll(dispatchedTasks);
         }
 
-        public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
-        {
-            string basename = Path.ChangeExtension(path, null);
-            string? extension = Path.GetExtension(path);
-            string dataPath = GetDataDirectory();
-
-            Trace.WriteLine($"ExtractTags (hr): {basename} {extension} => {dataPath}");
-
-			switch (extension)
-            {
-                case ".scenario_structure_bsp":
-                case ".render_model":
-                case ".physics_model":
-                case ".collision_model":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-import-info", Path.Join(GetTagDirectory(), path) }, OutputMode.closeShell);
-                    break;
-                case ".bitmap":
-                    string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
-                    Directory.CreateDirectory(bitmapsDir);
-                    if (bitmapsAsTGA)
-                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
-                    else
-                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-tga", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
-                    break;
-                case ".multilingual_unicode_string_list":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", basename }, OutputMode.closeShell);
-                    break;
-            }
-        }
-
         public override bool IsMutexLocked(ToolType tool)
         {
             // todo(num0005) implement this
