@@ -400,10 +400,15 @@ namespace ToolkitLauncher.ToolkitInterface
 
 		protected override Utility.Process.InjectionConfig? ModifyInjectionSettings(ToolType tool, Utility.Process.InjectionConfig? requestedConfig)
 		{
-            bool is_game_engine_build = tool == ToolType.Sapien || tool == ToolType.Game;
+			static void ModifyEnviroment(IDictionary<string, string?> Enviroment)
+			{
+                Enviroment["DONT_TREAD_ON_ME_WITH_DEBUGGING_DIALOGS"] = "no_step_on_snek";
+			}
+
+			bool is_game_engine_build = tool == ToolType.Sapien || tool == ToolType.Game;
 			if (is_game_engine_build && requestedConfig is null && Profile.IsMCC && Profile.DisableAssertions)
             {
-				DLLInjector injector = new(Resources.H2ToolHooks, "h2.asserts.disable.dll");
+				DLLInjector injector = new(Resources.H2ToolHooks, "h2.asserts.disable.dll", ModifyEnviroment);
                 return new(injector);
 			}
 

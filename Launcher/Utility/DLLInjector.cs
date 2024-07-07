@@ -23,9 +23,15 @@ namespace ToolkitLauncher.Utility
         readonly private Dictionary<Guid, EventWaitHandle> _events = new();
         readonly private Dictionary<Guid, System.Diagnostics.Process> _processes = new();
 
-        public DLLInjector(byte[] dll_binary, string dll_name = "injected.dll")
+        public delegate void ModifyEnviroment(IDictionary<string, string?> Enviroment);
+
+        readonly private ModifyEnviroment _modifyEnviroment;
+
+		public DLLInjector(byte[] dll_binary, string dll_name = "injected.dll", ModifyEnviroment modifyEnviroment = null)
         {
-            Directory.CreateDirectory(App.TempFolder);
+            _modifyEnviroment = modifyEnviroment;
+
+			Directory.CreateDirectory(App.TempFolder);
             dll_path = Path.Combine(App.TempFolder, "DllInjector." + Guid.NewGuid().ToString() + "." + dll_name);
 
             File.WriteAllBytes(dll_path, dll_binary);
@@ -54,9 +60,14 @@ namespace ToolkitLauncher.Utility
 
         public Guid SetupEnviroment(ProcessStartInfo startInfo)
         {
+            Trace.WriteLine("SetupEnviroment - DLL injector");
+
             Guid injector_id = Preinject();
 
             startInfo.Environment[INJECTOR_ENVIROMENTAL_VARIABLE] = DLLInjector.GetEventName(injector_id);
+
+            if (_modifyEnviroment is not null)
+				_modifyEnviroment(startInfo.Environment);
 
             return injector_id;
         }
@@ -291,6 +302,7 @@ namespace ToolkitLauncher.Utility
 		[SupportedOSPlatform("windows6.0.6000")]
 		public async Task<bool> Inject(Guid id, System.Diagnostics.Process process)
         {
+			Trace.WriteLine("Inject - DLL injector");
 #if DEBUG
             // disable timeout for debug builds so we can debug the injection process
             const uint timeout = uint.MaxValue;
