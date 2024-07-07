@@ -321,34 +321,39 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <returns></returns>
         public async Task ASSFromFBX(string fbxPath, string assPath)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "fbx-to-ass", fbxPath, assPath });
+            await RunTool(ToolType.Tool, new() { "fbx-to-ass", fbxPath, assPath });
         }
 
         public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
-            string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
-            string dataPath = GetDataDirectory();
+			string basename = Path.ChangeExtension(path, null);
+			string? extension = Path.GetExtension(path);
+			string dataPath = GetDataDirectory();
 
-			switch (pathandExtension[1])
+			Trace.WriteLine($"ExtractTags (h3): {basename} {extension} => {dataPath}");
+
+			switch (extension)
             {
                 case ".scenario_structure_bsp":
                 case ".render_model":
                 case ".physics_model":
                 case ".collision_model":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-import-info", "tags\\" + path }, OutputMode.closeShell);
+                    await RunTool(ToolType.Tool, new() { "extract-import-info", Path.Join(GetTagDirectory(), path) }, OutputMode.closeShell);
                     break;
                 case ".bitmap":
                     string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
                     Directory.CreateDirectory(bitmapsDir);
                     if (bitmapsAsTGA)
-                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                        await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
                     else
-                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-tga", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                        await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
                     break;
                 case ".multilingual_unicode_string_list":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);
+                    await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.closeShell);
                     break;
-            }
+				default:
+					throw new Exception($"Extraction not supported for {extension}");
+			}
         }
 
         public override bool IsMutexLocked(ToolType tool)
