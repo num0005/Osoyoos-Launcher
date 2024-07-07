@@ -47,7 +47,9 @@ namespace ToolkitLauncher.Utility
         /// <returns>A task that will complete when the executable exits</returns>
         static public Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority = false, bool admin = false, bool noWindow = false, string? logFileName = null, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
         {
-            Trace.WriteLine($"starting(): directory: {directory}, executable:{executable}, args:{args}, admin: {admin}, low priority {lowPriority}, noWindow {noWindow} log {logFileName}");
+            string? argsForDebug = args is not null ? String.Join(",", args) : null;
+
+			Trace.WriteLine($"starting(): directory: {directory}, executable:{executable}, args:{argsForDebug}, admin: {admin}, low priority {lowPriority}, noWindow {noWindow} log {logFileName}");
             if (OperatingSystem.IsWindows())
                 return Windows.StartProcess(directory, executable, args, lowPriority, admin, noWindow, logFileName, injectionOptions, cancellationToken);
             throw new PlatformNotSupportedException();
