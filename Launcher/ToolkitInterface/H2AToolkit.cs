@@ -311,56 +311,78 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
-            string[] pathandExtension = { path.Substring(0, path.LastIndexOf('.')), path.Substring(path.LastIndexOf('.')) };
-            string dataPath = GetDataDirectory();
-            string fileName = pathandExtension[0].Substring(pathandExtension[0].LastIndexOf('\\') + 1);
-            string extractedFolderPath = "";
-            string newFolderPath = "";
-            switch (pathandExtension[1])
+			string basename = Path.ChangeExtension(path, null);
+			string? extension = Path.GetExtension(path);
+
+			string filename = Path.GetFileNameWithoutExtension(path);
+			
+			string dataPath = GetDataDirectory();
+
+			Trace.WriteLine($"ExtractTags (h2): {basename} {extension} {filename} => {dataPath}");
+
+
+			string extractedFolderPath = null;
+			string newFolderPath = null;
+
+            async Task ExtractJMS(string type)
+            {
+				await RunTool(ToolType.Tool, new() { $"extract-{type}-data", basename }, OutputMode.closeShell);
+
+				extractedFolderPath = Path.Join(dataPath, "!extracted", filename, type);
+                newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(basename), type);
+
+			}
+
+            switch (extension)
             {
                 case ".scenario_structure_bsp":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-structure-data", pathandExtension[0] }, OutputMode.closeShell);
-                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\structure\\";
-                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\structure\\";
-                    break;
+                    await ExtractJMS("structure");
+					break;
                 case ".render_model":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-render-data", pathandExtension[0] }, OutputMode.closeShell);
-                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\render\\";
-                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\render\\";
-                    break;
+					await ExtractJMS("render");
+					break;
                 case ".physics_model":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-physics-data", pathandExtension[0] }, OutputMode.closeShell);
-                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\physics\\";
-                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\physics\\";
+					await ExtractJMS("physics");
                     break;
                 case ".collision_model":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-collision-data", pathandExtension[0] }, OutputMode.closeShell);
-                    extractedFolderPath = dataPath + "\\!extracted\\" + fileName + "\\collision\\";
-                    newFolderPath = Path.Join(dataPath, Path.GetDirectoryName(pathandExtension[0])) + "\\collision\\";
+					await ExtractJMS("collision");
                     break;
                 case ".bitmap":
                     string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
                     Directory.CreateDirectory(bitmapsDir);
                     if (bitmapsAsTGA)
-                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-dds", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                        await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
                     else
-                        await RunTool(ToolType.Tool, new List<string>() { "export-bitmap-tga", pathandExtension[0], bitmapsDir + "\\" }, OutputMode.closeShell);
+                        await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
                     break;
                 case ".multilingual_unicode_string_list":
-                    await RunTool(ToolType.Tool, new List<string>() { "extract-unicode-strings", pathandExtension[0] }, OutputMode.closeShell);
+                    await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.closeShell);
                     break;
+                default:
+                    throw new Exception($"Extraction not supported for {extension}");
             }
             if (String.IsNullOrEmpty(extractedFolderPath) || String.IsNullOrEmpty(newFolderPath)) 
                 return;
-            if (pathandExtension[1] == ".bitmap" || pathandExtension[1] == ".multilingual_unicode_string_list")
+            if (extension == ".bitmap" || extension == ".multilingual_unicode_string_list")
                 return;
             if (h2MoveDir && Directory.Exists(extractedFolderPath))
             {
                 Directory.CreateDirectory(newFolderPath);
-                foreach (string newFilePath in Directory.GetFiles(extractedFolderPath))
+                foreach (string fileToMove in Directory.GetFiles(extractedFolderPath))
                 {
-                    File.Copy(newFilePath, newFolderPath + Path.GetFileName(newFilePath));
-                    File.Delete(newFilePath);
+                    string fileToMoveName = Path.GetFileName(fileToMove);
+					string newFileName = Path.Join(newFolderPath, fileToMoveName);
+
+                    try
+                    {
+                        File.Move(fileToMove, newFileName);
+                    } catch (Exception ex)
+                    {
+                        Trace.WriteLine("Failed to move extract file!");
+                        Trace.WriteLine(ex);
+
+                        MessageBox.Show($"Failed to copy over extracted file {fileToMove} to the correct directory. You will have to move it manually.\n Reason: {ex.Message}");
+                    }
                 }
             }
         }
