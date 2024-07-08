@@ -296,17 +296,6 @@ namespace ToolkitLauncher
         }
     }
 
-    public class BooleanToVisiblity : OneWayValueConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is true)
-                return Visibility.Visible;
-            else
-                return Visibility.Collapsed;
-        }
-    }
-
     public class ToolkitToSpaceConverter : OneWayValueConverter
     {
         private GridLength ParseGridConfig(string input)

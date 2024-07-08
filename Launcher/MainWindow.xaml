@@ -17,7 +17,6 @@
         <local:TextContentModifier x:Key="TextContentModifier" />
         <local:ToolkitToSpaceConverter x:Key="ToolkitToSpaceConverter" />
         <local:BooleanToSpaceConverter x:Key="BooleanToSpaceConverter" />
-        <local:BooleanToVisiblity x:Key="BooleanToVisiblity" />
         <local:IsScenarioPathToVisibilityConverter x:Key="IsScenarioPathToVisibilityConverter" />
         <local:ProfiletoVisibility x:Key="ProfiletoVisibility" />
         <local:ProfiletoVisibilityMulti x:Key="ProfiletoVisibilityMulti" />
