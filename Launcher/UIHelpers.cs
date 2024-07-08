@@ -210,7 +210,7 @@ namespace ToolkitLauncher
         static public bool IsAnyInEnableListValid(IEnumerable<TogglesUI> enable_for)
         {
             bool enable;
-            if (MainWindow.profile_mapping.Count > 0)
+            if (MainWindow.toolkit_profile is not null)
             {
                 enable = false;
 
@@ -252,6 +252,10 @@ namespace ToolkitLauncher
                         continue;
 
                     if (toggle.HasFlag(TogglesUI.HasStandalone) && string.IsNullOrEmpty(MainWindow.toolkit_profile.GameExePath))
+                        continue;
+
+                    // check extension support
+                    if (toggle.HasFlag(TogglesUI.H2Codez) && !MainWindow.toolkit_profile.IsH2Codez())
                         continue;
 
                     // everything checks out, exit early

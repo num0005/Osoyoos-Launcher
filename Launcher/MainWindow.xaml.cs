@@ -542,7 +542,7 @@ namespace ToolkitLauncher
         {
             get
             {
-                if (profile_index < 0 || profile_mapping.Count <= profile_index)
+                if (profile_mapping.Count == 0 || profile_index < 0 || profile_mapping.Count <= profile_index)
                     return null;
                 return ToolkitProfiles.SettingsList[profile_mapping[profile_index]];
             }
