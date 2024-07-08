@@ -230,10 +230,10 @@
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <ComboBox Grid.Column="0" x:Name="light_quality_level" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=2, ElementName=toolkit_selection}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2 + h3 + h4 + hr, ElementName=toolkit_selection}" ToolTip="Lighting quality (checkerboard is the worst, super is the best)."/>
-                                                                <Button Grid.Column="2" x:Name ="lightmap_config_button" HorizontalAlignment="Left" Height="22" Width="22" VerticalAlignment="Center" Click="lightmap_config_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|h2codez, ElementName=toolkit_selection}">
+                                                                <Button Grid.Column="2" x:Name ="lightmap_config_button" HorizontalAlignment="Left" Height="22" Width="22" VerticalAlignment="Center" Click="lightmap_config_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=H2|H2Codez|CommunityBuild, ElementName=toolkit_selection}">
                                                                     <Button.IsEnabled>
                                                                         <MultiBinding Converter="{StaticResource LightmapConfigModifier}">
-                                                                            <Binding ElementName="light_quality_level" Path="SelectedIndex" />
+                                                                            <Binding ElementName="light_quality_level" Path="SelectedValue" />
                                                                             <Binding ElementName="toolkit_selection" Path="SelectedIndex" />
                                                                         </MultiBinding>
                                                                     </Button.IsEnabled>
