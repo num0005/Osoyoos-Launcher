@@ -718,13 +718,12 @@ namespace ToolkitLauncher
     {
         public override object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int custom_index = 10;
-            int lightmap_quality = (int)values[0];
+            var lightmap_quality = values[0];
             int toolkit_selection = (int)values[1];
-            if (MainWindow.toolkit_profile != null && lightmap_quality >= 0 && toolkit_selection >= 0)
+            if (MainWindow.toolkit_profile != null && lightmap_quality != null && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.Generation >= ToolkitProfiles.GameGen.Halo2 && lightmap_quality == custom_index)
+                if (MainWindow.toolkit_profile.Generation >= ToolkitProfiles.GameGen.Halo2 && lightmap_quality.ToString() == "custom")
                     return true;
                 return false;
             }
