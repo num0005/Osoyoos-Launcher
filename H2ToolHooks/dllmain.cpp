@@ -39,7 +39,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             char event_name[0x1000];
             if (GetEnvironmentVariableA("OSOYOOS_INJECTOR_EVENT", event_name, sizeof(event_name)))
             {
-                HANDLE event = OpenEventA(WRITE_DAC, FALSE, event_name);
+                HANDLE event = OpenEventA(EVENT_MODIFY_STATE, FALSE, event_name);
                 if (event != 0)
                 {
 #if _DEBUG
@@ -47,7 +47,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 #endif
                     if (!SetEvent(event))
                     {
-                        DebugPrintf("[DLL FIX] Failed to communicate back to launcher!");
+                        DebugPrintf("[DLL FIX] Failed to communicate back to launcher: %x!", GetLastError());
                     }
                     CloseHandle(event);
                 }
