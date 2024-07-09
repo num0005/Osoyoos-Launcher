@@ -9,14 +9,14 @@
 #include "PatternScanner.h"
 #include "patches.h"
 #include "Debug.h"
+#include "KeyValueConfig.h"
 
-bool H2ToolHooks::hook()
+static bool disable_assertions(const PatternScanner &scanner)
 {
+	DebugPrintf("Disabling assertions");
 	/*
 	* Perform signature scanning to find the instructions we need to patch
 	*/
-	PatternScanner scanner;
-
 	std::array<pattern_entry, 7> hs_assert = {
 		PAT_BYTES(2, {0x6A, 0x01}), // push    1 (is fatal)
 		PAT_BYTE(0x68), PAT_INTEGER_RANGE(uint32_t, 2960 - 400, 2960 + 400), // push c_line_number
@@ -86,4 +86,69 @@ bool H2ToolHooks::hook()
 	}
 
 	return false;
+}
+
+struct lightmap_settings
+{
+	const char* name;
+	int32_t subpixel_count;
+	int32_t monte_carlo_sample_count;
+	uint32_t is_draft;
+	int32_t photon_count;
+	uint32_t unknown;
+	float search_distance;
+	uint32_t is_checkboard;
+};
+static_assert(sizeof(lightmap_settings) == 32);
+
+constexpr static lightmap_settings base_custom_settings = { "custom", 4, 8, false, 20000000, /*unknown*/ 0, 4.f, false };
+
+static bool patch_lightmap_quality(const PatternScanner &scanner)
+{
+	DebugPrintf("Patching lightmap quality");
+	std::array<pattern_entry, 8> cuban_lightmap_setting = {
+		PAT_STRING_XREF("cuban"),
+		PAT_POD_TYPE(int32_t(1)), // subpixel count
+		PAT_POD_TYPE(int32_t(1)), // monte carlo sample count
+		PAT_POD_TYPE(int32_t(0)), // is_draft
+		PAT_POD_TYPE(int32_t(50000)), // photon count
+		PAT_POD_TYPE(int32_t(0)), // unknown
+		PAT_POD_TYPE(float(1.0f)), // search distance setting
+		PAT_POD_TYPE(int32_t(0)) // is checkboard
+	};
+
+	auto cuban_match = scanner.find_pattern_in_rdata(cuban_lightmap_setting);
+
+	if (!cuban_match)
+	{
+		DebugPrintf("Failed to find lightmap quality settings!");
+		return false;
+	}
+
+	KeyValueFile config("custom_lightmap_quality.conf");
+
+	lightmap_settings quality_settings = base_custom_settings;
+
+	quality_settings.photon_count = config.getNumber<int32_t>("photon_count", quality_settings.photon_count);
+	quality_settings.monte_carlo_sample_count = config.getNumber<int32_t>("photon_count", quality_settings.monte_carlo_sample_count);
+
+	// patch config in rdata
+	WriteValue(cuban_match->offset, quality_settings);
+}
+
+bool H2ToolHooks::hook(HookFlags flags)
+{
+	PatternScanner scanner;
+	bool success = true;
+
+	if (flags & HookFlags::DisableAsserts)
+	{
+		success = disable_assertions(scanner) && success;
+	}
+	if (flags & HookFlags::PatchLightmapQuality)
+	{
+		success = patch_lightmap_quality(scanner) && success;
+	}
+
+	return success;
 }

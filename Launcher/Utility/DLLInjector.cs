@@ -42,9 +42,15 @@ namespace ToolkitLauncher.Utility
             File.Delete(dll_path);
         }
 
-        public const string INJECTOR_ENVIROMENTAL_VARIABLE = "OSOYOOS_INJECTOR_EVENT";
+        public static string GetVariableName(string variable)
+        {
+            return $"OSOYOOS_INJECTOR_{variable}";
+		}
 
-        private static string GetEventName(Guid id)
+        public string INJECTOR_ENVIROMENTAL_VARIABLE => GetVariableName("EVENT");
+
+
+		private static string GetEventName(Guid id)
         {
             return $"OSOYOOS_INJECT_{id}";
         }

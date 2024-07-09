@@ -64,6 +64,23 @@ public:
 	}
 
 	template <size_t pattern_size>
+	std::optional<Match> find_pattern_in_rdata(const std::array<pattern_entry, pattern_size>& pattern) const {
+
+		std::vector<Match> instances;
+		instances.reserve(1);
+
+		for (const auto& range : rdata) {
+			auto range_end = range.first + range.second;
+			if (find_pattern_in_range_internal(instances, range.first, range_end, pattern, 1))
+			{
+				return instances[0];
+			}
+		}
+
+		return std::optional<Match>{};
+	}
+
+	template <size_t pattern_size>
 	std::vector<Match> find_pattern_in_code_multiple(const std::array<pattern_entry, pattern_size>& pattern, size_t max_count = 0) const {
 		std::vector<Match> instances;
 		for (const auto& range : code) {

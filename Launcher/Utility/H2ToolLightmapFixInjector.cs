@@ -27,16 +27,25 @@ namespace ToolkitLauncher.Utility
 
 		private readonly uint _baseAddress;
 		private readonly IEnumerable<NopFill> _nopfills;
+		private readonly IProcessInjector _daisyChainedInjector = null;
 
-		public H2ToolLightmapFixInjector(uint baseAddress, IEnumerable<NopFill> nopFills)
+		public H2ToolLightmapFixInjector(uint baseAddress, IEnumerable<NopFill> nopFills, IProcessInjector daisyChain = null)
 		{
 			_baseAddress = baseAddress;
 			_nopfills = nopFills;
+			_daisyChainedInjector = daisyChain;
 		}
 
 		public Guid SetupEnviroment(ProcessStartInfo startInfo)
 		{
-			return _uuid;
+			if (_daisyChainedInjector is null)
+			{
+				return _uuid;
+			}
+			else
+			{
+				return _daisyChainedInjector.SetupEnviroment(startInfo);
+			}
 		}
 
 		[SupportedOSPlatform("windows5.1.2600")]
@@ -48,9 +57,17 @@ namespace ToolkitLauncher.Utility
 		public static extern void NtResumeProcess(IntPtr processHandle);
 
 		[SupportedOSPlatform("windows5.1.2600")]
-		public Task<bool> Inject(Guid id, System.Diagnostics.Process process)
+		public async Task<bool> Inject(Guid id, System.Diagnostics.Process process)
 		{
-			Debug.Assert(id == _uuid);
+			if (_daisyChainedInjector is null)
+				Debug.Assert(id == _uuid);
+
+			bool success = true;
+			if (_daisyChainedInjector is not null)
+			{
+				success = await _daisyChainedInjector.Inject(id, process);
+				Trace.WriteLine($"[H2 LM Patcher] Daisy chained injector done, succes = {success}");
+			}
 
 			// use try-finally to ensure the process is always resumed no matter whatever the patching was sucessful or not
 			try
@@ -71,29 +88,29 @@ namespace ToolkitLauncher.Utility
 					byte[] nopValues = new byte[fill.Length];
 					Array.Fill<byte>(nopValues, 0x90);
 
-					bool success;
+					bool writeSuccess;
 
 					unsafe
 					{
 						fixed (byte* nopVals = nopValues)
-							success = PInvoke.WriteProcessMemory((HANDLE)process.Handle, translatedAddress.ToPointer(), nopVals, (nuint)nopValues.Length, null);
+							writeSuccess = PInvoke.WriteProcessMemory((HANDLE)process.Handle, translatedAddress.ToPointer(), nopVals, (nuint)nopValues.Length, null);
 					}
 
-					if (!success)
+					if (!writeSuccess)
 					{
 						Trace.WriteLine("Failed to write patch to memory!");
-						return Task.FromResult(false);
+						success = false;
 					}
 				}
 
-				Trace.WriteLine($"[H2 LM Patcher] Done patching");
+				Trace.WriteLine($"[H2 LM Patcher] Done patching, success = {success}");
 
-				return Task.FromResult(true);
+				return success;
 			} catch(Exception ex)
 			{
 				Trace.WriteLine($"[H2 LM Patcher] Unexpected expection, bailing out: {ex}");
 
-				return Task.FromResult(false);
+				return false;
 			} finally
 			{
 				NtResumeProcess(process.Handle);

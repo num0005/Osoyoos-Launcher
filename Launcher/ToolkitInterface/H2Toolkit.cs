@@ -52,12 +52,17 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", scenario.Replace(".scenario", "") });
         }
 
-        private static string GetLightmapQuality(LightmapArgs lightmapArgs)
+        static private DLLInjector GetLightmapConfigInjector()
         {
-            return lightmapArgs.level_combobox.ToLower();
-        }
+			static void ModifyEnviroment(IDictionary<string, string?> Enviroment)
+			{
+				Enviroment[DLLInjector.GetVariableName("PATCH_QUALITY")] = "1";
+			}
 
-        private record NopFillFormat(uint BaseAddress, List<uint> CallsToPatch);
+            return new(Resources.H2ToolHooks, "h2.patch.lightmap-quality.dll", ModifyEnviroment);
+		}
+
+		private record NopFillFormat(uint BaseAddress, List<uint> CallsToPatch);
 
 
         readonly static Dictionary<string, NopFillFormat> _calls_to_patch_md5 = new()
@@ -70,7 +75,7 @@ namespace ToolkitLauncher.ToolkitInterface
 				new NopFillFormat(0x400000, new() {0x4ADD50, 0x4ADFF5}) }  // tag_save lightmap_tag, tag_save scenario_editable
 		};
 
-		private H2ToolLightmapFixInjector? GetInjector(LightmapArgs args)
+		private IProcessInjector? GetInjector(LightmapArgs args)
         {
             if (!Profile.IsMCC)
                 return null;
@@ -86,18 +91,26 @@ namespace ToolkitLauncher.ToolkitInterface
 
             string tool_hash = HashHelpers.GetMD5Hash(tool_Path).ToUpper();
 
+            DLLInjector? lightmapQualityInjector = null;
+
+			if (args.QualitySetting == "custom")
+            {
+                lightmapQualityInjector = GetLightmapConfigInjector();
+
+			}
+
             if (_calls_to_patch_md5.ContainsKey(tool_hash))
             {
                 NopFillFormat config = _calls_to_patch_md5[tool_hash];
 
                 IEnumerable<H2ToolLightmapFixInjector.NopFill> nopFills = config.CallsToPatch.Select(offset => new H2ToolLightmapFixInjector.NopFill(offset, 5));
 
-                return new H2ToolLightmapFixInjector(config.BaseAddress, nopFills);
+                return new H2ToolLightmapFixInjector(config.BaseAddress, nopFills, daisyChain: lightmapQualityInjector);
 
 			}
             else
             {
-                return null;
+                return lightmapQualityInjector;
             }
 		}
 
@@ -106,8 +119,6 @@ namespace ToolkitLauncher.ToolkitInterface
 			LogFolder = $"lightmaps_{Path.GetFileNameWithoutExtension(scenario)}";
 			try
 			{
-				string quality = GetLightmapQuality(args);
-
 				if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
 				{
 					if (progress is not null)
@@ -117,7 +128,7 @@ namespace ToolkitLauncher.ToolkitInterface
 						progress.MaxValue += 1 + args.instanceCount;
 
 
-					Utility.H2ToolLightmapFixInjector? injector = null;
+					IProcessInjector? injector = null;
                     Dictionary<int, Utility.Process.InjectionConfig> injectionState = new();
                     if (Profile.IsMCC)
                         injector = GetInjector(args);
@@ -189,7 +200,7 @@ namespace ToolkitLauncher.ToolkitInterface
 										"lightmaps-farm-worker",
 										scenario,
 										bsp,
-										quality,
+										args.QualitySetting,
 										index.ToString(),
 										args.instanceCount.ToString(),
 									},
@@ -211,7 +222,7 @@ namespace ToolkitLauncher.ToolkitInterface
 								"lightmaps-slave",// the long legacy of h2codez
 								scenario,
 								bsp,
-								quality,
+								args.QualitySetting,
 								args.instanceCount.ToString(),
 								index.ToString()
 							},
@@ -249,7 +260,7 @@ namespace ToolkitLauncher.ToolkitInterface
 						progress.DisableCancellation();
 						progress.MaxValue += 1;
 					}
-					await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+					await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, args.QualitySetting });
 					if (progress is not null)
 						progress.Report(1);
 				}
