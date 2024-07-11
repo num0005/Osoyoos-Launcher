@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ToolkitLauncher.Utility;
@@ -344,9 +345,15 @@ namespace ToolkitLauncher.ToolkitInterface
                     string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
                     Directory.CreateDirectory(bitmapsDir);
                     if (bitmapsAsTGA)
-                        await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
-                    else
+                    {
                         await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
+                        FixBitmapName(Path.Join(dataPath, basename) + "_00_00.tga");
+                    }
+                    else
+                    {
+                        await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
+                        FixBitmapName(Path.Join(dataPath, basename) + "_00_00.dds");
+                    }  
                     break;
                 case ".multilingual_unicode_string_list":
                     await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.closeShell);
