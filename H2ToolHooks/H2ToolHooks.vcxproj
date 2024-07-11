@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClInclude Include="Debug.h" />
     <ClInclude Include="H2ToolHooks.h" />
+    <ClInclude Include="KeyValueConfig.h" />
     <ClInclude Include="patches.h" />
     <ClInclude Include="PatternScanner.h" />
     <ClInclude Include="platform.h" />

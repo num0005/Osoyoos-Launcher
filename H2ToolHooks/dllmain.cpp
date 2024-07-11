@@ -28,7 +28,7 @@ static bool is_enviroment_variable_set(const char* var)
 static bool is_launcher_variable_set(const char* var)
 {
     char env_variable[0x100];
-    sprintf_s(env_variable, "OSOYOOS_INJECTOR_", var);
+    sprintf_s(env_variable, "OSOYOOS_INJECTOR_%s", var);
 
     return is_enviroment_variable_set(env_variable);
 }
@@ -37,7 +37,7 @@ template <size_t length>
 size_t get_launcher_variable(const char* var, char(&value)[length])
 {
     char env_variable_name[0x100];
-    sprintf_s(env_variable_name, "OSOYOOS_INJECTOR_", var);
+    sprintf_s(env_variable_name, "OSOYOOS_INJECTOR_%s", var);
 
     return GetEnvironmentVariableA(env_variable_name, value, length);
 }
@@ -52,6 +52,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+    {
         OutputDebugStringA("[DLL FIX] DLL_PROCESS_ATTACH\n");
         attach_to_console();
 
@@ -104,7 +105,9 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                 DebugPrintf("[DLL FIX] Failed to get injector event name!");
             }
         }
+
         break;
+    }
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:

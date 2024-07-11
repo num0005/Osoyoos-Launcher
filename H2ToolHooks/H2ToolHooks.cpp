@@ -125,15 +125,19 @@ static bool patch_lightmap_quality(const PatternScanner &scanner)
 		return false;
 	}
 
+	lightmap_settings* cuban_quality_setting = reinterpret_cast<lightmap_settings*>(cuban_match->offset);
+
 	KeyValueFile config("custom_lightmap_quality.conf");
 
 	lightmap_settings quality_settings = base_custom_settings;
 
 	quality_settings.photon_count = config.getNumber<int32_t>("photon_count", quality_settings.photon_count);
-	quality_settings.monte_carlo_sample_count = config.getNumber<int32_t>("photon_count", quality_settings.monte_carlo_sample_count);
+	quality_settings.monte_carlo_sample_count = config.getNumber<int32_t>("monte_carlo_sample_count", quality_settings.monte_carlo_sample_count);
 
 	// patch config in rdata
 	WriteValue(cuban_match->offset, quality_settings);
+
+	return true;
 }
 
 bool H2ToolHooks::hook(HookFlags flags)

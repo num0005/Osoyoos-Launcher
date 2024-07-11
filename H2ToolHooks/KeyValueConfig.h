@@ -31,6 +31,17 @@ public:
 
 class KeyValueFile
 {
+	inline static std::string_view str_trim(std::string_view str, const std::string& trim_char = " ")
+	{
+		if (str.empty())
+			return str;
+		auto start = str.find_first_not_of(trim_char);
+		if (start == std::string::npos)
+			return "";
+		else
+			return str.substr(start, str.find_last_not_of(trim_char) - start + 1);
+	}
+
 public:
 	KeyValueFile(std::filesystem::path path, bool autosave = false):
 		autosave(autosave),
@@ -47,11 +58,14 @@ public:
 			if (cut_point == std::string::npos)
 				continue;
 
+			std::string_view name_untrimmed = std::string_view(line).substr(0, cut_point);
+			std::string_view value_untrimmed = std::string_view(line).substr(cut_point + 1);
+
 			// remove trailing and leading spaces.
-			std::string setting_name = line.substr(line.find_first_not_of(' '), line.find_last_not_of(' ', cut_point)); 
-			std::string setting_value = line.substr(line.find_first_of(' ', cut_point + 1), line.find_last_not_of(' '));
+			std::string setting_name = std::string(str_trim(name_untrimmed));
+			std::string_view setting_value = str_trim(value_untrimmed);
 			if (validate_setting_name(setting_name))
-				key_value_pairs[setting_name] = setting_value;
+				key_value_pairs[std::move(setting_name)] = setting_value;
 			else
 				DebugPrintf("Skipping invalid setting name \"%s\" in configuration file \"%s\"", setting_name.c_str(), path.generic_u8string().c_str());
 		}
@@ -73,30 +87,18 @@ public:
 		settings_file.close();
 	}
 
-	const std::optional<std::string&> getStringOptional(const std::string& setting)
+	/* Throws an expection in case of an error */
+	const std::string& getString(const std::string& setting)
 	{
 		if (validate_setting_name(setting)) {
 			auto ilter = key_value_pairs.find(setting);
 			if (ilter != key_value_pairs.end())
 				return ilter->second;
 			else
-				return std::optional<std::string&>(); // empty
-		}
-		else {
+				throw KeyValueError("No such string");
+		} else {
 			throw KeyValueError("Invalid setting name");
 		}
-	}
-
-	/* Throws an expection in case of an error */
-	const std::string& getString(const std::string& setting)
-	{
-		auto string = getStringOptional(setting);
-		if (!string.has_value())
-		{
-			throw KeyValueError("No such string");
-		}
-
-		return string.value();
 	}
 
 	/* Returns success and throws and expection if the name is invalid */

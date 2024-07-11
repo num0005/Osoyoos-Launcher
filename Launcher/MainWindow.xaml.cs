@@ -1548,7 +1548,7 @@ namespace ToolkitLauncher
         public void LightmapConfigUI()
         {
 
-            lightmapConfig = new(toolkit.BaseDirectory + "\\" + "custom_lightmap_quality.conf");
+            lightmapConfig = new(Path.Join(toolkit.BaseDirectory, "custom_lightmap_quality.conf"));
             LightmapSetUI();
         }
 
@@ -1577,13 +1577,13 @@ namespace ToolkitLauncher
 
         private void SaveConfig()
         {
-            lightmapConfig.IsCheckerboard = lightmap_is_checkboard.IsChecked ?? false;
-            lightmapConfig.IsDirectOnly = lightmap_is_direct_only.IsChecked ?? false;
-            lightmapConfig.IsDraft = lightmap_is_draft.IsChecked ?? false;
+           // lightmapConfig.IsCheckerboard = lightmap_is_checkboard.IsChecked ?? false;
+           // lightmapConfig.IsDirectOnly = lightmap_is_direct_only.IsChecked ?? false;
+           // lightmapConfig.IsDraft = lightmap_is_draft.IsChecked ?? false;
             lightmapConfig.SampleCount = int.Parse(lightmap_sample_count.Text);
             lightmapConfig.PhotonCount = int.Parse(lightmap_photon_count.Text);
-            lightmapConfig.AASampleCount = int.Parse(lightmap_AA_sample_count.Text);
-            lightmapConfig.GatherDistance = float.Parse(lightmap_gather_dist.Text);
+          //  lightmapConfig.AASampleCount = int.Parse(lightmap_AA_sample_count.Text);
+           // lightmapConfig.GatherDistance = float.Parse(lightmap_gather_dist.Text);
 
             if (!lightmapConfig.Save())
                 MessageBox.Show($"Failed to save config to \"{lightmapConfig.Path}\". Check file system permissions!", "Error!");

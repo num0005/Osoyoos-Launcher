@@ -1276,12 +1276,12 @@
                         <Grid Grid.Column="1" Grid.Row="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="0"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="8"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="0" x:Name="lightmap_flags" Header="Lightmap Flags" Foreground="{DynamicResource TextColor}">
+                            <GroupBox Grid.Row="0" x:Name="lightmap_flags" Header="Lightmap Flags" Foreground="{DynamicResource TextColor}" Visibility="Collapsed">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="5"/>
@@ -1313,19 +1313,19 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="8"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="0"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="0"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource TextColor}" x:Name="lightmap_sample_count_label" Content="Sample Count:"/>
+                                    <Label Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource TextColor}" x:Name="lightmap_sample_count_label" Content="Monte Carlo Samples:"/>
                                     <Label Grid.Column="0" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="lightmap_photon_count_label" Content="Photon Count:" ToolTip="How many photons will be cast?"/>
-                                    <Label Grid.Column="0" Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="lightmap_AA_sample_count_label" Content="Antialiasing Samples:"/>
-                                    <Label Grid.Column="0" Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="lightmap_gather_dist_label" Content="Gather Distance:"/>
+                                    <Label Grid.Column="0" Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="lightmap_AA_sample_count_label" Content="Antialiasing Samples:" Visibility="Collapsed"/>
+                                    <Label Grid.Column="0" Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="lightmap_gather_dist_label" Content="Gather Distance:" Visibility="Collapsed"/>
                                     <TextBox Grid.Column="2" Grid.Row="0" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_sample_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
                                     <TextBox Grid.Column="2" Grid.Row="2" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_photon_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100" ToolTip="How many photons will be cast?"/>
-                                    <TextBox Grid.Column="2" Grid.Row="4" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_AA_sample_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100"/>
-                                    <TextBox Grid.Column="2" Grid.Row="6" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_gather_dist" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="decimals_only" MinWidth="100"/>
+                                    <TextBox Grid.Column="2" Grid.Row="4" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_AA_sample_count" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="numbers_only" MinWidth="100" Visibility="Collapsed"/>
+                                    <TextBox Grid.Column="2" Grid.Row="6" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" BorderBrush="{StaticResource brushWatermarkBorder}" x:Name="lightmap_gather_dist" TextWrapping="Wrap" PreviewKeyDown="spaces_PreviewKeyDown" PreviewTextInput="decimals_only" MinWidth="100" Visibility="Collapsed"/>
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Row="4">
