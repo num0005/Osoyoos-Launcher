@@ -15,5 +15,7 @@
 H2ToolHooks/x64/*
 H2ToolHooks/Debug/*
 H2ToolHooks/Release/*
+GetProcAddrHelper/Debug/*
+GetProcAddrHelper/Release/*
 /Debug/*
 /Release/*

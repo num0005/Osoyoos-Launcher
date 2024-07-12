@@ -54,7 +54,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
     {
         OutputDebugStringA("[DLL FIX] DLL_PROCESS_ATTACH\n");
-        attach_to_console();
+        //attach_to_console();
 
         pause_on_exit = is_launcher_variable_set("PAUSE_ON_EXIT");
 

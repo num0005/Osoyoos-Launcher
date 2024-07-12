@@ -20,5 +20,7 @@ namespace ToolkitLauncher.Utility
 		/// <param name="process">Process object</param>
 		/// <returns>Was the process sucessfully modified?</returns>
 		public Task<bool> Inject(Guid id, System.Diagnostics.Process process);
+
+		public virtual bool ShouldSuspendOnLaunch => false;
 	}
 }

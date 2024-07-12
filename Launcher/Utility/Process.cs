@@ -47,7 +47,7 @@ namespace ToolkitLauncher.Utility
         /// <returns>A task that will complete when the executable exits</returns>
         static public Task<Result> StartProcess(string directory, string executable, List<string> args, bool lowPriority = false, bool admin = false, bool noWindow = false, string? logFileName = null, InjectionConfig? injectionOptions = null, CancellationToken cancellationToken = default)
         {
-            string? argsForDebug = args is not null ? String.Join(",", args) : null;
+            string? argsForDebug = args is not null ? EscapeArgList(args) : null;
 
 			Trace.WriteLine($"starting(): directory: {directory}, executable:{executable}, args:{argsForDebug}, admin: {admin}, low priority {lowPriority}, noWindow {noWindow} log {logFileName}");
             if (OperatingSystem.IsWindows())
@@ -93,7 +93,7 @@ namespace ToolkitLauncher.Utility
         /// </summary>
         /// <param name="args">Unescaped arguments</param>
         /// <returns>Escaped command string</returns>
-        static public string EscapeArgList(List<string> args)
+        static public string EscapeArgList(IEnumerable<string> args)
         {
             string commnad_line = "";
             foreach (string arg in args)
@@ -117,9 +117,9 @@ namespace ToolkitLauncher.Utility
         /// </summary>
         /// <param name="arg">The unescaped argument</param>
         /// <returns>Escaped argument</returns>
-        private static string escape_arg(string arg)
+        private static string escape_arg(string arg, bool is_first = false)
         {
-            return " \"" + Regex.Replace(arg, @"(\\+)$", @"$1$1") + "\"";
+            return (is_first ? "\"" : " \"") + Regex.Replace(arg, @"(\\+)$", @"$1$1") + "\"";
         }
     }
 }

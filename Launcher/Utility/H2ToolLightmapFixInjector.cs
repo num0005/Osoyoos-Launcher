@@ -27,24 +27,24 @@ namespace ToolkitLauncher.Utility
 
 		private readonly uint _baseAddress;
 		private readonly IEnumerable<NopFill> _nopfills;
-		private readonly IProcessInjector _daisyChainedInjector = null;
+		public IProcessInjector DaisyChainedInjector { get; set; } = null;
 
 		public H2ToolLightmapFixInjector(uint baseAddress, IEnumerable<NopFill> nopFills, IProcessInjector daisyChain = null)
 		{
 			_baseAddress = baseAddress;
 			_nopfills = nopFills;
-			_daisyChainedInjector = daisyChain;
+			DaisyChainedInjector = daisyChain;
 		}
 
 		public Guid SetupEnviroment(ProcessStartInfo startInfo)
 		{
-			if (_daisyChainedInjector is null)
+			if (DaisyChainedInjector is null)
 			{
 				return _uuid;
 			}
 			else
 			{
-				return _daisyChainedInjector.SetupEnviroment(startInfo);
+				return DaisyChainedInjector.SetupEnviroment(startInfo);
 			}
 		}
 
@@ -56,16 +56,18 @@ namespace ToolkitLauncher.Utility
 		[DllImport("ntdll.dll", PreserveSig = false)]
 		public static extern void NtResumeProcess(IntPtr processHandle);
 
+		public virtual bool ShouldSuspendOnLaunch => DaisyChainedInjector is not null && DaisyChainedInjector.ShouldSuspendOnLaunch;
+
 		[SupportedOSPlatform("windows5.1.2600")]
 		public async Task<bool> Inject(Guid id, System.Diagnostics.Process process)
 		{
-			if (_daisyChainedInjector is null)
+			if (DaisyChainedInjector is null)
 				Debug.Assert(id == _uuid);
 
 			bool success = true;
-			if (_daisyChainedInjector is not null)
+			if (DaisyChainedInjector is not null)
 			{
-				success = await _daisyChainedInjector.Inject(id, process);
+				success = await DaisyChainedInjector.Inject(id, process);
 				Trace.WriteLine($"[H2 LM Patcher] Daisy chained injector done, succes = {success}");
 			}
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using ToolkitLauncher;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
@@ -59,7 +60,7 @@ namespace ToolkitLauncher.ToolkitInterface
 				Enviroment[DLLInjector.GetVariableName("PATCH_QUALITY")] = "1";
 			}
 
-            return new(Resources.H2ToolHooks, "h2.patch.lightmap-quality.dll", ModifyEnviroment);
+            return new(Resources.H2ToolHooks, "h2.patch.lightmap-quality.dll", ModifyEnviroment, earlyInjection: true);
 		}
 
 		private record NopFillFormat(uint BaseAddress, List<uint> CallsToPatch);
@@ -75,7 +76,7 @@ namespace ToolkitLauncher.ToolkitInterface
 				new NopFillFormat(0x400000, new() {0x4ADD50, 0x4ADFF5}) }  // tag_save lightmap_tag, tag_save scenario_editable
 		};
 
-		private IProcessInjector? GetInjector(LightmapArgs args)
+		private H2ToolLightmapFixInjector? GetInjector(LightmapArgs args)
         {
             if (!Profile.IsMCC)
                 return null;
@@ -91,32 +92,40 @@ namespace ToolkitLauncher.ToolkitInterface
 
             string tool_hash = HashHelpers.GetMD5Hash(tool_Path).ToUpper();
 
-            DLLInjector? lightmapQualityInjector = null;
-
-			if (args.QualitySetting == "custom")
-            {
-                lightmapQualityInjector = GetLightmapConfigInjector();
-
-			}
-
             if (_calls_to_patch_md5.ContainsKey(tool_hash))
             {
                 NopFillFormat config = _calls_to_patch_md5[tool_hash];
 
                 IEnumerable<H2ToolLightmapFixInjector.NopFill> nopFills = config.CallsToPatch.Select(offset => new H2ToolLightmapFixInjector.NopFill(offset, 5));
 
-                return new H2ToolLightmapFixInjector(config.BaseAddress, nopFills, daisyChain: lightmapQualityInjector);
+                return new H2ToolLightmapFixInjector(config.BaseAddress, nopFills);
 
 			}
             else
             {
-                return lightmapQualityInjector;
+                return null;
             }
 		}
 
 		public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
 		{
 			LogFolder = $"lightmaps_{Path.GetFileNameWithoutExtension(scenario)}";
+
+			DLLInjector? lightmapQualityInjector = null;
+
+			if (args.QualitySetting == "custom" && Profile.IsMCC)
+			{
+                if (args.outputSetting == OutputMode.keepOpen)
+                {
+                MessageBox.Show(
+                    "Output mode \"keep open\" is not compatible with custom quality setting.", 
+                    "Invalid configuration.");
+                return;
+                }
+				lightmapQualityInjector = GetLightmapConfigInjector();
+
+			}
+
 			try
 			{
 				if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
@@ -128,10 +137,13 @@ namespace ToolkitLauncher.ToolkitInterface
 						progress.MaxValue += 1 + args.instanceCount;
 
 
-					IProcessInjector? injector = null;
+					H2ToolLightmapFixInjector? injector = null;
                     Dictionary<int, Utility.Process.InjectionConfig> injectionState = new();
                     if (Profile.IsMCC)
                         injector = GetInjector(args);
+                    if (injector is not null)
+                        injector.DaisyChainedInjector = lightmapQualityInjector;
+
 
 					async Task RunInstance(int index)
 					{
@@ -187,11 +199,17 @@ namespace ToolkitLauncher.ToolkitInterface
 							Utility.Process.InjectionConfig? config = null;
                             if (injector is not null && index != 0)
                             {
-                                Trace.WriteLine($"Configuring injector for worker {index}");
+                                Trace.WriteLine($"Configuring injector (lm fix) for worker {index}");
                                 config = new(injector);
                                 injectionState[index] = config;
 
 							}
+
+                            if (config is null && lightmapQualityInjector is not null)
+                            {
+								Trace.WriteLine($"Configuring injector (quality patch) for worker {index}");
+								config = new(lightmapQualityInjector);
+                            }
 
 							try
 							{
