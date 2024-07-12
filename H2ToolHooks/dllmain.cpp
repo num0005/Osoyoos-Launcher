@@ -21,7 +21,7 @@ static void attach_to_console()
 
 static bool is_enviroment_variable_set(const char* var)
 {
-    char var_value[0x20] = {};
+    char var_value[2] = {};
     return GetEnvironmentVariableA(var, var_value, sizeof(var_value)) != 0;
 }
 
@@ -39,7 +39,9 @@ size_t get_launcher_variable(const char* var, char(&value)[length])
     char env_variable_name[0x100];
     sprintf_s(env_variable_name, "OSOYOOS_INJECTOR_%s", var);
 
-    return GetEnvironmentVariableA(env_variable_name, value, length);
+    size_t len = GetEnvironmentVariableA(env_variable_name, value, length);
+    value[length - 1] = 0; // ensure null teriminateion
+    return len;
 }
 
 static bool pause_on_exit = false;
@@ -54,7 +56,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
     {
         OutputDebugStringA("[DLL FIX] DLL_PROCESS_ATTACH\n");
-        //attach_to_console();
+        attach_to_console();
 
         pause_on_exit = is_launcher_variable_set("PAUSE_ON_EXIT");
 

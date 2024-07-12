@@ -369,6 +369,7 @@ namespace ToolkitLauncher.Utility
 			//3: push 0: flags
 			//4: push 1: ldrFlags
 			//5: call LdrLoadDll
+            //6: ret 4; pop the unused argument
 
 			WritePushSturcture(returnHandleOffset);
             WritePushSturcture(dllNameOffset);
@@ -393,7 +394,6 @@ namespace ToolkitLauncher.Utility
 				IntPtr shell_code_intptr = new(shell_code_ptr);
 
 				Trace.WriteLine("Injecting DLL using shell code in remote thread!");
-                NtResumeProcess(process.Handle);
                 // no argument is passed to the shell code, since the offsets used are already part of the generated shell code
 				injection_thread = CreateRemoteThread((HANDLE)process.Handle, null, 0, (FARPROC)shell_code_intptr, null, 0, null);
 				if (injection_thread == IntPtr.Zero)
@@ -502,7 +502,6 @@ namespace ToolkitLauncher.Utility
                         Trace.WriteLine($"Target process resumed, ready for thread injection (last error = {Marshal.GetLastWin32Error()})");
 
                         Trace.WriteLine("Injecting DLL into remote thread!");
-						NtResumeProcess(processHandle);
 						injection_thread = CreateRemoteThread(processHandle, null, 0, load_library_proc, remote_dll_string, 0, null);
                         if (injection_thread == IntPtr.Zero)
                         {
