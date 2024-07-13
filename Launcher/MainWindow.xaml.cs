@@ -158,7 +158,9 @@ namespace ToolkitLauncher
         high,
         [Description("Super")]
         super,
-    }
+		[Description("Custom")]
+		custom,
+	}
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum h3_quality_settings_stock
@@ -1064,7 +1066,7 @@ namespace ToolkitLauncher
             if (levelCompileType.HasFlag(level_compile_type.light))
             {
                 var lightmaps_args = new ToolkitBase.LightmapArgs(
-                    Level_Quality,
+                    Level_Quality.ToLower(),
                     level_slider,
                     radiosity_quality_toggle,
                     disable_asserts.IsChecked ?? false,
@@ -1111,7 +1113,7 @@ namespace ToolkitLauncher
 
         class BitmapCompile
         {
-            public static List<string> bitmapType = new List<string>()
+            public static List<string> bitmapType = new()
             {
                 "2d",
                 "3d",
@@ -1546,7 +1548,7 @@ namespace ToolkitLauncher
         public void LightmapConfigUI()
         {
 
-            lightmapConfig = new(toolkit.BaseDirectory + "\\" + "custom_lightmap_quality.conf");
+            lightmapConfig = new(Path.Join(toolkit.BaseDirectory, "custom_lightmap_quality.conf"));
             LightmapSetUI();
         }
 
@@ -1575,13 +1577,13 @@ namespace ToolkitLauncher
 
         private void SaveConfig()
         {
-            lightmapConfig.IsCheckerboard = lightmap_is_checkboard.IsChecked ?? false;
-            lightmapConfig.IsDirectOnly = lightmap_is_direct_only.IsChecked ?? false;
-            lightmapConfig.IsDraft = lightmap_is_draft.IsChecked ?? false;
+           // lightmapConfig.IsCheckerboard = lightmap_is_checkboard.IsChecked ?? false;
+           // lightmapConfig.IsDirectOnly = lightmap_is_direct_only.IsChecked ?? false;
+           // lightmapConfig.IsDraft = lightmap_is_draft.IsChecked ?? false;
             lightmapConfig.SampleCount = int.Parse(lightmap_sample_count.Text);
             lightmapConfig.PhotonCount = int.Parse(lightmap_photon_count.Text);
-            lightmapConfig.AASampleCount = int.Parse(lightmap_AA_sample_count.Text);
-            lightmapConfig.GatherDistance = float.Parse(lightmap_gather_dist.Text);
+          //  lightmapConfig.AASampleCount = int.Parse(lightmap_AA_sample_count.Text);
+           // lightmapConfig.GatherDistance = float.Parse(lightmap_gather_dist.Text);
 
             if (!lightmapConfig.Save())
                 MessageBox.Show($"Failed to save config to \"{lightmapConfig.Path}\". Check file system permissions!", "Error!");

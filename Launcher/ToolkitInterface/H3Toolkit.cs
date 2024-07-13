@@ -54,11 +54,6 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", scenario.Replace(".scenario", "") });
         }
 
-        public static string GetLightmapQuality(LightmapArgs lightmapArgs)
-        {
-            return lightmapArgs.level_combobox.ToLower();
-        }
-
         public async Task FauxSync(string scenario, string bsp, OutputMode mode, bool useFast, CancellationToken cancellationToken = default)
         {
             await RunTool(useFast ? ToolType.ToolFast : ToolType.Tool, new List<string>() { "faux_data_sync", scenario, bsp }, mode, cancellationToken: cancellationToken);
@@ -157,7 +152,6 @@ namespace ToolkitLauncher.ToolkitInterface
         public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
         {
             Debug.Assert(progress is not null);
-            string quality = GetLightmapQuality(args);
 
             // default to all
             string lightmap_group = args.lightmapGroup;
@@ -166,7 +160,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             try
             {
-                await FauxLocalFarm(scenario, bsp, lightmap_group, quality, args.instanceCount, args.NoAssert, args.outputSetting, progress);
+                await FauxLocalFarm(scenario, bsp, lightmap_group, args.QualitySetting, args.instanceCount, args.NoAssert, args.outputSetting, progress);
             }
             catch (OperationCanceledException)
             {

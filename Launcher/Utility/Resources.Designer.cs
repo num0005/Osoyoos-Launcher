@@ -93,6 +93,16 @@ namespace ToolkitLauncher.Utility {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] GetProcAddrHelper {
+            get {
+                object obj = ResourceManager.GetObject("GetProcAddrHelper", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] H2ToolHooks {
             get {
                 object obj = ResourceManager.GetObject("H2ToolHooks", resourceCulture);

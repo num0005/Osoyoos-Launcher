@@ -99,7 +99,7 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         public record LightmapArgs(
-            string level_combobox,
+            string QualitySetting,
             float Threshold,
             bool radiosity_quality,
             bool NoAssert,

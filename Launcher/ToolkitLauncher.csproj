@@ -90,7 +90,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Octokit" Version="4.0.3" />
-    <PackageReference Include="PeNet" Version="4.0.5" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="7.0.0" />
     <PackageReference Include="TlshSharp" Version="1.0.0" />
@@ -100,6 +99,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == true">
       <ProjectReference Include="..\H2ToolHooks\H2ToolHooks.vcxproj" />
+      <ProjectReference Include="..\GetProcAddrHelper\GetProcAddrHelper.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Credits.xaml.cs">

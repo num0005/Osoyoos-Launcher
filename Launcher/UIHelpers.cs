@@ -723,7 +723,7 @@ namespace ToolkitLauncher
             if (MainWindow.toolkit_profile != null && lightmap_quality != null && toolkit_selection >= 0)
             {
                 //Not sure what to do here. Crashes designer otherwise cause the list or value is empty
-                if (MainWindow.toolkit_profile.Generation >= ToolkitProfiles.GameGen.Halo2 && lightmap_quality.ToString() == "custom")
+                if (MainWindow.toolkit_profile.Generation == ToolkitProfiles.GameGen.Halo2 && lightmap_quality.ToString() == "custom")
                     return true;
                 return false;
             }

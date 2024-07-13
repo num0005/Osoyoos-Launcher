@@ -8,5 +8,12 @@
 #pragma once
 namespace H2ToolHooks
 {
-	bool hook();
+	enum HookFlags
+	{
+		None = 0,
+
+		DisableAsserts = 1 << 0,
+		PatchLightmapQuality = 1 << 1,
+	};
+	bool hook(HookFlags flags);
 }

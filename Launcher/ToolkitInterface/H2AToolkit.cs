@@ -409,9 +409,10 @@ namespace ToolkitLauncher.ToolkitInterface
 			static void ModifyEnviroment(IDictionary<string, string?> Enviroment)
 			{
                 Enviroment["DONT_TREAD_ON_ME_WITH_DEBUGGING_DIALOGS"] = "no_step_on_snek";
+                Enviroment[DLLInjector.GetVariableName("DISABLE_ASSERTIONS")] = "1";
 			}
 
-			bool is_game_engine_build = tool == ToolType.Sapien || tool == ToolType.Game;
+			bool is_game_engine_build = tool == ToolType.Sapien || tool == ToolType.Game || tool == ToolType.Guerilla;
 			if (is_game_engine_build && requestedConfig is null && Profile.IsMCC && Profile.DisableAssertions)
             {
 				DLLInjector injector = new(Resources.H2ToolHooks, "h2.asserts.disable.dll", ModifyEnviroment);

@@ -127,6 +127,9 @@
   <data name="defaultODST" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\default_odst.shader;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="GetProcAddrHelper" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GetProcAddrHelper.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="H2ToolHooks" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\H2ToolHooks.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

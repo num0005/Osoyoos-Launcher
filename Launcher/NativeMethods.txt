@@ -14,7 +14,9 @@ CloseHandle
 
 VirtualAllocEx
 VirtualFreeEx
+VirtualProtectEx
 WriteProcessMemory
+ReadProcessMemory
 CreateRemoteThread
 EnumProcessModulesEx
 IsWow64Process
@@ -28,3 +30,11 @@ GetMappedFileName
 SymInitialize
 SymCleanup
 SymFromName
+
+CreatePipe
+CreateProcess
+GetStdHandle
+GetCurrentProcess
+DuplicateHandle
+GetConsoleCP
+GetConsoleOutputCP

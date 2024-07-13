@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using ToolkitLauncher;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
@@ -52,12 +53,17 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "build-cache-file", scenario.Replace(".scenario", "") });
         }
 
-        private static string GetLightmapQuality(LightmapArgs lightmapArgs)
+        static private DLLInjector GetLightmapConfigInjector()
         {
-            return lightmapArgs.level_combobox.ToLower();
-        }
+			static void ModifyEnviroment(IDictionary<string, string?> Enviroment)
+			{
+				Enviroment[DLLInjector.GetVariableName("PATCH_QUALITY")] = "1";
+			}
 
-        private record NopFillFormat(uint BaseAddress, List<uint> CallsToPatch);
+            return new(Resources.H2ToolHooks, "h2.patch.lightmap-quality.dll", ModifyEnviroment, earlyInjection: true);
+		}
+
+		private record NopFillFormat(uint BaseAddress, List<uint> CallsToPatch);
 
 
         readonly static Dictionary<string, NopFillFormat> _calls_to_patch_md5 = new()
@@ -104,10 +110,24 @@ namespace ToolkitLauncher.ToolkitInterface
 		public override async Task BuildLightmap(string scenario, string bsp, LightmapArgs args, ICancellableProgress<int>? progress)
 		{
 			LogFolder = $"lightmaps_{Path.GetFileNameWithoutExtension(scenario)}";
+
+			DLLInjector? lightmapQualityInjector = null;
+
+			if (args.QualitySetting == "custom" && Profile.IsMCC)
+			{
+                if (args.outputSetting == OutputMode.keepOpen)
+                {
+                MessageBox.Show(
+                    "Output mode \"keep open\" is not compatible with custom quality setting.", 
+                    "Invalid configuration.");
+                return;
+                }
+				lightmapQualityInjector = GetLightmapConfigInjector();
+
+			}
+
 			try
 			{
-				string quality = GetLightmapQuality(args);
-
 				if (args.instanceCount > 1 && (Profile.IsMCC || Profile.CommunityTools)) // multi instance?
 				{
 					if (progress is not null)
@@ -117,10 +137,13 @@ namespace ToolkitLauncher.ToolkitInterface
 						progress.MaxValue += 1 + args.instanceCount;
 
 
-					Utility.H2ToolLightmapFixInjector? injector = null;
+					H2ToolLightmapFixInjector? injector = null;
                     Dictionary<int, Utility.Process.InjectionConfig> injectionState = new();
                     if (Profile.IsMCC)
                         injector = GetInjector(args);
+                    if (injector is not null)
+                        injector.DaisyChainedInjector = lightmapQualityInjector;
+
 
 					async Task RunInstance(int index)
 					{
@@ -176,11 +199,17 @@ namespace ToolkitLauncher.ToolkitInterface
 							Utility.Process.InjectionConfig? config = null;
                             if (injector is not null && index != 0)
                             {
-                                Trace.WriteLine($"Configuring injector for worker {index}");
+                                Trace.WriteLine($"Configuring injector (lm fix) for worker {index}");
                                 config = new(injector);
                                 injectionState[index] = config;
 
 							}
+
+                            if (config is null && lightmapQualityInjector is not null)
+                            {
+								Trace.WriteLine($"Configuring injector (quality patch) for worker {index}");
+								config = new(lightmapQualityInjector);
+                            }
 
 							try
 							{
@@ -189,7 +218,7 @@ namespace ToolkitLauncher.ToolkitInterface
 										"lightmaps-farm-worker",
 										scenario,
 										bsp,
-										quality,
+										args.QualitySetting,
 										index.ToString(),
 										args.instanceCount.ToString(),
 									},
@@ -211,7 +240,7 @@ namespace ToolkitLauncher.ToolkitInterface
 								"lightmaps-slave",// the long legacy of h2codez
 								scenario,
 								bsp,
-								quality,
+								args.QualitySetting,
 								args.instanceCount.ToString(),
 								index.ToString()
 							},
@@ -249,7 +278,7 @@ namespace ToolkitLauncher.ToolkitInterface
 						progress.DisableCancellation();
 						progress.MaxValue += 1;
 					}
-					await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, quality });
+					await RunTool((args.NoAssert && Profile.IsMCC) ? ToolType.ToolFast : ToolType.Tool, new() { "lightmaps", scenario, bsp, args.QualitySetting });
 					if (progress is not null)
 						progress.Report(1);
 				}

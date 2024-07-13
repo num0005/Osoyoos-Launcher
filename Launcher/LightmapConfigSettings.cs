@@ -23,14 +23,14 @@
         }
         public int SampleCount
         {
-            get { return config.Get("main_monte_carlo_setting", 8); }
-            set { config.Set("main_monte_carlo_setting", value); }
+            get { return config.Get("monte_carlo_sample_count", 8); }
+            set { config.Set("main_monte_carlo_setting", value); config.Set("monte_carlo_sample_count", value); }
         }
         public int PhotonCount
         {
-            get { return config.Get("proton_count", 20000000); }
-            set { config.Set("proton_count", value); }
-        }
+            get { return config.Get("photon_count", 20000000); }
+            set { config.Set("proton_count", value); config.Set("photon_count", value); }
+		}
         public int AASampleCount
         {
             get { return config.Get("secondary_monte_carlo_setting", 4); }
