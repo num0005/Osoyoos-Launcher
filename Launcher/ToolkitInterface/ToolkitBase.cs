@@ -662,5 +662,32 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         public ProfileSettingsLauncher Profile { get; }
+
+        public static void FixBitmapName(string textureFile)
+        {
+            if (File.Exists(textureFile))
+            {
+                // Check if the file name ends with "_00_00" and has a .dds or .tga extension
+                if ((textureFile.EndsWith("_00_00.dds") || textureFile.EndsWith("_00_00.tga")))
+                {
+                    // Remove the "_00_00" part from the file name
+                    string newFileName = textureFile.Substring(0, textureFile.Length - 10) + Path.GetExtension(textureFile);
+
+                    string newFilePath = Path.Combine(textureFile, newFileName);
+
+                    File.Move(textureFile, newFilePath);
+
+                    Trace.WriteLine($"Renamed: {textureFile} to {newFileName}");
+                }
+                else
+                {
+                    Trace.WriteLine($"Texture file {textureFile} does not have trailing \"_00_00\"");
+                }
+            }
+            else
+            {
+                Trace.WriteLine($"Attempted to fix name of {textureFile}, but it does not exist");
+            }
+        }
     }
 }
