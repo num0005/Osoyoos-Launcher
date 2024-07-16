@@ -32,6 +32,7 @@ Global
 		{8BAB0404-C2F9-41DE-A96F-0E19E2BCFBAF}.Debug|x64.ActiveCfg = Release|Win32
 		{8BAB0404-C2F9-41DE-A96F-0E19E2BCFBAF}.Debug|x64.Build.0 = Release|Win32
 		{8BAB0404-C2F9-41DE-A96F-0E19E2BCFBAF}.Release|x64.ActiveCfg = Release|Win32
+		{8BAB0404-C2F9-41DE-A96F-0E19E2BCFBAF}.Release|x64.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
