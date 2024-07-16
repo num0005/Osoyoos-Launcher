@@ -137,10 +137,26 @@ namespace ToolkitLauncher.Utility
 
         static object _32bitLock = new();
         static string? _32bitHelperPath = null;
+		static Dictionary<(string, string), FARPROC> _32bit_procs_cache = new();
 
-        static private async Task<FARPROC> GetLibraryProcAddress32(string moduleName, string procName)
+        /// <summary>
+        /// Get the address of a procdure. Only works for a few special libararies that are mapped at the same address in all modules
+        /// </summary>
+        /// <param name="moduleName"></param>
+        /// <param name="procName"></param>
+        /// <returns></returns>
+		static private async Task<FARPROC> GetLibraryProcAddress32(string moduleName, string procName)
         {
             System.Diagnostics.Process process;
+            var cacheKey = (moduleName, procName);
+
+            // check cache first
+            // this method only works for modules loaded at the same address in all processes anyways
+            lock (_32bit_procs_cache)
+            {
+			    if (_32bit_procs_cache.ContainsKey(cacheKey))
+                    return _32bit_procs_cache[cacheKey];
+			}
 
 			lock (_32bitLock)
             {
@@ -156,13 +172,23 @@ namespace ToolkitLauncher.Utility
 
             await process.WaitForExitAsync();
             IntPtr ptr = new(process.ExitCode);
+            FARPROC ptrProc = new(ptr);
 
-            return new FARPROC(ptr);
+
+			if (ptr != IntPtr.Zero)
+            {
+                lock (_32bit_procs_cache)
+                {
+                    _32bit_procs_cache.Add(cacheKey, ptrProc);
+				}
+            }
+
+            return ptrProc;
         }
 
 
 		[SupportedOSPlatform("windows6.0.6000")]
-		private async Task<FARPROC> GetLibraryProcAddressForProcess(System.Diagnostics.Process process, string moduleName, string procName, string? moduleNameBackup = null)
+		static private async Task<FARPROC> GetLibraryProcAddressForProcess(System.Diagnostics.Process process, string moduleName, string procName, string? moduleNameBackup = null)
         {
             bool isWOW64 = IsProcessWow64(process);
             FARPROC procAddr = FARPROC.Null;
@@ -226,11 +252,26 @@ namespace ToolkitLauncher.Utility
 		}
 
 		[SupportedOSPlatform("windows6.0.6000")]
-		private async Task<HANDLE> EarlyProcessInject(System.Diagnostics.Process process, string dllName, uint timeout)
+		private async Task<HANDLE> EarlyProcessInject(System.Diagnostics.Process process, string dllName, uint timeout, bool injectWOW64 = false)
         {
 			bool isWOW64 = IsProcessWow64(process);
-            FARPROC LdrLoadDll = await GetLibraryProcAddressForProcess(process, "ntdll", "LdrLoadDll");
-            int ptrSize = isWOW64 ? 4 : 8;
+
+			injectWOW64 = injectWOW64 && isWOW64;
+
+			bool amd64Bytecode = injectWOW64 || !isWOW64;
+
+			FARPROC LdrLoadDll = await GetLibraryProcAddressForProcess(process, "ntdll", "LdrLoadDll");
+            int ptrSize = amd64Bytecode ? 8 : 4;
+            int align(int ptr)
+            {
+                return (ptr + ptrSize - 1) & ~(ptrSize - 1);
+            }
+
+			if (injectWOW64)
+            {
+				var module = PInvoke.GetModuleHandle("ntdll");
+				LdrLoadDll = PInvoke.GetProcAddress(module, "LdrLoadDll");
+			}
 
 			// shell code arguments structure
 			// 
@@ -239,8 +280,8 @@ namespace ToolkitLauncher.Utility
             // dllNameContents: wchar_t[lenght]
 
 			int returnHandleOffset = 0;
-            int dllNameOffset = returnHandleOffset + ptrSize;
-            int dllNamePtrOffset = dllNameOffset + 4;
+            int dllNameOffset = align(returnHandleOffset + ptrSize);
+            int dllNamePtrOffset = align(dllNameOffset + 4);
 
 			int dllNameContents = dllNamePtrOffset + ptrSize;
 
@@ -293,21 +334,27 @@ namespace ToolkitLauncher.Utility
 				}
 			}
 
-            // done building and writing paramters
+			// done building and writing paramters
 
 			// build shell code
 			List<byte> shellCode = new();
-            // write a push index into the arguments structure
-            void WritePushSturcture(int structureOffset)
+			UIntPtr GetOffsetInStructure(int structureOffset)
+			{
+				UIntPtr address;
+
+				unsafe
+				{
+					address = shell_code_arguments_addr + structureOffset;
+				}
+
+				return address;
+			}
+			// write a push index into the arguments structure
+			void WritePushSturcture(int structureOffset)
             {
-                UIntPtr address;
+				UIntPtr address = GetOffsetInStructure(structureOffset);
 
-                unsafe
-                {
-                    address = shell_code_arguments_addr + structureOffset;
-                }
-
-				if (isWOW64)
+				if (!amd64Bytecode)
                 {
                     shellCode.Add(0x68);
 					shellCode.AddRange(BitConverter.GetBytes((uint)address));
@@ -332,7 +379,7 @@ namespace ToolkitLauncher.Utility
 			// write a call to a FARPROC
 			void WriteCall(FARPROC callTarget)
 			{
-				if (isWOW64)
+				if (!amd64Bytecode)
 				{
                     // mov eax, imm32
 					shellCode.Add(0xb8);
@@ -362,21 +409,104 @@ namespace ToolkitLauncher.Utility
 				}
 			}
 
-			// shell code
+            void SwitchTo64Bit()
+            {
+                Debug.Assert(amd64Bytecode);
+
+                // push 0x33 (cs_64)
+				shellCode.AddRange(new byte[] { 0x6a, 0x33 });
+				// call $+5
+				shellCode.AddRange(new byte[] { 0xe8, 0x00, 0x00, 0x00, 0x00 });
+				// add dword [esp], 5
+				shellCode.AddRange(new byte[] { 0x83, 0x04, 0x24, 0x05 });
+                shellCode.Add(0xcb); // retf
+			}
+
+            void SwitchTo32Bit()
+            {
+				Debug.Assert(amd64Bytecode);
+
+				// call $+5
+				shellCode.AddRange(new byte[] { 0xe8, 0x00, 0x00, 0x00, 0x00 }); 
+                // mov dword [rsp + 4], 0x23 (cs_32)
+				shellCode.AddRange(new byte[] { 0xc7, 0x44, 0x24, 0x04, 0x23, 0x00, 0x00, 0x00 });
+				// add dword [esp], D
+				shellCode.AddRange(new byte[] { 0x83, 0x04, 0x24, 0x0d });
+				shellCode.Add(0xcb); // retf
+			}
+
+            void Amd64SetArgument(int index, UInt64 argument)
+            {
+                switch (index)
+                {
+                    case 1:
+                    case 2:
+						shellCode.AddRange(new byte[] { 0x48, (byte)(0xb9 + index - 1) });
+                        break;
+                    case 3:
+                    case 4:
+						shellCode.AddRange(new byte[] { 0x49, (byte)(0xb8 + index - 3) });
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+				}
+
+				shellCode.AddRange(BitConverter.GetBytes(argument));
+			}
+
+			void Amd64SetArgumentOffset(int index, int structureOffset)
+            {
+				UIntPtr address = GetOffsetInStructure(structureOffset);
+				Amd64SetArgument(index, address.ToUInt64());
+			}
+
+			// shell code (x86)
 			//
 			//1: push &returnHandleOffset
 			//2: push dllName: UNICODE_STRING*
 			//3: push 0: flags
 			//4: push 1: ldrFlags
 			//5: call LdrLoadDll
-            //6: ret 4; pop the unused argument
+			//6: ret 4; pop the unused argument
 
-			WritePushSturcture(returnHandleOffset);
-            WritePushSturcture(dllNameOffset);
-            WritePushU8(0);
-            WritePushU8(1);
-            WriteCall(LdrLoadDll);
-            WriteReturn(4);
+			// shell code (am65)
+			//
+			//1: mov arg4, &returnHandleOffset
+			//2: mov arg3, UNICODE_STRING*
+			//3: mov arg2, flags
+			//4: mov arg1, ldrFlags
+			//5: call LdrLoadDll
+			//6: ret 0
+
+
+			if (injectWOW64)
+			{
+				SwitchTo64Bit();
+			}
+
+			if (amd64Bytecode)
+			{
+				Amd64SetArgumentOffset(4, returnHandleOffset);
+				Amd64SetArgumentOffset(3, dllNameOffset);
+				Amd64SetArgument(2, 0);
+				Amd64SetArgument(1, 1);
+			}
+			else
+			{
+				WritePushSturcture(returnHandleOffset);
+				WritePushSturcture(dllNameOffset);
+				WritePushU8(0);
+				WritePushU8(1);
+			}
+
+			WriteCall(LdrLoadDll);
+
+			if (injectWOW64)
+			{
+				SwitchTo32Bit();
+			}
+
+			WriteReturn((ushort)(amd64Bytecode ? 0 : 4));
 
 			// done building shell code
 
@@ -412,6 +542,17 @@ namespace ToolkitLauncher.Utility
 				Trace.WriteLine($"Waiting on injection thread failed: {wait_result} - {Marshal.GetLastWin32Error()}!");
 				return HANDLE.Null;
 			}
+
+			uint exit_code;
+			unsafe
+			{
+				if (!PInvoke.GetExitCodeThread(injection_thread, &exit_code))
+				{
+					Trace.WriteLine($"Failed to get thread exit code  {Marshal.GetLastWin32Error()}");
+					return HANDLE.Null;
+				}
+			}
+			Trace.WriteLine($"Thread exit code {exit_code:X}");
 
             byte[] HandleBytes = new byte[ptrSize];
             bool readSuccess;
