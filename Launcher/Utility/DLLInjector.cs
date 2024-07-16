@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
@@ -14,11 +12,10 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.System.Memory;
-using static ToolkitLauncher.BuiltinProfiles.Profile;
 
 namespace ToolkitLauncher.Utility
 {
-    public class DLLInjector : IProcessInjector
+	public class DLLInjector : IProcessInjector
     {
         readonly private string dll_path;
         readonly private Dictionary<Guid, EventWaitHandle> _events = new();
