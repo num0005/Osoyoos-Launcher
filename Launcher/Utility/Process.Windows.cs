@@ -532,7 +532,15 @@ namespace ToolkitLauncher.Utility
                             process.Kill();
                     }
                     catch { } // will get arg error if the process exits
-                    return new Result("", "", process.ExitCode);
+					int exitCode = 0;
+					try
+					{
+						exitCode = process.ExitCode;
+					} catch (Exception ex)
+					{
+						Trace.WriteLine($"Failed to get process exit code:\n {ex}");
+					}
+                    return new Result("", "", exitCode);
                 }
 
                 for (int i = 0; i < 300; i++)
