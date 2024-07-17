@@ -2729,16 +2729,19 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             List<Task> itemsToExtract = new();
             foreach (string tag in extract_tag_list.Items)
             {
-				itemsToExtract.Add(Task.Run(() => toolkit.ExtractTags(tag, moveExtractedFiles, extractBitmapsAsTGA)));
-			}
+                itemsToExtract.Add(Task.Run(() => toolkit.ExtractTags(tag, moveExtractedFiles, extractBitmapsAsTGA)));
+            }
 
             Trace.WriteLine($"Dispatching {itemsToExtract.Count} extractions.");
             await Task.WhenAll(itemsToExtract);
 
-			if (keep_extract_list.IsChecked != true)
+            if (keep_extract_list.IsChecked != true)
             {
                 extract_tag_list.Items.Clear();
             }
+
+            if (itemsToExtract.Count > 0)
+                MessageBox.Show($"Done extracting tags! Attempted to extract {itemsToExtract.Count} items.");
         }
 
         private void extract_tag_clear_all_Click(object sender, RoutedEventArgs e)
