@@ -2726,11 +2726,16 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             bool moveExtractedFiles = halo2_move_directory.IsChecked == true;
             bool extractBitmapsAsTGA = extract_bitmaps_tga.IsChecked == true;
 
+            List<Task> itemsToExtract = new();
             foreach (string tag in extract_tag_list.Items)
             {
-                await toolkit.ExtractTags(tag, moveExtractedFiles, extractBitmapsAsTGA);
-            }
-            if (keep_extract_list.IsChecked != true)
+				itemsToExtract.Add(toolkit.ExtractTags(tag, moveExtractedFiles, extractBitmapsAsTGA));
+			}
+
+            Trace.WriteLine($"Dispatching {itemsToExtract.Count} extractions.");
+            await Task.WhenAll(itemsToExtract);
+
+			if (keep_extract_list.IsChecked != true)
             {
                 extract_tag_list.Items.Clear();
             }
