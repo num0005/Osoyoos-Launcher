@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -670,13 +671,12 @@ namespace ToolkitLauncher.ToolkitInterface
                 // Check if the file name ends with "_00_00" and has a .dds or .tga extension
                 if ((textureFile.EndsWith("_00_00.dds") || textureFile.EndsWith("_00_00.tga")))
                 {
-                    // Remove the "_00_00" part from the file name
-                    string newFileName = textureFile.Substring(0, textureFile.Length - 10) + Path.GetExtension(textureFile);
+                    // Remove trailing "_00_00" from the file name
+                    string pattern = @"_00_00(\.dds|\.tga)$";
+                    string newFileName = Regex.Replace(textureFile, pattern, "$1");
 
-                    string newFilePath = Path.Combine(textureFile, newFileName);
-
-                    File.Move(textureFile, newFilePath);
-
+                    // Rename file
+                    File.Move(textureFile, newFileName);
                     Trace.WriteLine($"Renamed: {textureFile} to {newFileName}");
                 }
                 else
