@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml;
 using static ToolkitLauncher.ToolkitProfiles;
 using static ToolkitLauncher.Utility.Process;
@@ -685,7 +686,17 @@ namespace ToolkitLauncher.ToolkitInterface
                 string textureFileFixedPath = textureFile + extension;
                 Trace.WriteLine($"Moving bitmap path: {entries[0]} --> {textureFileFixedPath}");
 
-                File.Move(entries[0], textureFileFixedPath);
+                try
+                {
+                    File.Move(entries[0], textureFileFixedPath);
+                } catch (Exception ex)
+                {
+                    Trace.WriteLine($"Failed to move file ({entries[0]} --> {textureFileFixedPath}): {ex}");
+                    if (!File.Exists(textureFileFixedPath)) // skip the error message if the file already existed
+                    {
+                        MessageBox.Show($"Failed to move extracted bitmap {entries[0]}, to the proper path. You will need to do this yourself");
+                    }
+                }
 			}
         }
 
