@@ -352,24 +352,8 @@ namespace ToolkitLauncher.ToolkitInterface
 					await ExtractJMS("collision");
                     break;
                 case ".bitmap":
-                    string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
-                    if (!Path.EndsInDirectorySeparator(bitmapsDir))
-                        bitmapsDir += Path.DirectorySeparatorChar;
-
-					string bitmapFileNameBase = Path.Join(dataPath, basename);
-
-					Directory.CreateDirectory(bitmapsDir);
-                    if (bitmapsAsTGA)
-                    {
-                        await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir}, outputMode);
-                        FixBitmapName(bitmapFileNameBase, ".tga");
-                    }
-                    else
-                    {
-                        await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir}, outputMode);
-						FixBitmapName(bitmapFileNameBase, ".dds");
-                    }  
-                    break;
+					await ExtractBitmapGen2Plus(path, basename, bitmapsAsTGA);
+					break;
                 case ".multilingual_unicode_string_list":
                     await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, outputMode);
                     break;

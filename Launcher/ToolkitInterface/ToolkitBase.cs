@@ -664,7 +664,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public ProfileSettingsLauncher Profile { get; }
 
-        protected static void FixBitmapName(string textureFile, string extension)
+        private static void FixBitmapName(string textureFile, string extension)
         {
 			Debug.WriteLine($"textureFile: {textureFile}");
 
@@ -688,5 +688,32 @@ namespace ToolkitLauncher.ToolkitInterface
                 File.Move(entries[0], textureFileFixedPath);
 			}
         }
+
+        protected async Task ExtractBitmapGen2Plus(string path, string basename, bool bitmapsAsTGA)
+        {
+            Trace.Assert(Profile.Generation >= GameGen.Halo2);
+
+			string dataPath = GetDataDirectory();
+
+			string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
+			if (!Path.EndsInDirectorySeparator(bitmapsDir))
+				bitmapsDir += Path.DirectorySeparatorChar;
+			string bitmapFileNameBase = Path.Join(dataPath, basename);
+
+			Directory.CreateDirectory(bitmapsDir);
+
+            Debug.WriteLine($"bitmapsDir: {bitmapsDir}, bitmapFileNameBase: {bitmapFileNameBase}, basename: {basename}");
+
+			if (bitmapsAsTGA)
+			{
+				await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir }, OutputMode.slient);
+				FixBitmapName(bitmapFileNameBase, ".tga");
+			}
+			else
+			{
+				await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir }, OutputMode.slient);
+				FixBitmapName(bitmapFileNameBase, ".dds");
+			}
+		}
     }
 }
