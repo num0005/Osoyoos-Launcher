@@ -332,24 +332,28 @@ namespace ToolkitLauncher.ToolkitInterface
                 case ".render_model":
                 case ".physics_model":
                 case ".collision_model":
-                    await RunTool(ToolType.Tool, new() { "extract-import-info", Path.Join(GetTagDirectory(), path) }, OutputMode.closeShell);
+                    await RunTool(ToolType.Tool, new() { "extract-import-info", Path.Join(GetTagDirectory(), path) }, OutputMode.slient);
                     break;
                 case ".bitmap":
-                    string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
-                    Directory.CreateDirectory(bitmapsDir);
-                    if (bitmapsAsTGA)
-                    {
-                        await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
-                        FixBitmapName(Path.Join(dataPath, basename) + "_00_00.tga");
-                    }
-                    else
-                    {
-                        await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir + "\\" }, OutputMode.closeShell);
-                        FixBitmapName(Path.Join(dataPath, basename) + "_00_00.dds");
-                    }  
-                    break;
-                case ".multilingual_unicode_string_list":
-                    await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.closeShell);
+					string bitmapsDir = Path.Join(dataPath, Path.GetDirectoryName(path));
+					if (!Path.EndsInDirectorySeparator(bitmapsDir))
+						bitmapsDir += Path.DirectorySeparatorChar;
+					string bitmapFileNameBase = Path.Join(dataPath, basename);
+
+					Directory.CreateDirectory(bitmapsDir);
+					if (bitmapsAsTGA)
+					{
+						await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir }, OutputMode.slient);
+						FixBitmapName(bitmapFileNameBase, ".tga");
+					}
+					else
+					{
+						await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir }, OutputMode.slient);
+						FixBitmapName(bitmapFileNameBase, ".dds");
+					}
+					break;
+				case ".multilingual_unicode_string_list":
+                    await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.slient);
                     break;
 				default:
 					throw new Exception($"Extraction not supported for {extension}");

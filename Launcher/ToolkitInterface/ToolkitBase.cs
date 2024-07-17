@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -663,31 +664,29 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public ProfileSettingsLauncher Profile { get; }
 
-        public static void FixBitmapName(string textureFile)
+        protected static void FixBitmapName(string textureFile, string extension)
         {
-            if (File.Exists(textureFile))
+			Debug.WriteLine($"textureFile: {textureFile}");
+
+			string? directory = Path.GetDirectoryName(textureFile);
+            if (directory is null || !Directory.Exists(directory))
+                return;
+
+            string searchPattern = Path.GetFileNameWithoutExtension(textureFile) + "_??_??" + extension;
+            Debug.WriteLine($"searchPattern: {searchPattern} directory: {directory}");
+
+            string[] entries = Directory.GetFiles(directory, searchPattern);
+
+            Trace.WriteLineIf(entries.Length != 1, $"FixBitmapName, more entries than supported: [{String.Join(",", entries)}]");
+
+
+			if (entries.Length == 1)
             {
-                // Check if the file name ends with "_00_00" and has a .dds or .tga extension
-                if ((textureFile.EndsWith("_00_00.dds") || textureFile.EndsWith("_00_00.tga")))
-                {
-                    // Remove the "_00_00" part from the file name
-                    string newFileName = textureFile.Substring(0, textureFile.Length - 10) + Path.GetExtension(textureFile);
+                string textureFileFixedPath = textureFile + extension;
+                Trace.WriteLine($"Moving bitmap path: {entries[0]} --> {textureFileFixedPath}");
 
-                    string newFilePath = Path.Combine(textureFile, newFileName);
-
-                    File.Move(textureFile, newFilePath);
-
-                    Trace.WriteLine($"Renamed: {textureFile} to {newFileName}");
-                }
-                else
-                {
-                    Trace.WriteLine($"Texture file {textureFile} does not have trailing \"_00_00\"");
-                }
-            }
-            else
-            {
-                Trace.WriteLine($"Attempted to fix name of {textureFile}, but it does not exist");
-            }
+                File.Move(entries[0], textureFileFixedPath);
+			}
         }
     }
 }
