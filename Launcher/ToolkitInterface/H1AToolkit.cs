@@ -177,5 +177,23 @@ namespace ToolkitLauncher.ToolkitInterface
         {
             return "H1MCC";
         }
-    }
+
+		protected override Utility.Process.InjectionConfig? ModifyInjectionSettings(ToolType tool, Utility.Process.InjectionConfig? requestedConfig)
+		{
+			static void ModifyEnviroment(IDictionary<string, string?> Enviroment)
+			{
+				Enviroment[DLLInjector.GetVariableName("DISABLE_ASSERTIONS")] = "1";
+			}
+            
+            // tool, sapien and guerilla codegen correctly identifies _system_exit as noreturn and does not generate code to continue past a failed assertion
+            // patching out assertions would be more difficult for those targets
+			if (tool == ToolType.Game && requestedConfig is null && Profile.IsMCC && Profile.DisableAssertions)
+			{
+				DLLInjector injector = new(Resources.H2ToolHooks, "h1.asserts.disable.dll", ModifyEnviroment);
+				return new(injector);
+			}
+
+			return requestedConfig;
+		}
+	}
 }

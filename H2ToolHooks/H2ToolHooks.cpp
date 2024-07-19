@@ -62,14 +62,14 @@ static bool disable_assertions(const PatternScanner &scanner)
 			return false;
 		}
 
-		std::array<pattern_entry, 10> assert_pat = {
+		std::array<pattern_entry, 8> assert_pat = {
 			PAT_BYTES(2, { 0x6A, 0x01}), //  push 1 (is fatal)
 			PAT_BYTE(0x68), PAT_ANY(4),  //  push c_line
 			PAT_BYTE(0x68), PAT_ANY(4),  //  push c_filename
 			PAT_BYTE(0x68), PAT_ANY(4),  //  push c_assertion_message
 			PAT_CALL(display_assert_offset), // call display_assert
-			PAT_BYTES(3, { 0x83, 0xC4, 0x10}), // add esp, 10h
-			PAT_CALL(system_debugger_present_offset) // call system_debugger_present
+			//PAT_BYTES(3, { 0x83, 0xC4, 0x10}), // add esp, 10h
+			//PAT_CALL(system_debugger_present_offset) // call system_debugger_present
 		};
 		auto asserts = scanner.find_pattern_in_code_multiple(assert_pat);
 		DebugPrintf("Found %d asserts", asserts.size());
@@ -77,6 +77,20 @@ static bool disable_assertions(const PatternScanner &scanner)
 			WriteValue<uint8_t>(assert.offset + 1, 0x00); // disable fatal
 		}
 		DebugPrintf("Patched all asserts found!");
+
+		std::array<pattern_entry, 2> assertion_debug_break_pattern = {
+			PAT_CALL(display_assert_offset), // call display_assert
+			PAT_BYTE(0xcc) // __debugbreak
+		};
+
+		auto assertion_debug_break = scanner.find_pattern_in_code_multiple(assertion_debug_break_pattern);
+		DebugPrintf("Found %d __debugbreak's", assertion_debug_break.size());
+		for (auto& debugbreak : assertion_debug_break)
+		{
+			WriteValue<uint8_t>(debugbreak.offset + 5, 0x90);
+		}
+		DebugPrintf("Patched all __debugbreak's found!");
+
 
 		return true;
 	}
