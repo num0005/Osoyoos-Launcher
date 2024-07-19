@@ -134,7 +134,16 @@ namespace ToolkitLauncher.Utility
 
         static object _32bitLock = new();
         static string? _32bitHelperPath = null;
+        static FileStream _32bitHelperPathLock = null; // filestream used to lock the file for write and delete
 		static Dictionary<(string, string), FARPROC> _32bit_procs_cache = new();
+
+        private static void _deploy_get_proc_helper()
+        {
+
+            _32bitHelperPath = Path.Combine(App.TempFolder, "DllInjector.GetProcAddrHelper." + Guid.NewGuid().ToString() + ".exe");
+            File.WriteAllBytes(_32bitHelperPath, Utility.Resources.GetProcAddrHelper);
+            _32bitHelperPathLock = new(_32bitHelperPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+		}
 
         /// <summary>
         /// Get the address of a procdure. Only works for a few special libararies that are mapped at the same address in all modules
@@ -145,7 +154,7 @@ namespace ToolkitLauncher.Utility
 		static private async Task<FARPROC> GetLibraryProcAddress32(string moduleName, string procName)
         {
             System.Diagnostics.Process process;
-            var cacheKey = (moduleName, procName);
+            var cacheKey = (moduleName.ToUpperInvariant(), procName);
 
             // check cache first
             // this method only works for modules loaded at the same address in all processes anyways
@@ -157,11 +166,8 @@ namespace ToolkitLauncher.Utility
 
 			lock (_32bitLock)
             {
-                if (_32bitHelperPath is null)
-                {
-					_32bitHelperPath = Path.Combine(App.TempFolder, "DllInjector.GetProcAddrHelper." + Guid.NewGuid().ToString() + ".exe");
-                    File.WriteAllBytes(_32bitHelperPath, Utility.Resources.GetProcAddrHelper);
-				}
+                if (_32bitHelperPath is null || !File.Exists(_32bitHelperPath))
+                    _deploy_get_proc_helper();
 
                 List<string> args = new() { moduleName.Trim(), procName.Trim() };
 				process = System.Diagnostics.Process.Start(_32bitHelperPath, args);
@@ -176,7 +182,7 @@ namespace ToolkitLauncher.Utility
             {
                 lock (_32bit_procs_cache)
                 {
-                    _32bit_procs_cache.Add(cacheKey, ptrProc);
+                    _32bit_procs_cache[cacheKey]  = ptrProc;
 				}
             }
 
