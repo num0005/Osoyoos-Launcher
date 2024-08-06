@@ -223,23 +223,30 @@ namespace ToolkitLauncher.ToolkitInterface
 
             void ConvertAllInFolder(string folder)
             {
-                IEnumerable<string> files = Directory.EnumerateFiles(folder, "*.fbx");
-
-                foreach (var f in files)
+                try
                 {
-                    Task toolTask = GR2FromFBX(
-                        f,
-                        getFilepath(f) + ".json",
-                        getFilepath(f) + ".gr2",
-                        json_rebuild,
-                        show_output);
-                    dispatchedTasks.Add(toolTask);
+                    IEnumerable<string> files = Directory.EnumerateFiles(folder, "*.fbx");
+
+                    foreach (var f in files)
+                    {
+                        Task toolTask = GR2FromFBX(
+                            f,
+                            getFilepath(f) + ".json",
+                            getFilepath(f) + ".gr2",
+                            json_rebuild,
+                            show_output);
+                        dispatchedTasks.Add(toolTask);
+                    }
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Trace.WriteLine($"{folder} does not exist");
                 }
             }
 
             foreach (var folder in Directory.EnumerateDirectories(fbx_search_path))
             {
-                string folderName = Path.GetDirectoryName(folder);
+                string folderName = Path.GetFileName(folder);
 
                 string[] assetFolders = new[] { "animations", "collision", "markers", "physics", "render", "skeleton" };
 
