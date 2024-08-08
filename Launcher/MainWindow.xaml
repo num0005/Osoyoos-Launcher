@@ -116,7 +116,13 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="1" Grid.Row="1">
                         <TabControl TabStripPlacement="Left" Background="{DynamicResource TabControlPrimaryColor}" BorderBrush="{DynamicResource TabControlSecondaryColor}">
-                            <TabItem Header="Import &amp; Light Level" Margin="-2,-2,0,-2">
+                            <TabControl.Resources>
+                                <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                                    <Setter Property="Margin" Value="0,0,0,0"/>
+                                    <Setter Property="Height" Value="24"/>
+                                </Style>
+                            </TabControl.Resources>
+                            <TabItem Header="Import &amp; Light Level">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
@@ -422,7 +428,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Text" Margin="-2,2,0,-2" Height="24">
+                            <TabItem Header="Import Text">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -480,7 +486,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Bitmaps" Margin="-2,2,0,-6">
+                            <TabItem Header="Import Bitmaps">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -556,7 +562,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Model" Margin="-2,6,0,-6" Height="24" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Model" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                         <Grid.RowDefinitions>
@@ -746,7 +752,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sound" Margin="-2,6,0,-10" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sound" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
@@ -856,7 +862,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Packaging" Margin="-2,10,0,-14">
+                            <TabItem Header="Packaging">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
@@ -960,7 +966,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sidecar" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sidecar" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
@@ -1112,7 +1118,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Extract Tags" Margin="-2,14,0,-17" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
+                            <TabItem Header="Extract Tags" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
