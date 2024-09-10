@@ -527,7 +527,7 @@ namespace ToolkitLauncher
         {
             sounds_one_shot,
             sounds_single_layer,
-            sounds_single_mixed,
+            sound_multi_layer,
         }
 
         enum codec_type
