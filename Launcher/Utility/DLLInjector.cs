@@ -18,6 +18,7 @@ namespace ToolkitLauncher.Utility
 	public class DLLInjector : IProcessInjector
     {
         readonly private string dll_path;
+        private readonly FileStream _dll_filestream_lock;
         readonly private Dictionary<Guid, EventWaitHandle> _events = new();
         readonly private Dictionary<Guid, System.Diagnostics.Process> _processes = new();
 
@@ -37,11 +38,17 @@ namespace ToolkitLauncher.Utility
             dll_path = Path.Combine(App.TempFolder, "DllInjector." + Guid.NewGuid().ToString() + "." + dll_name);
 
             File.WriteAllBytes(dll_path, dll_binary);
-        }
+
+            // prevent other processes from deleting the dll while we are still using it.
+			_dll_filestream_lock = new(dll_path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+		}
 
         ~DLLInjector()
         {
-            File.Delete(dll_path);
+            _dll_filestream_lock.Close();
+
+			File.Delete(dll_path);
         }
 
         public static string GetVariableName(string variable)
