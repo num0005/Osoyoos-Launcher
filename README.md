@@ -1,6 +1,6 @@
 # Osoyoos Launcher
 
-[![.NET Core](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet-5.yml/badge.svg)](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet-5.yml)
+[![.NET Core](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet-6.yml/badge.svg)](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet-6.yml)
 
 ## Launcher Description
 The Osoyoos launcher is an application that can be used to easily interact with various HEK toolsets from a simple GUI. Profiles can be created to run released or community modified toolsets.
@@ -19,8 +19,8 @@ The following profiles are or will be supported by this launcher:
  * Halo 3 MCC
  * Halo 3: ODST MCC
  * Halo Reach
- * Halo 4 MCC (Planned)
- * Halo 2 Anniversary MCC (Planned)
+ * Halo 4 MCC
+ * Halo 2 Anniversary MCC
 
 Launcher can do the following:
 
@@ -44,6 +44,10 @@ Launcher can do the following:
 
 ## Non-free content warning
 The reference managedblam assembly is not covered by the MIT license and is instead covered by the MCC EULA and/or the fair dealing/fair use exemption. This reference assembly is automatically generated from the public interface of a closed source binary and contains no executable code and is only used for the purpose of interoperability.
+
+## Sponsorship
+
+If you found this software useful and have some spare change feel free to donate using [Github Sponsors](https://github.com/sponsors/num0005) for a one-time donation or via [Liberapay](https://liberapay.com/Osoyoos-Launcher/) for recurring donations (as that platform allows the donations to be split automatically). Donors do not receive anything in return, but any support is appreciated.
 
 ## Credits
 
