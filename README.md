@@ -1,6 +1,6 @@
 # Osoyoos Launcher
 
-[![.NET Core](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet-6.yml/badge.svg)](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet-6.yml)
+[![.NET](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet.yml/badge.svg)](https://github.com/num0005/Osoyoos-Launcher/actions/workflows/dotnet.yml)
 
 ## Launcher Description
 The Osoyoos launcher is an application that can be used to easily interact with various HEK toolsets from a simple GUI. Profiles can be created to run released or community modified toolsets.

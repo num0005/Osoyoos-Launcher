@@ -40,7 +40,7 @@ jobs:
     - name: Publish
       run: dotnet publish .\Launcher\ToolkitLauncher.csproj -c Release -r win-x64 -P:PublishSingleFile=true -p:PublishTrimmed=false --self-contained false
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: launcher
         path: Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4
       with:
         name: launcher
         path: Launcher_win64
