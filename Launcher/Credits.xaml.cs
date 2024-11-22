@@ -8,6 +8,8 @@ using System.IO;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Win32;
+using System.Runtime.Versioning;
 
 namespace ToolkitLauncher
 {
@@ -103,11 +105,49 @@ progress, token);
             }
         }
 
+		[SupportedOSPlatform("windows")]
+		private static bool CheckDotnet8Installed()
+        {
+            const string registry_path_string = "SOFTWARE\\dotnet\\Setup\\InstalledVersions\\x64\\sharedfx\\Microsoft.WindowsDesktop.App";
+
+			RegistryKey? sub_key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(registry_path_string);
+
+            if (sub_key is null)
+            {
+                Trace.TraceWarning("Unable to open subkey to check installed dotnet versions, this shouddn't happen!");
+                return false;
+            }
+
+            string[] values = sub_key.GetValueNames();
+            Trace.WriteLine("Installed dotnet version: " + String.Join(",", values));
+
+			foreach (string value in values)
+            {
+                // todo parse the version string here one day
+                if (value.StartsWith("8."))
+                    return true;
+            }
+
+			return false;
+		}
+
         private async void update_button_Click(object sender, RoutedEventArgs e)
         {
             update_button.IsEnabled = false; // Make sure we can't click on this multiple times
             try 
             {
+                if (OperatingSystem.IsWindows() && !CheckDotnet8Installed())
+                {
+                    const string dotnet_8_download_url = "https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe";
+					MessageBoxResult result = MessageBox.Show(
+	                    "You do not have .NET 8 Desktop runtime installed yet, this will be required for future versions.\nPleases do so now, the download link will be opened in your browser.",
+	                    "Required .NET version not installed!",
+	                    MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.Cancel)
+                        return;
+                    Utility.Process.OpenURL(dotnet_8_download_url);
+				}
+
                 GitHubReleases gitHubReleases = new();
                 IReadOnlyList<GitHubReleases.Release> list = await gitHubReleases.GetReleasesForRepo("num0005", "Osoyoos-Launcher");
                 Debug.WriteLine(list.ToString());

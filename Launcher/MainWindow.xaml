@@ -1324,7 +1324,7 @@
                                         <RowDefinition Height="0"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource TextColor}" x:Name="lightmap_sample_count_label" Content="Monte Carlo Samples:"/>
+                                    <Label Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource TextColor}" x:Name="lightmap_sample_count_label" Content="Monte Carlo Samples:" ToolTip="Indirect radiance monte carlo sample count, 2*x^2 samples will be used."/>
                                     <Label Grid.Column="0" Grid.Row="2" Foreground="{DynamicResource TextColor}" x:Name="lightmap_photon_count_label" Content="Photon Count:" ToolTip="How many photons will be cast?"/>
                                     <Label Grid.Column="0" Grid.Row="4" Foreground="{DynamicResource TextColor}" x:Name="lightmap_AA_sample_count_label" Content="Antialiasing Samples:" Visibility="Collapsed"/>
                                     <Label Grid.Column="0" Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="lightmap_gather_dist_label" Content="Gather Distance:" Visibility="Collapsed"/>
