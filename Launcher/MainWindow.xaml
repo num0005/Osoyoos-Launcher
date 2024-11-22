@@ -1229,8 +1229,8 @@
                                                 <TextBox x:Name="bank_extension_repair" VerticalAlignment="Center" ToolTip="Enter a custom FMOD bank extension. Will be created if it does not exist. Leave blank to use default SFX/Language FMODs." BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" CaretBrush="{DynamicResource TextColor}" MinHeight="22" MaxHeight="22"></TextBox>
                                             </GroupBox>
                                         </Grid>
-                                        <Grid Grid.Row="6">
-                                            <Button x:Name="fmod_repair" Content="Rebuild FMOD Bank" VerticalAlignment="Bottom" Click="fix_fmod_Click" ToolTip="Import the sound!">
+                                        <Grid Grid.Row="2">
+                                            <Button x:Name="fmod_repair" Content="Rebuild FMOD Bank" VerticalAlignment="Bottom" Click="fix_fmod_Click" ToolTip="Runs the two tool commands needed to rebuild the FMOD bank.">
                                                 <Button.IsEnabled>
                                                     <MultiBinding Converter="{StaticResource DualTextToEnabledConverter}">
                                                         <Binding Path="Text" ElementName="fix_sound_path" />

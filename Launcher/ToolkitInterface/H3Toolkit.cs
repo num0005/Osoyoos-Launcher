@@ -345,6 +345,21 @@ namespace ToolkitLauncher.ToolkitInterface
 			}
         }
 
+        /// <summary>
+        /// Runs tool commands "report-sounds" and "export-fmod-banks" to rebuild/repair broken custom FMOD banks after importing
+        /// The command should output a "sounds_report_sizes.csv" in "H3EK\reports\reports_00"
+        /// We run "export-fmod-banks" twice to cover both sfx and language FMODs without require extra user input to choose which
+        /// </summary>
+        /// <param name="relativeSoundsPath">The folder from which all sound tag data will be pulled recursively by "report-sounds"</param>
+        /// <param name="customBankName">The custom bank extension to be repaired, used by "export-fmod-banks"</param>
+        /// <returns></returns>
+        public async Task RepairFmod(string relativeSoundsPath, string customBankName)
+        {
+            await RunTool(ToolType.Tool, new() { "report-sounds", relativeSoundsPath });
+            await RunTool(ToolType.Tool, new() { "export-fmod-banks", "reports\\reports_00\\sounds_report_sizes.csv", "pc", "sfx", $"-bank:{customBankName}"});
+            await RunTool(ToolType.Tool, new() { "export-fmod-banks", "reports\\reports_00\\sounds_report_sizes.csv", "pc", "languages", $"-bank:{customBankName}" });
+        }
+
         public override bool IsMutexLocked(ToolType tool)
         {
             // todo(num0005) implement this

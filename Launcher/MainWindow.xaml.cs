@@ -1334,9 +1334,9 @@ namespace ToolkitLauncher
         {
             bool tag_dir = true;
             bool is_file = false;
-            var soundOptions = soundDataOptions;
             string default_path = get_default_path(fix_sound_path.Text, tag_dir, is_file);
-            var picker = new FilePicker(fix_sound_path, toolkit, soundOptions, default_path);
+            var options = FilePicker.Options.FolderSelect("Select Folder", FilePicker.Options.PathRoot.Tag);
+            var picker = new FilePicker(fix_sound_path, toolkit, options, default_path);
             picker.Prompt();
         }
 
@@ -2759,9 +2759,10 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             extract_tag_list.Items.Clear();
         }
 
-        private void fix_fmod_Click(object sender, RoutedEventArgs e)
+        private async void fix_fmod_Click(object sender, RoutedEventArgs e)
         {
-
+            H3Toolkit h3tool = toolkit as H3Toolkit;
+            await h3tool.RepairFmod(fix_sound_path.Text, bank_extension_repair.Text);
         }
     }
 }
