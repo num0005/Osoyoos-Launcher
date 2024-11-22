@@ -1330,6 +1330,16 @@ namespace ToolkitLauncher
             picker.Prompt();
         }
 
+        private void browse_sound_fix_Click(object sender, RoutedEventArgs e)
+        {
+            bool tag_dir = true;
+            bool is_file = false;
+            var soundOptions = soundDataOptions;
+            string default_path = get_default_path(fix_sound_path.Text, tag_dir, is_file);
+            var picker = new FilePicker(fix_sound_path, toolkit, soundOptions, default_path);
+            picker.Prompt();
+        }
+
         private void browse_ltf_Click(object sender, RoutedEventArgs e)
         {
             bool tag_dir = false;
@@ -2747,6 +2757,11 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
         private void extract_tag_clear_all_Click(object sender, RoutedEventArgs e)
         {
             extract_tag_list.Items.Clear();
+        }
+
+        private void fix_fmod_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

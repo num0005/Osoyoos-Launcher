@@ -916,5 +916,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <local:DualTextBoxLengthToEnabledConverter x:Key="DualTextToEnabledConverter"/>
     </Application.Resources>
 </Application>

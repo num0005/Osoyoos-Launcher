@@ -788,7 +788,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="1" Text="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=6, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                             </Grid>
-                                            <TextBox Grid.Column="3" Name="import_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                            <TextBox Grid.Column="3" Name="import_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" VerticalContentAlignment="Center"/>
                                         </Grid>
                                         <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|h2codez, ElementName=toolkit_selection}">
                                             <Grid.ColumnDefinitions>
@@ -1201,6 +1201,44 @@
                                             <Button Content="Clear Extract List" Grid.Column="1" HorizontalAlignment="Right" Foreground="{DynamicResource TextColor}" Click="extract_tag_clear_all_Click" Margin="0,-4,0,0" VerticalAlignment="Top"/>
                                         </Grid>
                                         <Button Grid.Row="6" Content="Extract Tags" Foreground="{DynamicResource TextColor}" VerticalAlignment="Bottom" Click="ExtractTags" IsEnabled="{Binding Items.Count, ElementName=extract_tag_list, Mode=OneWay}" ToolTip="Extract the tags!"/>
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="FMOD Repair" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h3, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h3, ElementName=toolkit_selection}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="5"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="1" Grid.Row="1">
+                                        <Grid>
+                                            <GroupBox x:Name="sound_folder_box" Header="Sound Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290">
+                                                <Grid Margin="0,0,174,0">
+                                                    <Button Grid.Column="0" x:Name="browse_sound_folder_fix" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_fix_Click" MinWidth="75" MinHeight="26" ToolTip="Select sound source file."/>
+                                                    <TextBox Name="fix_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" Margin="77,0,-172,0" VerticalContentAlignment="Center"/>
+                                                    <TextBlock Text="Select folder with bank's sound tags" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=fix_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4" Margin="75,0,-172,0"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox x:Name="custom_bank_box_repair" Header="Custom Bank Extension" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="290,0,0,0" Height="48.96">
+                                                <TextBox x:Name="bank_extension_repair" VerticalAlignment="Center" ToolTip="Enter a custom FMOD bank extension. Will be created if it does not exist. Leave blank to use default SFX/Language FMODs." BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" Background="{DynamicResource brushTextboxBackground}" CaretBrush="{DynamicResource TextColor}" MinHeight="22" MaxHeight="22"></TextBox>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="6">
+                                            <Button x:Name="fmod_repair" Content="Rebuild FMOD Bank" VerticalAlignment="Bottom" Click="fix_fmod_Click" ToolTip="Import the sound!">
+                                                <Button.IsEnabled>
+                                                    <MultiBinding Converter="{StaticResource DualTextToEnabledConverter}">
+                                                        <Binding Path="Text" ElementName="fix_sound_path" />
+                                                        <Binding Path="Text" ElementName="bank_extension_repair" />
+                                                    </MultiBinding>
+                                                </Button.IsEnabled>
+                                            </Button>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </TabItem>
