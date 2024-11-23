@@ -24,6 +24,7 @@
         <local:ForceBooleanConverter x:Key="ForceBooleanConverter" />
         <local:ProfiletoContent x:Key="ProfiletoContent" />
         <local:LightmapConfigModifier x:Key="LightmapConfigModifier" />
+        <local:DualTextBoxLengthToEnabledConverter x:Key="DualTextToEnabledConverter"/>
         <ObjectDataProvider x:Key="cache_type_enum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="local:CacheType"/>
