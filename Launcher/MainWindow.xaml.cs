@@ -1335,7 +1335,7 @@ namespace ToolkitLauncher
             bool tag_dir = true;
             bool is_file = false;
             string default_path = get_default_path(fix_sound_path.Text, tag_dir, is_file);
-            var options = FilePicker.Options.FolderSelect("Select Folder", FilePicker.Options.PathRoot.Tag);
+            var options = FilePicker.Options.FolderSelect("Select sound tag parent folder", FilePicker.Options.PathRoot.Tag);
             var picker = new FilePicker(fix_sound_path, toolkit, options, default_path);
             picker.Prompt();
         }
@@ -2762,7 +2762,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
         private async void fix_fmod_Click(object sender, RoutedEventArgs e)
         {
             H3Toolkit h3tool = toolkit as H3Toolkit;
-            await h3tool.RepairFmod(fix_sound_path.Text, bank_extension_repair.Text);
+            await h3tool.RepairFmod(fix_sound_path.Text, bank_extension_repair.Text, toolkit.BaseDirectory);
         }
     }
 }

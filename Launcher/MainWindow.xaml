@@ -1219,7 +1219,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Column="1" Grid.Row="1">
                                         <Grid>
-                                            <GroupBox x:Name="sound_folder_box" Header="Sound Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290">
+                                            <GroupBox x:Name="sound_folder_box" Header="Sounds Parent Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290">
                                                 <Grid Margin="0,0,174,0">
                                                     <Button Grid.Column="0" x:Name="browse_sound_folder_fix" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_fix_Click" MinWidth="75" MinHeight="26" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
                                                     <TextBox Name="fix_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" Margin="77,0,-172,0" VerticalContentAlignment="Center" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>

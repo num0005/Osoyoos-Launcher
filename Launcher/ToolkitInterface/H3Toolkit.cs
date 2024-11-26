@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using ToolkitLauncher.Utility;
 using static ToolkitLauncher.ToolkitProfiles;
 using Path = System.IO.Path;
@@ -352,12 +353,40 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         /// <param name="relativeSoundsPath">The folder from which all sound tag data will be pulled recursively by "report-sounds"</param>
         /// <param name="customBankName">The custom bank extension to be repaired, used by "export-fmod-banks"</param>
+        /// <param name="baseDirectory">The current toolkit base directory, used to check for .csv existence</param>
         /// <returns></returns>
-        public async Task RepairFmod(string relativeSoundsPath, string customBankName)
+        public async Task RepairFmod(string relativeSoundsPath, string customBankName, string baseDirectory)
         {
-            await RunTool(ToolType.Tool, new() { "report-sounds", relativeSoundsPath });
-            await RunTool(ToolType.Tool, new() { "export-fmod-banks", "reports\\reports_00\\sounds_report_sizes.csv", "pc", "sfx", $"-bank:{customBankName}"});
-            await RunTool(ToolType.Tool, new() { "export-fmod-banks", "reports\\reports_00\\sounds_report_sizes.csv", "pc", "languages", $"-bank:{customBankName}" });
+            string csvRelativePath = "reports\\reports_00\\sounds_report_sizes.csv";
+            string csvFullPath = Path.Join(baseDirectory, csvRelativePath);
+            // Remove old .csv so we can very it was generated correctly later
+            if (File.Exists(csvFullPath))
+            {
+                File.Delete(csvFullPath);
+            }
+            
+            try
+            {
+                await RunTool(ToolType.Tool, new() { "report-sounds", relativeSoundsPath }, OutputMode.closeShell);
+                if (File.Exists(csvFullPath))
+                {
+                    await RunTool(ToolType.Tool, new() { "export-fmod-banks", csvRelativePath, "pc", "sfx", $"-bank:{customBankName}" }, OutputMode.closeShell);
+                    await RunTool(ToolType.Tool, new() { "export-fmod-banks", csvRelativePath, "pc", "languages", $"-bank:{customBankName}" }, OutputMode.closeShell);
+                }
+                else
+                {
+                    MessageBox.Show($"Could not locate generated .csv file \"{csvRelativePath}\"", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"An error occured when attempting to rebuild FMOD bank \"{customBankName}\".\nError: {e}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+            MessageBox.Show($"Successfully rebuilt FMOD bank \"{customBankName}\"", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public override bool IsMutexLocked(ToolType tool)
