@@ -235,7 +235,7 @@
                                                                     <ColumnDefinition Width="{Binding SelectedIndex, ConverterParameter=(h2|h2codez\, 8\, 0), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
-                                                                <ComboBox Grid.Column="0" x:Name="light_quality_level" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=2, ElementName=toolkit_selection}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2 + h3 + h4 + hr, ElementName=toolkit_selection}" ToolTip="Lighting quality (checkerboard is the worst, super is the best)."/>
+                                                                <ComboBox Grid.Column="0" x:Name="light_quality_level" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=2, ElementName=toolkit_selection}" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2 + h3 + h4 + hr, ElementName=toolkit_selection}" VerticalContentAlignment="Center" ToolTip="Lighting quality (checkerboard is the worst, super is the best)."/>
                                                                 <Button Grid.Column="2" x:Name ="lightmap_config_button" HorizontalAlignment="Left" Height="22" Width="22" VerticalAlignment="Center" Click="lightmap_config_Click" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=H2, ElementName=toolkit_selection}">
                                                                     <Button.IsEnabled>
                                                                         <MultiBinding Converter="{StaticResource LightmapConfigModifier}">
@@ -349,11 +349,11 @@
                                                             <CheckBox x:Name="struct_auto_fbx" Content="Auto FBX" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=9, ElementName=toolkit_selection}"/>
                                                         </Grid>
                                                         <Grid Grid.Row="3" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2 + h3 + hr + h4, ElementName=toolkit_selection}">
-                                                            <ComboBox x:Name="output_mode" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource output_mode_enum}}" ToolTip="Choose what to do with tool output.">
+                                                            <ComboBox x:Name="output_mode" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource output_mode_enum}}" VerticalContentAlignment="Center" ToolTip="Choose what to do with tool output.">
                                                             </ComboBox>
                                                         </Grid>
                                                         <Grid Grid.Row="4" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3, ElementName=toolkit_selection}">
-                                                            <ComboBox x:Name="structure_import_type" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the level.">
+                                                            <ComboBox x:Name="structure_import_type" Grid.Column="5" MinHeight="26" VerticalAlignment="Center" SelectedIndex="0" VerticalContentAlignment="Center" ToolTip="Select the command to use for the level.">
                                                                 <ComboBoxItem Content="Structure"/>
                                                                 <ComboBoxItem Content="Design"/>
                                                                 <ComboBoxItem Content="Seams"/>
@@ -479,7 +479,7 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="5"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <ComboBox Grid.Column="1" x:Name="string_encoding" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:StringType}}}" SelectionChanged="string_SelectionChanged"/>
+                                                    <ComboBox Grid.Column="1" x:Name="string_encoding" VerticalAlignment="Center" SelectedIndex="0" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:StringType}}}" SelectionChanged="string_SelectionChanged" VerticalContentAlignment="Center"/>
                                                 </Grid>
                                             </GroupBox>
                                             <Button Grid.Row="3" Content="Import Text" Click="CompileText" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_text_path, Mode=OneWay, ValidatesOnNotifyDataErrors=False}" ToolTip="Import the text file!"/>
@@ -830,17 +830,17 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <GroupBox Grid.Column="0" x:Name="class_type" Header="Class" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
-                                                <ComboBox x:Name="class_dropdown" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=15, ElementName=toolkit_selection}" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Select the class to set for the sound on first import."/>
+                                                <ComboBox x:Name="class_dropdown" ItemsSource="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=15, ElementName=toolkit_selection}" SelectedIndex="0" VerticalAlignment="Center" VerticalContentAlignment="Center" ToolTip="Select the class to set for the sound on first import."/>
                                             </GroupBox>
                                             <GroupBox Grid.Column="2" x:Name="import_box" Header="Import Type" VerticalAlignment="Stretch"  Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
-                                                <ComboBox x:Name="sound_import_type" VerticalAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the sound.">
+                                                <ComboBox x:Name="sound_import_type" VerticalAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="0" ToolTip="Select the command to use for the sound.">
                                                     <ComboBoxItem Content="Single Shot"/>
                                                     <ComboBoxItem Content="Single Layer"/>
                                                     <ComboBoxItem Content="Multi Layer"/>
                                                 </ComboBox>
                                             </GroupBox>
                                             <GroupBox Grid.Column="4" x:Name="compression_box" Header="Compression Type" VerticalAlignment="Stretch" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc, ElementName=toolkit_selection}">
-                                                <ComboBox x:Name="sound_compression_type" VerticalAlignment="Center" SelectedIndex="2" ToolTip="Select the compression type to use for the sound.">
+                                                <ComboBox x:Name="sound_compression_type" VerticalAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="2" ToolTip="Select the compression type to use for the sound.">
                                                     <ComboBoxItem Content="Uncompressed"/>
                                                     <ComboBoxItem Content="ADPCM"/>
                                                     <ComboBoxItem Content="Opus"/>
@@ -930,9 +930,9 @@
                                                             <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
                                                         <CheckBox Foreground="{DynamicResource TextColor}" x:Name="log_tag_loads" Content="Log loaded tags (advanced)" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Log the tags that were loaded during level package to a text file in toolkit root."/>
-                                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cache_type" ItemsSource="{Binding Source={StaticResource cache_type_enum}}" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Does the map only support classic H1 graphics or does it support remastered H1A graphics?" />
+                                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cache_type" ItemsSource="{Binding Source={StaticResource cache_type_enum}}" SelectedIndex="0" VerticalAlignment="Center" VerticalContentAlignment="Center" ToolTip="Does the map only support classic H1 graphics or does it support remastered H1A graphics?" />
                                                         <Label Grid.Row="2" MinWidth="170" HorizontalAlignment="Left" Foreground="{DynamicResource TextColor}">Graphics usage:</Label>
-                                                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="resource_map_usage" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Should shared resources be used and/or updated?">
+                                                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="resource_map_usage" SelectedIndex="0" VerticalAlignment="Center" VerticalContentAlignment="Center" ToolTip="Should shared resources be used and/or updated?">
                                                             <ComboBoxItem Content="None"></ComboBoxItem>
                                                             <ComboBoxItem Content="Read only"></ComboBoxItem>
                                                             <ComboBoxItem Content="Read and update"></ComboBoxItem>
@@ -1039,7 +1039,7 @@
                                                         <ColumnDefinition Width="5"/>
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <ComboBox x:Name="asset_type" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Type of asset you wish to generate a sidecar for." SelectionChanged="asset_type_SelectionChanged">
+                                                    <ComboBox x:Name="asset_type" SelectedIndex="0" VerticalAlignment="Center" ToolTip="Type of asset you wish to generate a sidecar for." SelectionChanged="asset_type_SelectionChanged" VerticalContentAlignment="Center">
                                                         <ComboBoxItem Content="Model"/>
                                                         <ComboBoxItem Content="Scenario"/>
                                                         <ComboBoxItem Content="Decorator Set"/>
@@ -1269,9 +1269,9 @@
                         <RowDefinition Height="5"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Column="1" Grid.Row="1" Content="Profile" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26" Foreground="{DynamicResource TextColor}"/>
-                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="{Binding Path=SelectedProfileIndex, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148" ToolTip="Which toolkit profile is being used?"/>
+                    <ComboBox Grid.Column="2" Grid.Row="1" x:Name="toolkit_selection" SelectionChanged="toolkit_SelectionChanged" SelectedIndex="{Binding Path=SelectedProfileIndex, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" MaxWidth="148" ToolTip="Which toolkit profile is being used?"/>
                     <Label Grid.Column="3" Grid.Row="1" Content="Theme" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinHeight="26" Foreground="{DynamicResource TextColor}"/>
-                    <ComboBox Grid.Column="5" Grid.Row="1" x:Name="theme" ItemsSource="{Binding Source={StaticResource theme_type_enum}}" VerticalAlignment="Center" SelectedIndex="0" SelectionChanged="theme_SelectionChanged" HorizontalAlignment="Right" MinHeight="26" ToolTip="Darkness or light?"/>
+                    <ComboBox Grid.Column="5" Grid.Row="1" x:Name="theme" ItemsSource="{Binding Source={StaticResource theme_type_enum}}" VerticalAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="0" SelectionChanged="theme_SelectionChanged" HorizontalAlignment="Right" MinHeight="26" ToolTip="Darkness or light?"/>
                     <Button Grid.Column="7" Grid.Row="1" x:Name="toolkit_profiles" Content="Toolkit Profiles" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="toolkit_profiles_Click" ToolTip="Edit toolkit profiles selection."/>
                     <Button Grid.Column="9" Grid.Row="1" Content="About" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4" MinWidth="75" MinHeight="26" Click="about_Click" ToolTip="by the prophets!"/>
                 </Grid>
