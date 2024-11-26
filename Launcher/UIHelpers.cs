@@ -874,9 +874,9 @@ namespace ToolkitLauncher
 
     // XAML doesn't support combining properties from multiple elements natively
     // So have to use this to check if something should be enabled based on the text contents of two boxes
-    public class DualTextBoxLengthToEnabledConverter : IMultiValueConverter
+    public class DualTextBoxLengthToEnabledConverter : OneWayMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length == 2 && values[0] is string text1 && values[1] is string text2) // Ensure only two values
             {
@@ -885,11 +885,6 @@ namespace ToolkitLauncher
             }
 
             return false;
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
         }
     }
 }

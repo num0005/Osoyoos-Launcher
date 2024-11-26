@@ -364,29 +364,19 @@ namespace ToolkitLauncher.ToolkitInterface
             {
                 File.Delete(csvFullPath);
             }
-            
-            try
+
+            await RunTool(ToolType.Tool, new() { "report-sounds", relativeSoundsPath }, OutputMode.closeShell);
+            if (File.Exists(csvFullPath))
             {
-                await RunTool(ToolType.Tool, new() { "report-sounds", relativeSoundsPath }, OutputMode.closeShell);
-                if (File.Exists(csvFullPath))
-                {
-                    await RunTool(ToolType.Tool, new() { "export-fmod-banks", csvRelativePath, "pc", "sfx", $"-bank:{customBankName}" }, OutputMode.closeShell);
-                    await RunTool(ToolType.Tool, new() { "export-fmod-banks", csvRelativePath, "pc", "languages", $"-bank:{customBankName}" }, OutputMode.closeShell);
-                }
-                else
-                {
-                    MessageBox.Show($"Could not locate generated .csv file \"{csvRelativePath}\"", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                
+                await RunTool(ToolType.Tool, new() { "export-fmod-banks", csvRelativePath, "pc", "sfx", $"-bank:{customBankName}" }, OutputMode.closeShell);
+                await RunTool(ToolType.Tool, new() { "export-fmod-banks", csvRelativePath, "pc", "languages", $"-bank:{customBankName}" }, OutputMode.closeShell);
+                MessageBox.Show($"Successfully rebuilt FMOD bank \"{customBankName}\"", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception e)
+            else
             {
-                MessageBox.Show($"An error occured when attempting to rebuild FMOD bank \"{customBankName}\".\nError: {e}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Could not locate generated .csv file \"{csvRelativePath}\"", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
-            MessageBox.Show($"Successfully rebuilt FMOD bank \"{customBankName}\"", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public override bool IsMutexLocked(ToolType tool)
