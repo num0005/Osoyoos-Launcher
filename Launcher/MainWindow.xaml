@@ -536,24 +536,17 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="5"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compile_type" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}" ToolTip="Type of image">
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compile_type" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}" VerticalContentAlignment="Center" ToolTip="Type of image">
                                                         <ComboBoxItem Content="2D Textures"/>
                                                         <ComboBoxItem Content="3D Textures"/>
                                                         <ComboBoxItem Content="Cubemaps"/>
                                                         <ComboBoxItem Content="Sprites"/>
                                                         <ComboBoxItem Content="Interface"/>
                                                     </ComboBox>
-                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." Margin="0,0,208,8" Grid.RowSpan="2" ItemsSource="{Binding Source={StaticResource BitmapCompressionTypeValues}}"></ComboBox>
-                                                    <Label Grid.Column="1" x:Name="compression_type_label" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" Content="Compression Type" Margin="195,0,89,0" RenderTransformOrigin="0.5,0.5">
-                                                        <Label.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform ScaleX="1"/>
-                                                                <SkewTransform/>
-                                                                <RotateTransform/>
-                                                                <TranslateTransform/>
-                                                            </TransformGroup>
-                                                        </Label.RenderTransform>
-                                                    </Label>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Height="25.96">
+                                                        <ComboBox x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." ItemsSource="{Binding Source={StaticResource BitmapCompressionTypeValues}}" Height="25.96" Width="210" VerticalContentAlignment="Center"></ComboBox>
+                                                        <Label x:Name="compression_type_label" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" Content="Compression Type"></Label>
+                                                    </StackPanel>
                                                     <CheckBox Grid.Row="2" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
                                                     <CheckBox Grid.Row="2" Grid.Column="1" x:Name="bitmap_clear_old_settings" Content="Clear old bitmaps overrides" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" ToolTip="Reset the bitmap overrides (set this if you don't know what those are)."/>
                                                 </Grid>
