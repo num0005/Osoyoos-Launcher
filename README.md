@@ -34,10 +34,11 @@ Launcher can do the following:
  * Run a Guerilla or Sapien instance from the UI
  * Run tool commands from the UI or open command prompt in the root of the toolkit
  * Automatically generate blank .shader tags for new models to save you time (H2/H3/ODST)
+ * Rebuild broken FMOD banks (H3/ODST)
 
 ## Usage
 
-0. Download and install the [.NET 6 Desktop Runtime x64](https://dotnet.microsoft.com/download/dotnet/6.0/runtime). It is *very* important that you download the **64-bit** **Desktop** runtime, otherwise the launcher won't start correctly. For convenience you can use the [direct download link]( https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.31-windows-x64-installer) but it might point to an older version as this readme is not regularly revised.
+0. Download and install the [.NET 6 Desktop Runtime x64](https://dotnet.microsoft.com/download/dotnet/6.0/runtime). It is *very* important that you download the **64-bit** **Desktop** runtime, otherwise the launcher won't start correctly. For convenience you can use the [direct download link]( https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.36-windows-x64-installer) but it might point to an older version as this readme is not regularly revised.
 
 1. Download and run the launcher executable [from Github releases](https://github.com/num0005/Osoyoos-Launcher/releases).
 2. Use the setup dialog and/or profile wizard to setup the paths for all toolkits you wish to use.
