@@ -374,7 +374,7 @@ namespace ToolkitLauncher.ToolkitInterface
             }
             else
             {
-                MessageBox.Show($"Could not locate generated .csv file \"{csvRelativePath}\"", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Could not locate generated .csv file \"{csvRelativePath}\"", "FMOD Rebuild Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
