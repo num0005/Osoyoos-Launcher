@@ -34,6 +34,7 @@ Launcher can do the following:
  * Run a Guerilla or Sapien instance from the UI
  * Run tool commands from the UI or open command prompt in the root of the toolkit
  * Automatically generate blank .shader tags for new models to save you time (H2/H3/ODST)
+ * Rebuild broken FMOD banks (H3/ODST)
 
 ## Usage
 
