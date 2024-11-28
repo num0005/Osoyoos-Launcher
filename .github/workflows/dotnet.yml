@@ -1,4 +1,4 @@
-name: .NET 6
+name: .NET 8
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.x
     - name: Install dependencies
       run: dotnet restore
     - name: Enable developer command prompt
@@ -43,11 +43,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: launcher
-        path: Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\
+        path: Launcher\bin\x64\Release\net8.0-windows\win-x64\publish\
     - name: Get release name
       shell: pwsh
       id: get_release_name
-      run: echo "PRODUCT=$((Get-Item -Path 'Launcher\bin\x64\Release\net6.0-windows\win-x64\publish\Osoyoos.exe').VersionInfo.ProductVersion)" >> $env:GITHUB_OUTPUT
+      run: echo "PRODUCT=$((Get-Item -Path 'Launcher\bin\x64\Release\net8.0-windows\win-x64\publish\Osoyoos.exe').VersionInfo.ProductVersion)" >> $env:GITHUB_OUTPUT
     
         
   release:
