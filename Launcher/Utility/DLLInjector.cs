@@ -294,6 +294,9 @@ namespace ToolkitLauncher.Utility
             int dllNamePtrOffset = align(dllNameOffset + 4);
 
 			int dllNameContents = dllNamePtrOffset + ptrSize;
+            Debug.Assert(dllNameContents >= 0);
+            Debug.Assert(dllNamePtrOffset >= 0);
+            Debug.Assert(dllNamePtrOffset > dllNameContents);
 
             int paramtersLengthTotal = dllNameContents + Encoding.Unicode.GetByteCount(dllName) + 2;
 
@@ -332,11 +335,11 @@ namespace ToolkitLauncher.Utility
 				}
 
 				shell_code_arguments_addr = new UIntPtr(shell_code_arguments_ptr);
-                UIntPtr dll_name_process_addr = shell_code_arguments_addr + dllNameContents;
+                UIntPtr dll_name_process_addr = shell_code_arguments_addr + (nuint)dllNameContents;
                 byte[] dll_name_process_addr_bytes = isWOW64 ? BitConverter.GetBytes(dll_name_process_addr.ToUInt32()) : BitConverter.GetBytes(dll_name_process_addr.ToUInt64());
 
 
-                if (!WriteProcessMemory((HANDLE)process.Handle, (shell_code_arguments_addr + dllNamePtrOffset).ToPointer(), dll_name_process_addr_bytes, (nuint)dll_name_process_addr_bytes.Length))
+                if (!WriteProcessMemory((HANDLE)process.Handle, (shell_code_arguments_addr + (nuint)dllNamePtrOffset).ToPointer(), dll_name_process_addr_bytes, (nuint)dll_name_process_addr_bytes.Length))
                 {
 					PInvoke.VirtualFreeEx((HANDLE)process.Handle, shell_code_arguments_ptr, 0, VIRTUAL_FREE_TYPE.MEM_RELEASE);
 					Trace.WriteLine($"Failed to write string pointer into remote process - {Marshal.GetLastWin32Error()}!");
@@ -348,7 +351,7 @@ namespace ToolkitLauncher.Utility
 
 			// build shell code
 			List<byte> shellCode = new();
-			UIntPtr GetOffsetInStructure(int structureOffset)
+			UIntPtr GetOffsetInStructure(nuint structureOffset)
 			{
 				UIntPtr address;
 
@@ -362,7 +365,9 @@ namespace ToolkitLauncher.Utility
 			// write a push index into the arguments structure
 			void WritePushSturcture(int structureOffset)
             {
-				UIntPtr address = GetOffsetInStructure(structureOffset);
+				Debug.Assert(structureOffset >= 0);
+
+				UIntPtr address = GetOffsetInStructure((nuint)structureOffset);
 
 				if (!amd64Bytecode)
                 {
@@ -466,7 +471,8 @@ namespace ToolkitLauncher.Utility
 
 			void Amd64SetArgumentOffset(int index, int structureOffset)
             {
-				UIntPtr address = GetOffsetInStructure(structureOffset);
+                Debug.Assert(structureOffset >= 0);
+				UIntPtr address = GetOffsetInStructure((nuint)structureOffset);
 				Amd64SetArgument(index, address.ToUInt64());
 			}
 
@@ -568,7 +574,7 @@ namespace ToolkitLauncher.Utility
             bool readSuccess;
             unsafe {
                 fixed (byte* HandleBytesPtr = HandleBytes)
-					readSuccess = PInvoke.ReadProcessMemory((HANDLE)process.Handle, (shell_code_arguments_addr + returnHandleOffset).ToPointer(), HandleBytesPtr, (nuint)HandleBytes.Length);
+					readSuccess = PInvoke.ReadProcessMemory((HANDLE)process.Handle, (shell_code_arguments_addr + (nuint)returnHandleOffset).ToPointer(), HandleBytesPtr, (nuint)HandleBytes.Length);
             }
 
             if (!readSuccess)
