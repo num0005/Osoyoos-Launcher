@@ -536,7 +536,7 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="5"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compile_type" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}" VerticalContentAlignment="Center" ToolTip="Type of image">
+                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compile_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}" VerticalContentAlignment="Center" ToolTip="Type of image">
                                                         <ComboBoxItem Content="2D Textures"/>
                                                         <ComboBoxItem Content="3D Textures"/>
                                                         <ComboBoxItem Content="Cubemaps"/>
