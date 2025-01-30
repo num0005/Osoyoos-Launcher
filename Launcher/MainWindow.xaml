@@ -1112,7 +1112,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Extract Tags" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3 + hr + h4, ElementName=toolkit_selection}">
+                            <TabItem Header="Extract Tags" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h2|mcc + h3, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|mcc + h3, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
@@ -1198,8 +1198,8 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="FMOD Repair" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h3, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3, ElementName=toolkit_selection}">
-                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h3, ElementName=toolkit_selection}">
+                            <TabItem Header="FMOD Repair" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h3 + hr, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr, ElementName=toolkit_selection}">
+                                <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h3 + hr, ElementName=toolkit_selection}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
                                         <RowDefinition Height="*"/>
