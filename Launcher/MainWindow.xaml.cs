@@ -1019,7 +1019,8 @@ namespace ToolkitLauncher
             // tool doesn't support a value of 0 or 1, the bounds are [0, 1], so we adjust the value a bit to get something reasonable
             float light_level_slider = (float)Math.Max(Math.Min(light_quality_slider.ConvertedValue, 0.999999), 0.000001);
             int instance_count = 1;
-            if (!halo_ce && !halo_2_standalone_stock && !halo_4)
+            ToolkitBase.H3Toolkit_GenerateNamedShaders = generate_named_shaders?.IsChecked ?? false;
+			if (!halo_ce && !halo_2_standalone_stock && !halo_4)
             {
                 if (instance_value.Text.Length == 0 ? true : Int32.TryParse(instance_value.Text, out instance_count))
                 {
