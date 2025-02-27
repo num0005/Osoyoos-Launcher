@@ -556,7 +556,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Model" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Model" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}">
                                     <Grid IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                         <Grid.RowDefinitions>
@@ -746,7 +746,7 @@
                                     </Grid>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Import Sound" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
+                            <TabItem Header="Import Sound" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                 <Grid Background="{DynamicResource WindowSecondaryColor}" IsEnabled="{Binding SelectedIndex, Converter={StaticResource ProfiletoIsEnabled}, ConverterParameter=h1 + h2|h2codez + h2|mcc + h3 + hr, ElementName=toolkit_selection}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="5"/>
