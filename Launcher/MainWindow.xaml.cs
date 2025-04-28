@@ -7,6 +7,10 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text;
+using static System.Text.Encoding;
+using static System.Text.CodePagesEncodingProvider;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -15,6 +19,9 @@ using System.Windows.Navigation;
 using System.Xml.Linq;
 using ToolkitLauncher.Properties;
 using ToolkitLauncher.ToolkitInterface;
+
+
+
 
 namespace ToolkitLauncher
 {
@@ -2764,5 +2771,231 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             H3Toolkit h3tool = toolkit as H3Toolkit;
             await h3tool.RepairFmod(fix_sound_path.Text, bank_extension_repair.Text, toolkit.BaseDirectory);
         }
+
+
+
+
+
+
+        /////////////////////////////////////////////////////////
+        private void ReadJSONFile(ComboBox recent_level_path, string v)
+        {
+            throw new NotImplementedException();
+        }
+        private void WriteJSONFile(ComboBox recent_level2_path, string v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void phats_update(object sender, RoutedEventArgs e)
+        {
+            ReadJSONFile(this.recent_level_path, "scenario_phats.JSON");
+            ReadJSONFile(this.recent_sound_path, "sound_phats.JSON");
+            ReadJSONFile(this.recent_cmodelfp_path, "cmodelfp_phats.JSON");
+            ReadJSONFile(this.recent_wmodelfp_path, "wmodelfp_phats.JSON");
+            ReadJSONFile(this.recent_model_path, "model_phats.JSON");
+            ReadJSONFile(this.recent_image_path, "bitmaps_phats.JSON");
+            ReadJSONFile(this.recent_text_path, "text_phats.JSON");
+            ReadJSONFile(this.recent_bsp_path, "bsp_phats.JSON");
+            ReadJSONFile(this.recent_level2_path, "ass_phats.JSON");
+            ///ReadJSONFile(this.recent_extract_path, "extract_phats.JSON");
+            ///ReadJSONFile(this.recent_bink_path, "bink_phats.JSON");
+            ///ReadJSONFile(this.recent_convert_path, "convert_phats.JSON");
+            ///ReadJSONFile(this.recent_convert_path_Copy, "convert_phats2.JSON");
+            ReadJSONFile(this.recent_sidecar_path, "sidecar_phats.JSON");
+        }
+
+
+
+        private void recent_level2_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_level2_path.IsDropDownOpen || !(this.recent_level2_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.compile_level_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_level_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_level2_path.IsEnabled = true;
+            ItemCollection items = this.recent_level2_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.compile_level_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_level2_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_level2_path, "ass_phats.JSON");
+        }
+
+
+
+        private void recent_bsp_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_bsp_path.IsDropDownOpen || !(this.recent_bsp_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.bsp_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_bsp_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_bsp_path.IsEnabled = true;
+            ItemCollection items = this.recent_bsp_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.bsp_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_bsp_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_bsp_path, "bsp_phats.JSON");
+        }
+
+        private void recent_text_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_text_path.IsDropDownOpen || !(this.recent_text_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.compile_text_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_text_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_text_path.IsEnabled = true;
+            ItemCollection items = this.recent_text_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.compile_text_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_text_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_text_path, "text_phats.JSON");
+        }
+
+        private void recent_image_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_image_path.IsDropDownOpen || !(this.recent_image_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.compile_image_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_image_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_image_path.IsEnabled = true;
+            ItemCollection items = this.recent_image_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.compile_image_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_image_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_image_path, "bitmaps_phats.JSON");
+        }
+
+        private void recent_model_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_model_path.IsDropDownOpen || !(this.recent_model_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.compile_model_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_model_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_model_path.IsEnabled = true;
+            ItemCollection items = this.recent_model_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.compile_model_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_model_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_model_path, "model_phats.JSON");
+        }
+
+        private void recent_wmodelfp_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_wmodelfp_path.IsDropDownOpen || !(this.recent_wmodelfp_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.weapon_fp_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_wmodelfp_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_wmodelfp_path.IsEnabled = true;
+            ItemCollection items = this.recent_wmodelfp_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.weapon_fp_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_wmodelfp_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_wmodelfp_path, "wmodelfp_phats.JSON");
+        }
+
+        private void recent_cmodelfp_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_cmodelfp_path.IsDropDownOpen || !(this.recent_cmodelfp_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.character_fp_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void compile_cmodelfp_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_cmodelfp_path.IsEnabled = true;
+            ItemCollection items = this.recent_cmodelfp_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.character_fp_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_cmodelfp_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_cmodelfp_path, "cmodelfp_phats.JSON");
+        }
+
+        private void recent_sound_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_sound_path.IsDropDownOpen || !(this.recent_sound_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.import_sound_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void import_sound_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_sound_path.IsEnabled = true;
+            ItemCollection items = this.recent_sound_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.import_sound_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_sound_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_sound_path, "sound_phats.JSON");
+        }
+
+        private void recent_level_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_level_path.IsDropDownOpen || !(this.recent_level_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.package_level_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void package_level_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_level_path.IsEnabled = true;
+            ItemCollection items = this.recent_level_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.package_level_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_level_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_level_path, "scenario_phats.JSON");
+        }
+
+        private void recent_sidecar_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_sidecar_path.IsDropDownOpen || !(this.recent_sidecar_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.textBlockImport.Text = selectedItem.Content.ToString();
+        }
+
+        private void sidecar_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_sidecar_path.IsEnabled = true;
+            ItemCollection items = this.recent_sidecar_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.textBlockImport.Text;
+            items.Insert(0, insertItem);
+            this.recent_sidecar_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_sidecar_path, "sidecar_phats.JSON");
+        }
+
     }
 }
+
+
+
+
+
+
+
+
