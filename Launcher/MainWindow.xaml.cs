@@ -2789,20 +2789,21 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
 
         private void phats_update(object sender, RoutedEventArgs e)
         {
-            ReadJSONFile(this.recent_level_path, "scenario_phats.JSON");
-            ReadJSONFile(this.recent_sound_path, "sound_phats.JSON");
-            ReadJSONFile(this.recent_cmodelfp_path, "cmodelfp_phats.JSON");
-            ReadJSONFile(this.recent_wmodelfp_path, "wmodelfp_phats.JSON");
-            ReadJSONFile(this.recent_model_path, "model_phats.JSON");
-            ReadJSONFile(this.recent_image_path, "bitmaps_phats.JSON");
-            ReadJSONFile(this.recent_text_path, "text_phats.JSON");
-            ReadJSONFile(this.recent_bsp_path, "bsp_phats.JSON");
-            ReadJSONFile(this.recent_level2_path, "ass_phats.JSON");
+            ReadJSONFile(this.recent_level_path, "scenario_paths.JSON");
+            ReadJSONFile(this.recent_sound_path, "sound_paths.JSON");
+            ReadJSONFile(this.recent_fmod_path, "fmod_phats.JSON");
+            ReadJSONFile(this.recent_cmodelfp_path, "cmodelfp_paths.JSON");
+            ReadJSONFile(this.recent_wmodelfp_path, "wmodelfp_paths.JSON");
+            ReadJSONFile(this.recent_model_path, "model_paths.JSON");
+            ReadJSONFile(this.recent_image_path, "bitmaps_paths.JSON");
+            ReadJSONFile(this.recent_text_path, "text_paths.JSON");
+            ReadJSONFile(this.recent_bsp_path, "bsp_paths.JSON");
+            ReadJSONFile(this.recent_level2_path, "ass_paths.JSON");
             ///ReadJSONFile(this.recent_extract_path, "extract_phats.JSON");
             ///ReadJSONFile(this.recent_bink_path, "bink_phats.JSON");
             ///ReadJSONFile(this.recent_convert_path, "convert_phats.JSON");
             ///ReadJSONFile(this.recent_convert_path_Copy, "convert_phats2.JSON");
-            ReadJSONFile(this.recent_sidecar_path, "sidecar_phats.JSON");
+            ReadJSONFile(this.recent_sidecar_path, "sidecar_paths.JSON");
         }
 
 
@@ -2822,7 +2823,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.compile_level_path.Text;
             items.Insert(0, insertItem);
             this.recent_level2_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_level2_path, "ass_phats.JSON");
+            WriteJSONFile(this.recent_level2_path, "ass_paths.JSON");
         }
 
 
@@ -2842,7 +2843,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.bsp_path.Text;
             items.Insert(0, insertItem);
             this.recent_bsp_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_bsp_path, "bsp_phats.JSON");
+            WriteJSONFile(this.recent_bsp_path, "bsp_paths.JSON");
         }
 
         private void recent_text_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2860,7 +2861,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.compile_text_path.Text;
             items.Insert(0, insertItem);
             this.recent_text_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_text_path, "text_phats.JSON");
+            WriteJSONFile(this.recent_text_path, "text_paths.JSON");
         }
 
         private void recent_image_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2878,7 +2879,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.compile_image_path.Text;
             items.Insert(0, insertItem);
             this.recent_image_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_image_path, "bitmaps_phats.JSON");
+            WriteJSONFile(this.recent_image_path, "bitmaps_paths.JSON");
         }
 
         private void recent_model_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2896,7 +2897,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.compile_model_path.Text;
             items.Insert(0, insertItem);
             this.recent_model_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_model_path, "model_phats.JSON");
+            WriteJSONFile(this.recent_model_path, "model_paths.JSON");
         }
 
         private void recent_wmodelfp_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2914,7 +2915,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.weapon_fp_path.Text;
             items.Insert(0, insertItem);
             this.recent_wmodelfp_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_wmodelfp_path, "wmodelfp_phats.JSON");
+            WriteJSONFile(this.recent_wmodelfp_path, "wmodelfp_paths.JSON");
         }
 
         private void recent_cmodelfp_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2932,7 +2933,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.character_fp_path.Text;
             items.Insert(0, insertItem);
             this.recent_cmodelfp_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_cmodelfp_path, "cmodelfp_phats.JSON");
+            WriteJSONFile(this.recent_cmodelfp_path, "cmodelfp_paths.JSON");
         }
 
         private void recent_sound_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2950,7 +2951,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.import_sound_path.Text;
             items.Insert(0, insertItem);
             this.recent_sound_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_sound_path, "sound_phats.JSON");
+            WriteJSONFile(this.recent_sound_path, "sound_paths.JSON");
         }
 
         private void recent_level_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2968,7 +2969,7 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.package_level_path.Text;
             items.Insert(0, insertItem);
             this.recent_level_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_level_path, "scenario_phats.JSON");
+            WriteJSONFile(this.recent_level_path, "scenario_paths.JSON");
         }
 
         private void recent_sidecar_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2986,7 +2987,26 @@ readonly FilePicker.Options xmlOptions = FilePicker.Options.FolderSelect(
             insertItem.Content = this.textBlockImport.Text;
             items.Insert(0, insertItem);
             this.recent_sidecar_path.SelectedIndex = -1;
-            WriteJSONFile(this.recent_sidecar_path, "sidecar_phats.JSON");
+            WriteJSONFile(this.recent_sidecar_path, "sidecar_paths.JSON");
+        }
+
+
+        private void recent_fmod_path_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.recent_fmod_path.IsDropDownOpen || !(this.recent_fmod_path.SelectedItem is ComboBoxItem selectedItem))
+                return;
+            this.import_sound_path.Text = selectedItem.Content.ToString();
+        }
+
+        private void import_fmod_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.recent_fmod_path.IsEnabled = true;
+            ItemCollection items = this.recent_fmod_path.Items;
+            ComboBoxItem insertItem = new ComboBoxItem();
+            insertItem.Content = this.import_sound_path.Text;
+            items.Insert(0, insertItem);
+            this.recent_fmod_path.SelectedIndex = -1;
+            WriteJSONFile(this.recent_fmod_path, "fmod_paths.JSON");
         }
 
     }

@@ -1228,10 +1228,10 @@
                                             <GroupBox x:Name="sound_folder_box" Header="Sounds Parent Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290">
                                                 <Grid Margin="0,0,174,0">
                                                     <Button Grid.Column="0" x:Name="browse_sound_folder_fix" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_fix_Click" MinWidth="75" MinHeight="26" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
-                                                    <Button Grid.Column="0" x:Name="browse_sound_folder_fix" Content="Browse" HorizontalAlignment="Left" Padding="4" Click="browse_sound_fix_Click" MinWidth="75" MinHeight="26" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
+                                                    
                                                     <TextBox Name="fix_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" Margin="77,0,-172,0" VerticalContentAlignment="Center" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
                                                     <TextBlock Text="Select folder with bank's sound tags" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=fix_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4" Margin="75,0,-172,0" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
-                                                    <ComboBox x:Name="recent_sound_path_Copy1" SelectionChanged="recent_sound_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent sound paths" Margin="257,0,-181,0" />
+                                                    <ComboBox x:Name="recent_fmod_path" SelectionChanged="recent_fmod_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent fmod paths" Margin="272,0,-184,0" />
 
                                                 </Grid>
                                             </GroupBox>
