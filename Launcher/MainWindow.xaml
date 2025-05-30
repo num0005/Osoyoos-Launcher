@@ -331,6 +331,8 @@
                                                             <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(hr + h4\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, Converter={StaticResource ToolkitToSpaceConverter}, ConverterParameter=(h3\, star\, auto), ElementName=toolkit_selection}"/>
                                                             <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h3\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h3\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
+                                                            <RowDefinition Height="{Binding SelectedIndex, ConverterParameter=(h3\, star\, auto), Converter={StaticResource ToolkitToSpaceConverter}, ElementName=toolkit_selection}"/>
                                                         </Grid.RowDefinitions>
                                                         <Grid Grid.Row="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="phantom_hack" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Enable to fix phantom BSP errors on level compile.">
@@ -394,6 +396,9 @@
                                                         </Grid>
                                                         <Grid Grid.Row="16" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_supress_errors_to_vrml" Content="Supress Errors To VRML" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Do not write errors to VRML files."/>
+                                                        </Grid>
+                                                        <Grid Grid.Row="17" Visibility="{Binding SelectedIndex, ConverterParameter=h3, Converter={StaticResource ProfiletoVisibility}, ElementName=toolkit_selection}">
+                                                            <CheckBox x:Name="generate_named_shaders" Content="Generate Named Shaders" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Generate named shaders with a base bitmap from existing '.bitmap' files."/>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
