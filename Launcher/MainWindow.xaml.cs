@@ -1049,7 +1049,7 @@ namespace ToolkitLauncher
                 var import_args = new ToolkitBase.ImportArgs(
                     import_check.IsChecked ?? false,
                     import_force.IsChecked ?? false,
-                    import_verbose.IsChecked ?? false,
+                    lightmap_color_fix.IsChecked ?? false,
                     import_repro.IsChecked ?? false,
                     import_draft.IsChecked ?? false,
                     import_seam_debug.IsChecked ?? false,

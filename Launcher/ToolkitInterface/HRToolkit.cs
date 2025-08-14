@@ -24,8 +24,6 @@ namespace ToolkitLauncher.ToolkitInterface
                 args.Add("check");
             if (import_args.import_force)
                 args.Add("force");
-            if (import_args.import_verbose)
-                args.Add("verbose");
             if (import_args.import_repro)
                 args.Add("repro");
             if (import_args.import_draft)
