@@ -393,7 +393,7 @@
                                                             <CheckBox x:Name="import_decompose_instances" Content="Decompose Instances" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Run convex decomposition for poop physics (very slow)."/>
                                                         </Grid>
                                                         <Grid Grid.Row="16" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr, ElementName=toolkit_selection}">
-                                                            <CheckBox x:Name="import_supress_errors_to_vrml" Content="Supress Errors To VRML" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Do not write errors to VRML files."/>
+                                                            <CheckBox x:Name="import_suppress_errors_to_vrml" Content="Suppress Errors To VRML" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Do not write errors to VRML files."/>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>

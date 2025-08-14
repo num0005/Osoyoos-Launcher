@@ -199,7 +199,7 @@ namespace ToolkitLauncher.ToolkitInterface
             if (json_rebuild)
                 args.Add("recreate_json");
 
-            await RunTool(ToolType.Tool, args, showOutput ? OutputMode.keepOpen : OutputMode.slient);
+            await RunTool(ToolType.Tool, args, showOutput ? OutputMode.keepOpen : OutputMode.silent);
         }
 
         public async Task ImportSidecar(string sidecarPath)

@@ -59,10 +59,10 @@ namespace ToolkitLauncher.ToolkitInterface
         keepOpen,
         [Description("Close shell")]
         closeShell,
-        [Description("Slient (log to disk)")]
+        [Description("Silent (log to disk)")]
         logToDisk,
-        [Description("Slient (no log)")]
-        slient
+        [Description("Silent (no log)")]
+        silent
     }
 
     abstract public class ToolkitBase
@@ -481,8 +481,8 @@ namespace ToolkitLauncher.ToolkitInterface
             switch (mode)
             {
                 case OutputMode.logToDisk:
-                case OutputMode.slient:
-                    return OutputMode.slient;
+                case OutputMode.silent:
+                    return OutputMode.silent;
                 case OutputMode.keepOpen:
                 case OutputMode.closeShell:
                     return OutputMode.closeShell;
@@ -576,7 +576,7 @@ namespace ToolkitLauncher.ToolkitInterface
         /// </summary>
         private async Task<Result?> RunToolInternal(ToolType tool, List<string>? args, OutputMode? outputMode, bool lowPriority, InjectionConfig? injectionOptions, CancellationToken cancellationToken)
         {
-            bool has_window = outputMode != OutputMode.slient && outputMode != OutputMode.logToDisk;
+            bool has_window = outputMode != OutputMode.silent && outputMode != OutputMode.logToDisk;
             bool enabled_log = outputMode == OutputMode.logToDisk;
 
             // always include the prepend args
@@ -717,12 +717,12 @@ namespace ToolkitLauncher.ToolkitInterface
 
 			if (bitmapsAsTGA)
 			{
-				await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir }, OutputMode.slient);
+				await RunTool(ToolType.Tool, new() { "export-bitmap-tga", basename, bitmapsDir }, OutputMode.silent);
 				FixBitmapName(bitmapFileNameBase, ".tga");
 			}
 			else
 			{
-				await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir }, OutputMode.slient);
+				await RunTool(ToolType.Tool, new() { "export-bitmap-dds", basename, bitmapsDir }, OutputMode.silent);
 				FixBitmapName(bitmapFileNameBase, ".dds");
 			}
 		}

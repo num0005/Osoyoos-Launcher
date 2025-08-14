@@ -1058,7 +1058,7 @@ namespace ToolkitLauncher
                     import_farm_seams.IsChecked ?? false,
                     import_farm_bsp.IsChecked ?? false,
                     import_decompose_instances.IsChecked ?? false,
-                    import_supress_errors_to_vrml.IsChecked ?? false
+                    import_suppress_errors_to_vrml.IsChecked ?? false
                     );
 
                 await toolkit.ImportStructure(structure_command, level_path, phantom_fix, is_release, disable_asserts.IsChecked ?? false, struct_auto_fbx.IsChecked ?? false, import_args);

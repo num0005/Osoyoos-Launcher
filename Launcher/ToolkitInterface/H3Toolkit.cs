@@ -333,13 +333,13 @@ namespace ToolkitLauncher.ToolkitInterface
                 case ".render_model":
                 case ".physics_model":
                 case ".collision_model":
-                    await RunTool(ToolType.Tool, new() { "extract-import-info", Path.Join(GetTagDirectory(), path) }, OutputMode.slient);
+                    await RunTool(ToolType.Tool, new() { "extract-import-info", Path.Join(GetTagDirectory(), path) }, OutputMode.silent);
                     break;
                 case ".bitmap":
                     await ExtractBitmapGen2Plus(path, basename, bitmapsAsTGA);
 					break;
 				case ".multilingual_unicode_string_list":
-                    await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.slient);
+                    await RunTool(ToolType.Tool, new() { "extract-unicode-strings", basename }, OutputMode.silent);
                     break;
 				default:
 					throw new Exception($"Extraction not supported for {extension}");
