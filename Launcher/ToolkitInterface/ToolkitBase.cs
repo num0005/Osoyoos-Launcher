@@ -108,12 +108,12 @@ namespace ToolkitLauncher.ToolkitInterface
             string lightmapGroup,
             int instanceCount,
             OutputMode outputSetting,
-            string lightmapGlobals);
+            string lightmapGlobals,
+            bool lightmapColorFix);
 
         public record ImportArgs(
             bool import_check,
             bool import_force,
-            bool import_verbose,
             bool import_repro,
             bool import_draft,
             bool import_seam_debug,
@@ -122,7 +122,7 @@ namespace ToolkitLauncher.ToolkitInterface
             bool import_farm_seams,
             bool import_farm_bsp,
             bool import_decompose_instances,
-            bool import_supress_errors_to_vrml);
+            bool import_suppress_errors_to_vrml);
 
         /// <summary>
         /// Build a lightmap for a given scenario and BSP

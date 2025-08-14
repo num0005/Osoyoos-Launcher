@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static ToolkitLauncher.ToolkitInterface.ToolkitBase;
 using static ToolkitLauncher.ToolkitProfiles;
 
 namespace ToolkitLauncher.ToolkitInterface
@@ -40,14 +41,71 @@ namespace ToolkitLauncher.ToolkitInterface
                 args.Add("farm_bsp");
             if (import_args.import_decompose_instances)
                 args.Add("decompose_instances");
-            if (import_args.import_supress_errors_to_vrml)
+            if (import_args.import_suppress_errors_to_vrml)
                 args.Add("supress_errors_to_vrml");
 
             await RunTool(tool, args);
         }
 
-        override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
+        // Disables "color->red>=0" type assertion failures during lightmapping
+        private void PatchLightmapColorAssert(ToolType tool)
         {
+            byte[] newBytes = { 0xEB, 0x3D };
+            string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
+
+            if (tool == ToolType.ToolFast)
+            {
+                // Patch for assert for Reach tool_fast.exe ---- 0xF2A7F 73 0C -> EB 3D ---- 0xF29F9 73 11 -> EB 3D (Thanks Krevil)
+                ToolPatcher(exePath, 0xF2A7F, 0xF29F9, newBytes);
+            }
+            else
+            {
+                // Patch for assert for Reach tool.exe ---- 0x170956 73 0C -> EB 3D ---- 0x17157F 73 0C -> EB 3D (Thanks Krevil)
+                ToolPatcher(exePath, 0x170956, 0x17157F, newBytes);
+            }
+        
+            static void ToolPatcher(string exePath, long offset1, long offset2, byte[] newBytes)
+            {
+                using (var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite))
+                {
+                    // Only bother patching if the bytes haven't already been changed
+                    bool alreadyPatched = true;
+
+                    // Check first offset
+                    fs.Seek(offset1, SeekOrigin.Begin);
+                    byte[] current1 = new byte[2];
+                    fs.Read(current1, 0, 2);
+                    if (current1[0] != newBytes[0] || current1[1] != newBytes[1])
+                    {
+                        alreadyPatched = false;
+                    }
+
+                    // Check second offset
+                    fs.Seek(offset2, SeekOrigin.Begin);
+                    byte[] current2 = new byte[2];
+                    fs.Read(current2, 0, 2);
+                    if (current2[0] != newBytes[0] || current2[1] != newBytes[1])
+                    {
+                        alreadyPatched = false;
+                    }
+
+                    if (!alreadyPatched)
+                    {
+                        // Apply patch
+                        fs.Seek(offset1, SeekOrigin.Begin);
+                        fs.Write(newBytes, 0, 2);
+                        fs.Seek(offset2, SeekOrigin.Begin);
+                        fs.Write(newBytes, 0, 2);
+                    }
+                }
+            }
+        }
+
+        override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool lightmapColorFix, OutputMode mode, ICancellableProgress<int> progress)
+        {
+            ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
+            if (lightmapColorFix) { PatchLightmapColorAssert(tool); }
+
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
             // first sync
@@ -59,7 +117,6 @@ namespace ToolkitLauncher.ToolkitInterface
             string blobDirectory = $"faux\\{jobID}";
 
             string clientCountStr = clientCount.ToString(); // cache
-            ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
 
             async Task<Utility.Process.Result?> RunFastool(List<string> arguments, OutputMode mode)
             {
