@@ -66,37 +66,23 @@ namespace ToolkitLauncher.ToolkitInterface
         
             static void ToolPatcher(string exePath, long offset1, long offset2, byte[] newBytes)
             {
-                using (var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite))
+                using var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite);
+                bool NeedsPatch(long offset)
                 {
-                    // Only bother patching if the bytes haven't already been changed
-                    bool alreadyPatched = true;
+                    fs.Seek(offset, SeekOrigin.Begin);
+                    byte[] current = new byte[2];
+                    fs.Read(current, 0, 2);
+                    return current[0] != newBytes[0] || current[1] != newBytes[1];
+                }
 
-                    // Check first offset
+                // Only bother patching if the bytes haven't already been changed
+                if (NeedsPatch(offset1) || NeedsPatch(offset2))
+                {
+                    // Apply patch
                     fs.Seek(offset1, SeekOrigin.Begin);
-                    byte[] current1 = new byte[2];
-                    fs.Read(current1, 0, 2);
-                    if (current1[0] != newBytes[0] || current1[1] != newBytes[1])
-                    {
-                        alreadyPatched = false;
-                    }
-
-                    // Check second offset
+                    fs.Write(newBytes, 0, 2);
                     fs.Seek(offset2, SeekOrigin.Begin);
-                    byte[] current2 = new byte[2];
-                    fs.Read(current2, 0, 2);
-                    if (current2[0] != newBytes[0] || current2[1] != newBytes[1])
-                    {
-                        alreadyPatched = false;
-                    }
-
-                    if (!alreadyPatched)
-                    {
-                        // Apply patch
-                        fs.Seek(offset1, SeekOrigin.Begin);
-                        fs.Write(newBytes, 0, 2);
-                        fs.Seek(offset2, SeekOrigin.Begin);
-                        fs.Write(newBytes, 0, 2);
-                    }
+                    fs.Write(newBytes, 0, 2);
                 }
             }
         }
