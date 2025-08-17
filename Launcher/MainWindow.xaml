@@ -366,33 +366,30 @@
                                                             <CheckBox x:Name="import_force" Content="Force" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Force all files to import even if they haven't changed."/>
                                                         </Grid>
                                                         <Grid Grid.Row="7" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
-                                                            <CheckBox x:Name="lm_color_fix" Content="No Lightmap Color Assert" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Applies small patch to tool.exe/tool_fast.exe to prevent color below zero (e.g. color->red>=0) assertion failures."/>
-                                                        </Grid>
-                                                        <Grid Grid.Row="8" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_repro" Content="Repro" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Assumes GR2 and sidecar files are in the same directory, tags built to tags\\repro."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="9" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="8" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_draft" Content="Draft" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(model only) Skip generating PRT data, faster speed, lower quality."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="10" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="9" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_seam_debug" Content="Seam Debug" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Extra seam debugging information."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="11" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="10" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_skip_instances" Content="Skip Instances" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Skip importing all instances."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="12" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="11" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_local" Content="Local" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Build is orphaned from the depot."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="13" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="12" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_farm_seams" Content="Farm Seams" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Specifics a content index to stamp with."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="14" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="13" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr + h4, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_farm_bsp" Content="Farm BSP" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Do not rebuild seams.  Use the seam content index on structures you build."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="15" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="14" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_decompose_instances" Content="Decompose Instances" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="(structure only) Run convex decomposition for poop physics (very slow)."/>
                                                         </Grid>
-                                                        <Grid Grid.Row="16" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr, ElementName=toolkit_selection}">
+                                                        <Grid Grid.Row="15" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=hr, ElementName=toolkit_selection}">
                                                             <CheckBox x:Name="import_suppress_errors_to_vrml" Content="Suppress Errors To VRML" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" ToolTip="Do not write errors to VRML files."/>
                                                         </Grid>
                                                     </Grid>

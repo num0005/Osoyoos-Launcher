@@ -108,8 +108,7 @@ namespace ToolkitLauncher.ToolkitInterface
             string lightmapGroup,
             int instanceCount,
             OutputMode outputSetting,
-            string lightmapGlobals,
-            bool lightmapColorFix);
+            string lightmapGlobals);
 
         public record ImportArgs(
             bool import_check,

@@ -1072,8 +1072,7 @@ namespace ToolkitLauncher
                     lightmap_group,
                     instance_count,
                     (OutputMode)output_mode.SelectedIndex,
-                    lightmapper_globals,
-                    lm_color_fix.IsChecked ?? false
+                    lightmapper_globals
                     );
 
                 var info = ToolkitBase.SplitStructureFilename(level_path, bsp_path, Path.GetDirectoryName(toolkit_profile.ToolPath));

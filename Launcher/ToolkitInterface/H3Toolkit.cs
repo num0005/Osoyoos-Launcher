@@ -77,7 +77,7 @@ namespace ToolkitLauncher.ToolkitInterface
             MergeFail
         };
 
-        public virtual async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, bool lightmapColorFix, OutputMode mode, ICancellableProgress<int> progress)
+        public virtual async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
         {
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
@@ -161,7 +161,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
             try
             {
-                await FauxLocalFarm(scenario, bsp, lightmap_group, args.QualitySetting, args.instanceCount, args.NoAssert, args.lightmapColorFix, args.outputSetting, progress);
+                await FauxLocalFarm(scenario, bsp, lightmap_group, args.QualitySetting, args.instanceCount, args.NoAssert, args.outputSetting, progress);
             }
             catch (OperationCanceledException)
             {
