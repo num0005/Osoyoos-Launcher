@@ -50,9 +50,11 @@ namespace ToolkitLauncher.ToolkitInterface
         }
 
         // Disables "color->red>=0" type assertion failures during lightmapping
-        private void PatchLightmapColorAssert(ToolType tool)
+        // applyPatch being true means we edit the original exe, it being false means we revert the changes
+        private void PatchLightmapColorAssert(ToolType tool, bool applyPatch)
         {
             byte[] newBytes = { 0xEB, 0x3D };
+            byte[] oldBytes = { 0x73, 0x0C };
             string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
 
             // Expected hashes
@@ -66,30 +68,53 @@ namespace ToolkitLauncher.ToolkitInterface
 
             if (tool == ToolType.ToolFast)
             {
-                if (ShouldPatch(fileHash, originalHashFast, patchedHashFast, "tool_fast.exe"))
+                if (ShouldPatch(fileHash, originalHashFast, patchedHashFast, "tool_fast.exe", applyPatch))
                 {
                     // Patch for assert for Reach tool_fast.exe ---- 0xF2A7F 73 0C -> EB 3D ---- 0xF29F9 73 11 -> EB 3D (Thanks Krevil)
-                    ToolPatcher(exePath, 0xF2A7F, 0xF29F9, newBytes);
+
+                    if (applyPatch)
+                    {
+                        // Apply patch
+                        ToolPatcher(exePath, 0xF2A7F, newBytes);
+                        ToolPatcher(exePath, 0xF29F9, newBytes);
+                    }
+                    else
+                    {
+                        // Revert patch
+                        ToolPatcher(exePath, 0xF2A7F, oldBytes);
+                        ToolPatcher(exePath, 0xF29F9, [0x73, 0x11]); // Special case due to compiler differences (Krevil)
+                    }
+                    
                 }
             }
             else
             {
-                if (ShouldPatch(fileHash, originalHashNormal, patchedHashNormal, "tool.exe"))
+                if (ShouldPatch(fileHash, originalHashNormal, patchedHashNormal, "tool.exe", applyPatch))
                 {
                     // Patch for assert for Reach tool.exe ---- 0x170956 73 0C -> EB 3D ---- 0x17157F 73 0C -> EB 3D (Thanks Krevil)
-                    ToolPatcher(exePath, 0x170956, 0x17157F, newBytes);
+
+                    if (applyPatch)
+                    {
+                        // Apply patch
+                        ToolPatcher(exePath, 0x170956, newBytes);
+                        ToolPatcher(exePath, 0x17157F, newBytes);
+                    }
+                    else
+                    {
+                        // Revert patch
+                        ToolPatcher(exePath, 0x170956, oldBytes);
+                        ToolPatcher(exePath, 0x17157F, oldBytes);
+                    }
                 }
             }
         
-            static void ToolPatcher(string exePath, long offset1, long offset2, byte[] newBytes)
+            static void ToolPatcher(string exePath, long offset, byte[] bytes)
             {
                 using var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite);
 
                 // Apply patch
-                fs.Seek(offset1, SeekOrigin.Begin);
-                fs.Write(newBytes, 0, 2);
-                fs.Seek(offset2, SeekOrigin.Begin);
-                fs.Write(newBytes, 0, 2);
+                fs.Seek(offset, SeekOrigin.Begin);
+                fs.Write(bytes, 0, 2);
             }
 
             static string ComputeFileHash(string exePath)
@@ -100,17 +125,33 @@ namespace ToolkitLauncher.ToolkitInterface
                 return BitConverter.ToString(hash).Replace("-", "");
             }
 
-            bool ShouldPatch(string fileHash, string originalHash, string patchedHash, string exeName)
+            bool ShouldPatch(string fileHash, string originalHash, string patchedHash, string exeName, bool applyPatch)
             {
-                if (fileHash.Equals(originalHash, StringComparison.OrdinalIgnoreCase))
+                if (applyPatch)
                 {
-                    return true; // Safe to patch original file
+                    if (fileHash.Equals(originalHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true; // Safe to patch original file
+                    }
+
+                    if (fileHash.Equals(patchedHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return false; // Already patched, skip
+                    }
+                }
+                else
+                {
+                    if (fileHash.Equals(patchedHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true; // Safe to revert
+                    }
+
+                    if (fileHash.Equals(originalHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return false; // Already unpatched
+                    }
                 }
 
-                if (fileHash.Equals(patchedHash, StringComparison.OrdinalIgnoreCase))
-                {
-                    return false; // Already patched, skip
-                }
 
                 // Unknown file
                 Trace.WriteLine($"Hash mismatch for {exeName} -- aborting patch");
@@ -124,7 +165,8 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
         {
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
-            if (Profile.ReachColorAssertFix) { PatchLightmapColorAssert(tool); }
+            //if (Profile.ReachColorAssertFix) { PatchLightmapColorAssert(tool); }
+            PatchLightmapColorAssert(tool, Profile.ReachColorAssertFix);
 
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
