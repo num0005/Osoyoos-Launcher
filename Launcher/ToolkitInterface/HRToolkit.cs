@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 using static ToolkitLauncher.ToolkitInterface.ToolkitBase;
 using static ToolkitLauncher.ToolkitProfiles;
+using System.Windows;
 
 namespace ToolkitLauncher.ToolkitInterface
 {
@@ -53,37 +55,69 @@ namespace ToolkitLauncher.ToolkitInterface
             byte[] newBytes = { 0xEB, 0x3D };
             string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
 
+            // Expected hashes
+            string originalHashNormal = "7c6b868b5f5b9303aa9210f31a7cc3221a6fa419a6ab3f323c8e0831dfd0afcd"; // Reach tool.exe 18/07/2023 unmodified
+            string patchedHashNormal = "7b44c891aaf9687ac5e2848f82f1ddcf386ed928c81b9ee05043ffec83a178d0"; // Reach tool.exe 18/07/2023 WITH color patch
+            string originalHashFast = "cc94ebb74f45fb60c1bbefb81c4533320398e100882bf958bff653ac48571365"; // Reach tool_fast.exe 18/07/2023 unmodified
+            string patchedHashFast = "592410ad79ee701a0ba2ce96d7a72a5a34f127c42a7a96508983c57a5960237e";// Reach tool_fast.exe 18/07/2023 WITH color patch
+
+            // Verify hash before patching
+            string fileHash = ComputeFileHash(exePath);
+
             if (tool == ToolType.ToolFast)
             {
-                // Patch for assert for Reach tool_fast.exe ---- 0xF2A7F 73 0C -> EB 3D ---- 0xF29F9 73 11 -> EB 3D (Thanks Krevil)
-                ToolPatcher(exePath, 0xF2A7F, 0xF29F9, newBytes);
+                if (ShouldPatch(fileHash, originalHashFast, patchedHashFast, "tool_fast.exe"))
+                {
+                    // Patch for assert for Reach tool_fast.exe ---- 0xF2A7F 73 0C -> EB 3D ---- 0xF29F9 73 11 -> EB 3D (Thanks Krevil)
+                    ToolPatcher(exePath, 0xF2A7F, 0xF29F9, newBytes);
+                }
             }
             else
             {
-                // Patch for assert for Reach tool.exe ---- 0x170956 73 0C -> EB 3D ---- 0x17157F 73 0C -> EB 3D (Thanks Krevil)
-                ToolPatcher(exePath, 0x170956, 0x17157F, newBytes);
+                if (ShouldPatch(fileHash, originalHashNormal, patchedHashNormal, "tool.exe"))
+                {
+                    // Patch for assert for Reach tool.exe ---- 0x170956 73 0C -> EB 3D ---- 0x17157F 73 0C -> EB 3D (Thanks Krevil)
+                    ToolPatcher(exePath, 0x170956, 0x17157F, newBytes);
+                }
             }
         
             static void ToolPatcher(string exePath, long offset1, long offset2, byte[] newBytes)
             {
                 using var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite);
-                bool NeedsPatch(long offset)
+
+                // Apply patch
+                fs.Seek(offset1, SeekOrigin.Begin);
+                fs.Write(newBytes, 0, 2);
+                fs.Seek(offset2, SeekOrigin.Begin);
+                fs.Write(newBytes, 0, 2);
+            }
+
+            static string ComputeFileHash(string exePath)
+            {
+                using var sha256 = SHA256.Create();
+                using var stream = File.OpenRead(exePath);
+                byte[] hash = sha256.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "");
+            }
+
+            bool ShouldPatch(string fileHash, string originalHash, string patchedHash, string exeName)
+            {
+                if (fileHash.Equals(originalHash, StringComparison.OrdinalIgnoreCase))
                 {
-                    fs.Seek(offset, SeekOrigin.Begin);
-                    byte[] current = new byte[2];
-                    fs.Read(current, 0, 2);
-                    return current[0] != newBytes[0] || current[1] != newBytes[1];
+                    return true; // Safe to patch original file
                 }
 
-                // Only bother patching if the bytes haven't already been changed
-                if (NeedsPatch(offset1) || NeedsPatch(offset2))
+                if (fileHash.Equals(patchedHash, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Apply patch
-                    fs.Seek(offset1, SeekOrigin.Begin);
-                    fs.Write(newBytes, 0, 2);
-                    fs.Seek(offset2, SeekOrigin.Begin);
-                    fs.Write(newBytes, 0, 2);
+                    return false; // Already patched, skip
                 }
+
+                // Unknown file
+                Trace.WriteLine($"Hash mismatch for {exeName} -- aborting patch");
+                MessageBox.Show($"Hash mismatch for {exeName} -- aborting \"color assert\" patch.\nIs your file original?\nLightmapping will continue but you may experience a crash.",
+                "Patcher Error", MessageBoxButton.OK, MessageBoxImage.Error
+                );
+                return false;
             }
         }
 
