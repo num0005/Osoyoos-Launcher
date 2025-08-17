@@ -704,6 +704,12 @@ namespace ToolkitLauncher
                     if (isMCC && gen_type_selection != 0 || gen_type_selection >= 2)
                         vis = Visibility.Visible;
                 }
+                else if (parameter_workaround is string && Int32.Parse(parameter_workaround as string) == 6)
+                {
+                    //Check if the build type is NOT MCC (aka is Reach, not H4/2A) and gentype is Gen4 (Reach+)
+                    if (!isMCC && gen_type_selection == 3)
+                        vis = Visibility.Visible;
+                }
             }
             else
             {

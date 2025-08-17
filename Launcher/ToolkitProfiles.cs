@@ -116,6 +116,9 @@ namespace ToolkitLauncher
             [JsonPropertyName("disable_assertions")]
             public bool DisableAssertions { get; set; } = false;
 
+            [JsonPropertyName("reach_color_assert_fix")]
+            public bool ReachColorAssertFix { get; set; } = false;
+
 			/// <summary>
 			/// Whatever we should temporarily be experts
 			/// </summary>

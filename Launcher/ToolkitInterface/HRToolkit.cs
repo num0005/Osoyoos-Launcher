@@ -90,7 +90,7 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
         {
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
-            if (true) { PatchLightmapColorAssert(tool); } // temp
+            if (Profile.ReachColorAssertFix) { PatchLightmapColorAssert(tool); }
 
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
 
