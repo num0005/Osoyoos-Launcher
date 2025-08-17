@@ -311,7 +311,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
         public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)
         {
-            var outputMode = OutputMode.slient;
+            var outputMode = OutputMode.silent;
 #if DEBUG
             outputMode = OutputMode.keepOpen;
 #endif

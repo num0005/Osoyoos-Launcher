@@ -406,6 +406,16 @@
                                     </MultiBinding>
                                 </CheckBox.Visibility>
                             </CheckBox>
+                            <CheckBox Grid.Row="6" Foreground="{DynamicResource TextColor}" x:Name="lm_color_fix" Content="Disable Lightmap Color Assertion" HorizontalAlignment="Stretch" Height="22" VerticalAlignment="Bottom" Click="profile_data_Click" ToolTip="Applies small patch to tool.exe/tool_fast.exe to prevent color below zero (e.g. color->red>=0) assertion failures.">
+                                <CheckBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource ProfileSettingsVisibility}">
+                                        <Binding ElementName="is_mcc" Path="IsChecked" />
+                                        <Binding ElementName="gen_type" Path="SelectedIndex" />
+                                        <Binding ElementName="community_tools" Path="IsChecked" />
+                                        <Binding Source="6" />
+                                    </MultiBinding>
+                                </CheckBox.Visibility>
+                            </CheckBox>
                         </Grid>
                     </Grid>
                 </GroupBox>
