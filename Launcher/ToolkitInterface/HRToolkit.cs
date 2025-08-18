@@ -58,14 +58,14 @@ namespace ToolkitLauncher.ToolkitInterface
             string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
 
             // Reach tool.exe/tool_fast.exe 18/07/2023
-            // For each Tool type, holds the original unmodified file hash, the patched hash, and a list of patch location addresses and the original bytes needed to reverse the patch
+            // For each Tool type, holds the original unmodified region hash, the patched region hash, and a list of patch location addresses and the original bytes needed to reverse the patch
             var patchMap = new Dictionary<ToolType, (string original, string patched, (long offset, byte[] RevertBytes)[] locations)>
             {
                 {
                     ToolType.Tool,
                     (
-                        "7c6b868b5f5b9303aa9210f31a7cc3221a6fa419a6ab3f323c8e0831dfd0afcd", // original
-                        "7b44c891aaf9687ac5e2848f82f1ddcf386ed928c81b9ee05043ffec83a178d0", // patched
+                        "C0E01E8EE1CBFF418302EA7C3D11E23C89F50E847E03506758B8C2C25C032BA0", // original
+                        "E3DE1D17C05D42B98439B422EB30A4051DC1D1A634ACFA20A871B5DEF7D5C6BB", // patched
                         new (long, byte[])[]
                         {
                             (0x170956, oldBytes),
@@ -76,8 +76,8 @@ namespace ToolkitLauncher.ToolkitInterface
                 {
                     ToolType.ToolFast,
                     (
-                        "cc94ebb74f45fb60c1bbefb81c4533320398e100882bf958bff653ac48571365", // original
-                        "592410ad79ee701a0ba2ce96d7a72a5a34f127c42a7a96508983c57a5960237e", // patched
+                        "C96350A38B253DACA3232F413011DAE0F4591889D26D40AA743B431DC351C773", // original
+                        "FD92EA6EEEA89CF268B7203409E295785EE7B41D15E97DAA62204D20DC6DCE93", // patched
                         new (long, byte[])[]
                         {
                             (0xF2A7F, oldBytes),
@@ -88,8 +88,8 @@ namespace ToolkitLauncher.ToolkitInterface
             };
 
             // Verify hash before patching
-            string fileHash = ComputeFileHash(exePath);
             var patchData = patchMap[tool];
+            string fileHash = ComputeRegionHash(exePath, patchData.locations.Select(x => x.offset), 1024);
 
             // Exit early if patch shouldn't be applied
             if (!ShouldPatch(fileHash, patchData.original, patchData.patched, GetToolExecutable(tool), applyPatch))
@@ -112,11 +112,26 @@ namespace ToolkitLauncher.ToolkitInterface
                 fs.Write(bytes, 0, 2);
             }
 
-            static string ComputeFileHash(string exePath)
+            static string ComputeRegionHash(string exePath, IEnumerable<long> offsets, int regionSize)
             {
                 using var sha256 = SHA256.Create();
-                using var stream = File.OpenRead(exePath);
-                byte[] hash = sha256.ComputeHash(stream);
+                using var fs = new FileStream(exePath, FileMode.Open, FileAccess.Read);
+                using var ms = new MemoryStream();
+
+                // Gather all region bytes together
+                foreach (var offset in offsets)
+                {
+                    long regionStart = Math.Max(0, offset - regionSize / 2); // Center region on the offset
+                    byte[] buffer = new byte[regionSize];
+
+                    fs.Seek(regionStart, SeekOrigin.Begin);
+                    int bytesRead = fs.Read(buffer, 0, buffer.Length);
+
+                    ms.Write(buffer, 0, bytesRead);
+                }
+
+                // Hash the joined regions
+                byte[] hash = sha256.ComputeHash(ms.ToArray());
                 return BitConverter.ToString(hash).Replace("-", "");
             }
 
@@ -149,8 +164,8 @@ namespace ToolkitLauncher.ToolkitInterface
 
 
                 // Unknown file
-                Trace.WriteLine($"Hash mismatch for {exeName} -- aborting patch");
-                MessageBox.Show($"Hash mismatch for {exeName} -- aborting \"color assert\" patch.\nIs your file original?\nLightmapping will continue but you may experience a crash.",
+                Trace.WriteLine($"Region hash mismatch for {exeName} -- aborting patch");
+                MessageBox.Show($"Region hash mismatch for {exeName} -- aborting \"color assert\" patch.\nUnknown modification detected in the 1KB surround patch region(s)\nLightmapping will continue but you may experience a crash.",
                 "Patcher Error", MessageBoxButton.OK, MessageBoxImage.Error
                 );
                 return false;
