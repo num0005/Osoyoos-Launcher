@@ -57,55 +57,50 @@ namespace ToolkitLauncher.ToolkitInterface
             byte[] oldBytes = { 0x73, 0x0C };
             string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
 
-            // Expected hashes
-            string originalHashNormal = "7c6b868b5f5b9303aa9210f31a7cc3221a6fa419a6ab3f323c8e0831dfd0afcd"; // Reach tool.exe 18/07/2023 unmodified
-            string patchedHashNormal = "7b44c891aaf9687ac5e2848f82f1ddcf386ed928c81b9ee05043ffec83a178d0"; // Reach tool.exe 18/07/2023 WITH color patch
-            string originalHashFast = "cc94ebb74f45fb60c1bbefb81c4533320398e100882bf958bff653ac48571365"; // Reach tool_fast.exe 18/07/2023 unmodified
-            string patchedHashFast = "592410ad79ee701a0ba2ce96d7a72a5a34f127c42a7a96508983c57a5960237e";// Reach tool_fast.exe 18/07/2023 WITH color patch
+            // Reach tool.exe/tool_fast.exe 18/07/2023
+            // For each Tool type, holds the original unmodified file hash, the patched hash, and a list of patch location addresses and the original bytes needed to reverse the patch
+            var patchMap = new Dictionary<ToolType, (string original, string patched, (long offset, byte[] RevertBytes)[] locations)>
+            {
+                {
+                    ToolType.Tool,
+                    (
+                        "7c6b868b5f5b9303aa9210f31a7cc3221a6fa419a6ab3f323c8e0831dfd0afcd", // original
+                        "7b44c891aaf9687ac5e2848f82f1ddcf386ed928c81b9ee05043ffec83a178d0", // patched
+                        new (long, byte[])[]
+                        {
+                            (0x170956, oldBytes),
+                            (0x17157F, oldBytes)
+                        }
+                    )
+                },
+                {
+                    ToolType.ToolFast,
+                    (
+                        "cc94ebb74f45fb60c1bbefb81c4533320398e100882bf958bff653ac48571365", // original
+                        "592410ad79ee701a0ba2ce96d7a72a5a34f127c42a7a96508983c57a5960237e", // patched
+                        new (long, byte[])[]
+                        {
+                            (0xF2A7F, oldBytes),
+                            (0xF29F9, new byte[]{ 0x73, 0x11 }) // Special case
+                        }
+                    )
+                }
+            };
 
             // Verify hash before patching
             string fileHash = ComputeFileHash(exePath);
+            var patchData = patchMap[tool];
 
-            if (tool == ToolType.ToolFast)
+            // Exit early if patch shouldn't be applied
+            if (!ShouldPatch(fileHash, patchData.original, patchData.patched, GetToolExecutable(tool), applyPatch))
             {
-                if (ShouldPatch(fileHash, originalHashFast, patchedHashFast, "tool_fast.exe", applyPatch))
-                {
-                    // Patch for assert for Reach tool_fast.exe ---- 0xF2A7F 73 0C -> EB 3D ---- 0xF29F9 73 11 -> EB 3D (Thanks Krevil)
-
-                    if (applyPatch)
-                    {
-                        // Apply patch
-                        ToolPatcher(exePath, 0xF2A7F, newBytes);
-                        ToolPatcher(exePath, 0xF29F9, newBytes);
-                    }
-                    else
-                    {
-                        // Revert patch
-                        ToolPatcher(exePath, 0xF2A7F, oldBytes);
-                        ToolPatcher(exePath, 0xF29F9, [0x73, 0x11]); // Special case due to compiler differences (Krevil)
-                    }
-                    
-                }
+                return;
             }
-            else
-            {
-                if (ShouldPatch(fileHash, originalHashNormal, patchedHashNormal, "tool.exe", applyPatch))
-                {
-                    // Patch for assert for Reach tool.exe ---- 0x170956 73 0C -> EB 3D ---- 0x17157F 73 0C -> EB 3D (Thanks Krevil)
 
-                    if (applyPatch)
-                    {
-                        // Apply patch
-                        ToolPatcher(exePath, 0x170956, newBytes);
-                        ToolPatcher(exePath, 0x17157F, newBytes);
-                    }
-                    else
-                    {
-                        // Revert patch
-                        ToolPatcher(exePath, 0x170956, oldBytes);
-                        ToolPatcher(exePath, 0x17157F, oldBytes);
-                    }
-                }
+            // Perform patching/reverting
+            foreach (var (offset, revertBytes) in patchData.locations)
+            {
+                ToolPatcher(exePath, offset, applyPatch ? newBytes : revertBytes);
             }
         
             static void ToolPatcher(string exePath, long offset, byte[] bytes)
@@ -165,7 +160,6 @@ namespace ToolkitLauncher.ToolkitInterface
         override public async Task FauxLocalFarm(string scenario, string bsp, string lightmapGroup, string quality, int clientCount, bool useFast, OutputMode mode, ICancellableProgress<int> progress)
         {
             ToolType tool = useFast ? ToolType.ToolFast : ToolType.Tool;
-            //if (Profile.ReachColorAssertFix) { PatchLightmapColorAssert(tool); }
             PatchLightmapColorAssert(tool, Profile.ReachColorAssertFix);
 
             progress.MaxValue += 1 + 1 + 5 * (clientCount + 1) + 1 + 3;
