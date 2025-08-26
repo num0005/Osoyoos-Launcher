@@ -642,7 +642,14 @@ progress, progress.GetCancellationToken());
                 }
 
                 // Perform patching/reverting
-                ToolPatcher(exePath, patchData.locations.Select(loc => (loc.offset, applyPatch ? newBytes : loc.RevertBytes)));
+                try
+                {
+                    ToolPatcher(exePath, patchData.locations.Select(loc => (loc.offset, applyPatch ? newBytes : loc.RevertBytes)));
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show($"Failed to patch {exePath}: {ex.Message}", "Patch Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
 
             static void ToolPatcher(string exePath, IEnumerable<(long offset, byte[] bytes)> patches)
