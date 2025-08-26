@@ -105,18 +105,17 @@ namespace ToolkitLauncher.ToolkitInterface
             }
 
             // Perform patching/reverting
-            foreach (var (offset, revertBytes) in patchData.locations)
-            {
-                ToolPatcher(exePath, offset, applyPatch ? newBytes : revertBytes);
-            }
-        
-            static void ToolPatcher(string exePath, long offset, byte[] bytes)
-            {
-                using var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite);
+            ToolPatcher(exePath, patchData.locations.Select(loc => (loc.offset, applyPatch ? newBytes : loc.RevertBytes)));
 
-                // Apply patch
-                fs.Seek(offset, SeekOrigin.Begin);
-                fs.Write(bytes, 0, bytes.Length);
+            static void ToolPatcher(string exePath, IEnumerable<(long offset, byte[] bytes)> patches)
+            {
+                using var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+                foreach (var (offset, bytes) in patches)
+                {
+                    fs.Seek(offset, SeekOrigin.Begin);
+                    fs.Write(bytes, 0, bytes.Length);
+                }
             }
 
             static string ComputeRegionHash(string exePath, IEnumerable<long> offsets, int regionSize)
