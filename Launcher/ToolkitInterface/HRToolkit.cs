@@ -53,11 +53,12 @@ namespace ToolkitLauncher.ToolkitInterface
         // applyPatch being true means we edit the original exe, it being false means we revert the changes
         private void PatchLightmapColorAssert(ToolType tool, bool applyPatch)
         {
-            byte[] newBytes = { 0x90, 0x90, 0x90, 0x90, 0x90 };
+            byte[] newBytes = [0x90, 0x90, 0x90, 0x90, 0x90];
             string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
 
             // Reach tool.exe/tool_fast.exe 18/07/2023
             // For each Tool type, holds the original unmodified region hash, the patched region hash, and a list of patch location addresses and the original bytes needed to reverse the patch
+            // The precalculated hashes here are obtained directly from ComputeRegionHash(), don't try to update these manually in the future
             var patchMap = new Dictionary<ToolType, (string original, string patched, (long offset, byte[] RevertBytes)[] locations)>
             {
                 {
@@ -138,11 +139,10 @@ namespace ToolkitLauncher.ToolkitInterface
 
                 // Hash the joined regions
                 byte[] hash = sha256.ComputeHash(ms.ToArray());
-                fs.Close();
                 return BitConverter.ToString(hash).Replace("-", "");
             }
 
-            bool ShouldPatch(string fileHash, string originalHash, string patchedHash, string exeName, bool applyPatch)
+            static bool ShouldPatch(string fileHash, string originalHash, string patchedHash, string exeName, bool applyPatch)
             {
                 if (applyPatch)
                 {
@@ -169,10 +169,9 @@ namespace ToolkitLauncher.ToolkitInterface
                     }
                 }
 
-
-                // Unknown file
+                // Unknown file changes
                 Trace.WriteLine($"Region hash mismatch for {exeName} -- aborting patch");
-                MessageBox.Show($"Region hash mismatch for {exeName} -- aborting \"color assert\" patch.\nUnknown modification detected in the 1KB surround patch region(s)\nLightmapping will continue but you may experience a crash.",
+                MessageBox.Show($"Region hash mismatch for {exeName} -- aborting \"color assert\" patch.\nUnknown modification detected in the 1KB surrounding patch region(s)\nLightmapping will continue but you may experience a crash.",
                 "Patcher Error", MessageBoxButton.OK, MessageBoxImage.Error
                 );
                 return false;
