@@ -53,8 +53,7 @@ namespace ToolkitLauncher.ToolkitInterface
         // applyPatch being true means we edit the original exe, it being false means we revert the changes
         private void PatchLightmapColorAssert(ToolType tool, bool applyPatch)
         {
-            byte[] newBytes = { 0xEB, 0x3D };
-            byte[] oldBytes = { 0x73, 0x0C };
+            byte[] newBytes = { 0x90, 0x90, 0x90, 0x90, 0x90 };
             string exePath = Path.Join(BaseDirectory, GetToolExecutable(tool));
 
             // Reach tool.exe/tool_fast.exe 18/07/2023
@@ -64,24 +63,32 @@ namespace ToolkitLauncher.ToolkitInterface
                 {
                     ToolType.Tool,
                     (
-                        "C0E01E8EE1CBFF418302EA7C3D11E23C89F50E847E03506758B8C2C25C032BA0", // original
-                        "E3DE1D17C05D42B98439B422EB30A4051DC1D1A634ACFA20A871B5DEF7D5C6BB", // patched
+                        "95CF79AC2308FE54D8003316E71223C3B789228E2EAB453B2C09CE03813B8247", // original
+                        "04C44C75D6456E396200B0F048299DF478509ABB6089047D5783523D06B344E4", // patched
                         new (long, byte[])[]
                         {
-                            (0x170956, oldBytes),
-                            (0x17157F, oldBytes)
+                            ( 0x17095F, new byte[] { 0xE8, 0x5C, 0x87, 0x68, 0x00 }),
+                            ( 0x170975, new byte[] { 0xE8, 0x46, 0x87, 0x68, 0x00 }),
+                            ( 0x170990, new byte[] { 0xE8, 0x2B, 0x87, 0x68, 0x00 }),
+                            ( 0x171588, new byte[] { 0xE8, 0x33, 0x7B, 0x68, 0x00 }),
+                            ( 0x17159E, new byte[] { 0xE8, 0x1D, 0x7B, 0x68, 0x00 }),
+                            ( 0x1715B9, new byte[] { 0xE8, 0x02, 0x7B, 0x68, 0x00 })
                         }
                     )
                 },
                 {
                     ToolType.ToolFast,
                     (
-                        "C96350A38B253DACA3232F413011DAE0F4591889D26D40AA743B431DC351C773", // original
-                        "FD92EA6EEEA89CF268B7203409E295785EE7B41D15E97DAA62204D20DC6DCE93", // patched
+                        "C59F3287BF1ED5C7FFF7306FFD583F98CBF4F3A85D12E13313F565A24566DD47", // original
+                        "FE232C0F1EA8CF9AB5380F3DCBF20781D5E68C41D22AA10A21B043EDAE18551A", // patched
                         new (long, byte[])[]
                         {
-                            (0xF2A7F, oldBytes),
-                            (0xF29F9, new byte[]{ 0x73, 0x11 }) // Special case
+                            ( 0xF2A02, new byte[] { 0xE8, 0x4D, 0x54, 0x29, 0x00 }),
+                            ( 0xF2A18, new byte[] { 0xE8, 0x37, 0x54, 0x29, 0x00 }),
+                            ( 0xF2A33, new byte[] { 0xE8, 0x1C, 0x54, 0x29, 0x00 }),
+                            ( 0xF2A88, new byte[] { 0xE8, 0xC7, 0x53, 0x29, 0x00 }),
+                            ( 0xF2A9E, new byte[] { 0xE8, 0xB1, 0x53, 0x29, 0x00 }),
+                            ( 0xF2AB9, new byte[] { 0xE8, 0x96, 0x53, 0x29, 0x00 })
                         }
                     )
                 }
@@ -109,7 +116,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
                 // Apply patch
                 fs.Seek(offset, SeekOrigin.Begin);
-                fs.Write(bytes, 0, 2);
+                fs.Write(bytes, 0, bytes.Length);
             }
 
             static string ComputeRegionHash(string exePath, IEnumerable<long> offsets, int regionSize)
@@ -132,6 +139,7 @@ namespace ToolkitLauncher.ToolkitInterface
 
                 // Hash the joined regions
                 byte[] hash = sha256.ComputeHash(ms.ToArray());
+                fs.Close();
                 return BitConverter.ToString(hash).Replace("-", "");
             }
 
