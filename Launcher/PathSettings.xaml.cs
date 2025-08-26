@@ -120,7 +120,10 @@ namespace ToolkitLauncher
         private void save_button_Click(object sender, RoutedEventArgs e)
         {
             ToolkitProfiles.Save();
-            PatchLightmapColorAssert(lm_color_fix.IsChecked ?? false);
+            if (gen_type.SelectedIndex == 3 && !(bool)is_mcc.IsChecked)
+            {
+                PatchLightmapColorAssert(lm_color_fix.IsChecked ?? false);
+            }
             this.Close();
         }
 
