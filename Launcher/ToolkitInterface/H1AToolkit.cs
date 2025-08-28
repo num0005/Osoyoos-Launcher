@@ -168,9 +168,9 @@ namespace ToolkitLauncher.ToolkitInterface
         /// <param name="path"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate, bool import_folder)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path, type, debug_plate.ToString() });
+            await RunTool(ToolType.Tool, new List<string>() { import_folder ? "bitmaps" : "bitmap", path, type, debug_plate.ToString() });
         }
 
         public override string GetDocumentationName()

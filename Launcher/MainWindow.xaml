@@ -516,13 +516,16 @@
                                                         <ColumnDefinition Width="2"/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image import folder." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
+                                                    <TextBlock Grid.Column="1" x:Name="image_import_textbox" Text="Select image import folder." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                                 </Grid>
                                                 <TextBox Grid.Column="2" Name="compile_image_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
                                             </Grid>
                                             <GroupBox Grid.Row="2" x:Name="bitmap_select_box" Header="Bitmap Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}">
                                                 <Grid VerticalAlignment="Center">
                                                     <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="8"/>
                                                         <RowDefinition Height="Auto"/>
@@ -533,22 +536,31 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="5"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="bitmap_compile_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}" VerticalContentAlignment="Center" ToolTip="Type of image">
+                                                    <Grid Grid.Row="0" Grid.Column="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <RadioButton Grid.Column="0" x:Name="bitmap_folder_radiobutton" VerticalAlignment="Center" Content="Import Folder" Foreground="{DynamicResource TextColor}" GroupName="bitmap_import_radiobuttons" IsChecked="True" Checked="import_bitmap_folder_Checked" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1 + h3 + hr, ElementName=toolkit_selection}" ToolTip="Import entire folder"/>
+                                                        <RadioButton Grid.Column="2" x:Name="bitmap_single_radiobutton" VerticalAlignment="Center" Content="Import Singular" Foreground="{DynamicResource TextColor}" GroupName="bitmap_import_radiobuttons" Checked="import_bitmap_single_Checked" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1 + h3 + hr, ElementName=toolkit_selection}" ToolTip="Import single image"/>
+                                                    </Grid>
+                                                    <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="bitmap_compile_type" HorizontalAlignment="Stretch" SelectedIndex="0" IsEnabled="{Binding SelectedIndex, ElementName=toolkit_selection}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}" ToolTip="Type of image">
                                                         <ComboBoxItem Content="2D Textures"/>
                                                         <ComboBoxItem Content="3D Textures"/>
                                                         <ComboBoxItem Content="Cubemaps"/>
                                                         <ComboBoxItem Content="Sprites"/>
                                                         <ComboBoxItem Content="Interface"/>
                                                     </ComboBox>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Height="25.96">
-                                                        <ComboBox x:Name="bitmap_compression_type" SelectedIndex="0" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." ItemsSource="{Binding Source={StaticResource BitmapCompressionTypeValues}}" Height="25.96" Width="210" VerticalContentAlignment="Center"></ComboBox>
-                                                        <Label x:Name="compression_type_label" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" Content="Compression Type"></Label>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Height="25.96" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}">
+                                                        <ComboBox x:Name="bitmap_compression_type" SelectedIndex="0" ToolTip="Set compression for imported images. Automatically forces &quot;pretty&quot; curve mode." ItemsSource="{Binding Source={StaticResource BitmapCompressionTypeValues}}" Height="25.96" Width="210" VerticalContentAlignment="Center"></ComboBox>
+                                                        <Label x:Name="compression_type_label" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Content="Compression Type"></Label>
                                                     </StackPanel>
-                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
-                                                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="bitmap_clear_old_settings" Content="Clear old bitmaps overrides" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" ToolTip="Reset the bitmap overrides (set this if you don't know what those are)."/>
+                                                    <CheckBox Grid.Row="3" Grid.Column="1" x:Name="debug_plate" Content="Debug Plate" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}" ToolTip="Dump the plate for debugging (you likely don't need this)."/>
+                                                    <CheckBox Grid.Row="3" Grid.Column="1" x:Name="bitmap_clear_old_settings" Content="Clear old bitmaps overrides" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h3 + hr + h4, ElementName=toolkit_selection}" ToolTip="Reset the bitmap overrides (set this if you don't know what those are)."/>
                                                 </Grid>
                                             </GroupBox>
-                                            <Button Grid.Row="3" Content="Import Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}" ToolTip="Import the bitmap!"/>
+                                            <Button Grid.Row="5" Content="Import Bitmap" Click="CompileImage" VerticalAlignment="Bottom" IsEnabled="{Binding Text.Length, ElementName=compile_image_path, Mode=OneWay}" ToolTip="Import the bitmap!"/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
@@ -987,7 +999,7 @@
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <Button Grid.Column="0" x:Name="convert_model_from_fbx_to_gr2" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" MinWidth="40" MinHeight="26" FontFamily="Arial" FontWeight="ExtraBold" Content="FBX" FontStyle="Italic" ToolTip="Create a GR2 file from an FBX file." Click="convert_model_from_fbx_to_gr2_Click"/>
-                                            <Button Grid.Column="2" x:Name="browse_folderPath" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_path_Click" MinWidth="75" MinHeight="26" ToolTip="Select an asset folder."/>
+                                            <Button Grid.Column="2" x:Name="browse_asset_folderPath" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_asset_path_Click" MinWidth="75" MinHeight="26" ToolTip="Select an asset folder."/>
                                             <Grid Grid.Column="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="2"/>

@@ -77,9 +77,9 @@ namespace ToolkitLauncher.ToolkitInterface
             await RunTool(ToolType.Tool, new List<string>() { "sounds", path, platform, bitrate });
         }
 
-        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate, bool import_folder)
         {
-            await RunTool(ToolType.Tool, new List<string>() { "bitmaps", path });
+            await RunTool(ToolType.Tool, new List<string>() { import_folder ?"bitmaps" : "bitmap", path });
         }
 
         public override async Task ExtractTags(string path, bool h2MoveDir, bool bitmapsAsTGA)

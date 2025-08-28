@@ -62,7 +62,7 @@ namespace ToolkitLauncher.ToolkitInterface
             get => "Sapien";
         }
 
-        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate)
+        override public async Task ImportBitmaps(string path, string type, string compression, bool should_clear_old_usage, bool debug_plate, bool import_folder)
         {
             await RunTool(ToolType.Tool, new() { "bitmaps", path, type, debug_plate.ToString() });
         }
