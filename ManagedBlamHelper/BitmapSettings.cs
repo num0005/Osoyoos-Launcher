@@ -23,41 +23,71 @@ namespace OsoyoosMB
 
             var bitmaps_to_import = GetBitmapsToImport(editingKit, tag_folder);
 
-            // Define bitmap name suffixes for anything non-diffuse
-            string[] normal_suffixes =
+            var mainSuffixRules = new Dictionary<string, Action<TagFileBitmap>>(StringComparer.OrdinalIgnoreCase)
             {
-                "_normal",
-                "_normalmap",
-                "_nm",
-                "_n",
-                "_zbump"
+                // Normal maps
+                { "_normal", ApplySettingsNormals },
+                { "_normalmap", ApplySettingsNormals },
+                { "_nm", ApplySettingsNormals },
+                { "_n", ApplySettingsNormals },
+                { "_zbump", ApplySettingsNormals },
+
+                // Bump maps
+                { "_bump", ApplySettingsBumps },
+                { "_bmp", ApplySettingsBumps },
+                { "_bp", ApplySettingsBumps },
+                { "_b", ApplySettingsBumps },
+
+                // Material maps
+                { "_material", ApplySettingsMaterials },
+                { "_materialmap", ApplySettingsMaterials },
+                { "_mat", ApplySettingsMaterials },
+                { "_m", ApplySettingsMaterials },
+                { "_orm", ApplySettingsMaterials },
+                { "_ormh", ApplySettingsMaterials },
+                { "_rmo", ApplySettingsMaterials },
+                { "_rmoh", ApplySettingsMaterials },
+                { "_mro", ApplySettingsMaterials },
+                { "_mroh", ApplySettingsMaterials },
+
+                // Terrain blend maps
+                { "_blend", ApplySettingsBlends },
+                { "_terrainblend", ApplySettingsBlends },    
             };
 
-            string[] bump_suffixes =
+            var miscSuffixRules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                "_bump",
-                "_bmp",
-                "_bp",
-                "_b"
-            };
-
-            string[] material_suffixes =
-            {
-                "_material",
-                "_materialmap",
-                "_mat",
-                "_m",
-                "_orm",
-                "_ormh",
-                "_rmo",
-                "_rmoh",
-                "_mro",
-                "_mroh"
+                //{ "_3d", "3D Texture" }, - crashes tool, disabling
+                { "_cc", "Change Color Map" },
+                { "_change", "Change Color Map" },
+                { "_changecolor", "Change Color Map" },
+                { "_cube", "Cube Map (Reflection Map)" },
+                { "_cubemap", "Cube Map (Reflection Map)" },
+                { "_detail", "Detail Map" },
+                { "_detailbump", "Detail Bump Map (from Height Map - fades out)" },
+                { "_dsprite", "Sprite (Double Multiply, Gray Background)" },
+                { "_float", "Float Map (WARNING" },
+                { "_height", "Height Map (for Parallax)" },
+                { "_heightmap", "Height Map (for Parallax)" },
+                { "_parallax", "Height Map (for Parallax)" },
+                { "_illum", "Self-Illum Map" },
+                { "_illumination", "Self-Illum Map" },
+                { "_selfillum", "Self-Illum Map" },
+                //{ "_lactxl", ApplySettingsMisc }, - unimplemented?
+                //{ "_ladxn", ApplySettingsMisc }, - unimplemented?
+                { "_msprite", "Sprite (Blend, White Background)" },
+                { "_spec", "Specular Map" },
+                { "_specular", "Specular Map" },
+                { "_sprite", "Sprite (Additive, Black Background)" },
+                { "_ui", "Interface Bitmap" },
+                { "_vec", "Vector Map" },
+                { "_vector", "Vector Map" },
+                { "_warp", "Warp Map (EMBM)" },
             };
 
             void ApplySettingsDiffuse(TagFileBitmap bitmapFile)
             {
-                bitmapFile.ResetUsageOverrides();
+                bitmapFile.ResetUsageOverride();
                 bitmapFile.CurveValue = "force PRETTY";
                 bitmapFile.BitmapFormatValue = compress_value;
                 bitmapFile.MipMapLevel.Data = -1;
@@ -75,7 +105,7 @@ namespace OsoyoosMB
 
             void ApplySettingsNormals(TagFileBitmap bitmapFile)
             {
-                bitmapFile.ResetUsageOverrides();
+                bitmapFile.ResetUsageOverride();
 
                 bitmapFile.UsageValue = "ZBrush Bump Map (from Bump Map)"; // 17
 
@@ -102,7 +132,7 @@ namespace OsoyoosMB
 
             void ApplySettingsBumps(TagFileBitmap bitmapFile)
             {
-                bitmapFile.ClearUsageOverrides();
+                bitmapFile.RemoveUsageOverride();
 
                 bitmapFile.UsageValue = "Bump Map (from Height Map)"; // 2
                 bitmapFile.BumpHeight.Data = 5; // use 5 as the default value
@@ -113,7 +143,7 @@ namespace OsoyoosMB
 
             void ApplySettingsMaterials(TagFileBitmap bitmapFile)
             {
-                bitmapFile.ResetUsageOverrides();
+                bitmapFile.ResetUsageOverride();
 
                 bitmapFile.CurveValue = "force PRETTY";
                 bitmapFile.BitmapFormatValue = compress_value;
@@ -125,10 +155,31 @@ namespace OsoyoosMB
                 bitmapFile.UsageFormatValue = compress_value;
             }
 
+            void ApplySettingsBlends(TagFileBitmap bitmapFile)
+            {
+                bitmapFile.ResetUsageOverride();
+                bitmapFile.UsageValue = "Blend Map (linear for terrains)";
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = compress_value;
+                bitmapFile.BitmapCurveValue = "linear";
+                bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
+                bitmapFile.MipLimit.Data = -1;
+                bitmapFile.MipMapLevel.Data = -1;
+                bitmapFile.Gamma.Data = 1.0f;
+            }
+
+            void ApplySettingsMisc(TagFileBitmap bitmapFile, string usage)
+            {
+                bitmapFile.RemoveUsageOverride();
+                bitmapFile.UsageValue = usage;
+                bitmapFile.CurveValue = "force PRETTY";
+                bitmapFile.BitmapFormatValue = compress_value;
+            }
+
             foreach (string bitmap in bitmaps_to_import)
             {
                 /*
-                 * Figure otu of the tag exists, and if it does, if we should modify it
+                 * Figure out of the tag exists, and if it does, if we should modify it
                  */
 
                 TagPath tag_path = TagPath.FromPathAndType(bitmap, "bitm*");
@@ -155,21 +206,35 @@ namespace OsoyoosMB
                  * Apply custom settings depending on the bitmap usage (based on filename)
                  */
 
-                if (normal_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+                bool applied = false;
+                // Check main suffix dictionary
+                foreach (var rule in mainSuffixRules)
                 {
-                    ApplySettingsNormals(tagBitmap);
+                    if (bitmap.EndsWith(rule.Key, StringComparison.OrdinalIgnoreCase))
+                    {
+                        rule.Value(tagBitmap);
+                        applied = true;
+                        break;
+                    }
                 }
-                else if (bump_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+
+                if (!applied)
                 {
-                    ApplySettingsBumps(tagBitmap);
+                    // Check misc suffix dictionary
+                    foreach (var rule in miscSuffixRules)
+                    {
+                        if (bitmap.EndsWith(rule.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            ApplySettingsMisc(tagBitmap, rule.Value);
+                            applied = true;
+                            break;
+                        }
+                    }
                 }
-                else if (material_suffixes.Any(suffix => bitmap.EndsWith(suffix)))
+
+                // Default to diffuse if no valid suffix
+                if (!applied)
                 {
-                    ApplySettingsMaterials(tagBitmap);
-                }
-                else
-                {
-                    // default to treating bitmaps as diffuse
                     ApplySettingsDiffuse(tagBitmap);
                 }
 
@@ -243,7 +308,7 @@ namespace OsoyoosMB
                 return new TagFileBitmap(tag_style_path);
             }
 
-            public void ResetUsageOverrides()
+            public void ResetUsageOverride()
             {
                 // clear any old data
                 UsageOverridesBlock.RemoveAllElements();
@@ -252,7 +317,7 @@ namespace OsoyoosMB
                 UsageOverridesBlock.AddElement();
             }
 
-            public void ClearUsageOverrides()
+            public void RemoveUsageOverride()
             {
                 UsageOverridesBlock.RemoveAllElements();
             }
