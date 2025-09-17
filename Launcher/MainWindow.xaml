@@ -163,6 +163,7 @@
                                                 <TextBlock Text="Select level file to import." Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" Padding="4"/>
                                             </Grid>
                                             <TextBox Name="compile_level_path" Grid.Column="4" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                            <ComboBox  Grid.Column="4" Name="recent_level2_path" SelectionChanged="recent_level2_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" Padding="4" ToolTip="recent level paths" Margin="289,1,0,-1" RenderTransformOrigin="0.129,0.456"/>
                                         </Grid>
                                         <Grid Grid.Row="4">
                                             <Grid.ColumnDefinitions>
@@ -411,6 +412,7 @@
                                                 <TextBlock Text="Select BSP to light" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=bsp_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" Padding="4"/>
                                             </Grid>
                                             <TextBox Name="bsp_path" Grid.Column="2" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" ToolTip="Structure to light, if non is selected all structures in the level/scenario will be lit."/>
+                                            <ComboBox Grid.Column="2" x:Name="recent_bsp_path" SelectionChanged="recent_bsp_path_SelectionChanged"  IsEnabled="False" ToolTip="recent bsp paths" Margin="340,0,0,0"  />
                                         </Grid>
                                         <Grid Grid.Row="3">
                                             <Grid.ColumnDefinitions>
@@ -468,6 +470,7 @@
                                                     </TextBlock>
                                                 </Grid>
                                                 <TextBox Grid.Column="3" Name="compile_text_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                                <ComboBox Grid.Column="2" Name="recent_text_path" SelectionChanged="recent_text_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent image paths" Margin="343,0,0,0"/>
                                             </Grid>
                                             <GroupBox Grid.Row="2" x:Name="string_box" Header="Text type" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1, ElementName=toolkit_selection}" ToolTip="What the text will be used for, HUD message or generic UI?">
                                                 <Grid>
@@ -519,6 +522,7 @@
                                                     <TextBlock Grid.Column="1" x:Name="textBlock" Text="Select image import folder." HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_image_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                                 </Grid>
                                                 <TextBox Grid.Column="2" Name="compile_image_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                                <ComboBox Grid.Column="3" x:Name="recent_image_path" SelectionChanged="recent_image_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent image paths" Margin="284,0,0,0" />
                                             </Grid>
                                             <GroupBox Grid.Row="2" x:Name="bitmap_select_box" Header="Bitmap Settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=mcc, ElementName=toolkit_selection}">
                                                 <Grid VerticalAlignment="Center">
@@ -594,6 +598,7 @@
                                                     <TextBlock Grid.Column="1" Text="Select model to import." VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=compile_model_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"  FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                                 </Grid>
                                                 <TextBox Grid.Column="4" Name="compile_model_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                                <ComboBox Grid.Column="4" Name="recent_model_path" SelectionChanged="recent_model_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent model paths" Margin="285,0,0,0" />
                                             </Grid>
                                             <Grid Grid.Row="2">
                                                 <Grid.ColumnDefinitions>
@@ -615,6 +620,7 @@
                                                     <TextBlock Grid.Column="3" Text="Select character FP source directory" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=character_fp_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                                 </Grid>
                                                 <TextBox Grid.Column="3" Name="character_fp_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                                <ComboBox Grid.Column="4" Name="recent_cmodelfp_path" SelectionChanged="recent_model_path_SelectionChanged" IsEnabled="False" ToolTip="recent character fp model paths" Margin="285,0,0,0" />
                                                 <Button Grid.Row="2" x:Name="browse_weapon_fp" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_weapon_fp_Click" MinWidth="75" MinHeight="26" ToolTip="Select the weapon's first person model source directory that is used by the JMA."/>
                                                 <Grid Grid.Row="2" Grid.Column="3">
                                                     <Grid.ColumnDefinitions>
@@ -624,6 +630,7 @@
                                                     <TextBlock Grid.Column="3" Text="Select weapon FP source directory" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=weapon_fp_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                                 </Grid>
                                                 <TextBox Grid.Row="2" Grid.Column="3" Name="weapon_fp_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                                <ComboBox Grid.Column="2" Name="recent_wmodelfp_path" SelectionChanged="recent_wmodelfp_path_SelectionChanged" IsEnabled="False" ToolTip="recent weapon fp model paths" Margin="285,0,0,0" Grid.Row="2" />
                                                 <Grid.Visibility>
                                                     <MultiBinding Converter="{StaticResource ProfiletoVisibilityMulti}">
                                                         <Binding ElementName="fp_anim" Path="IsChecked" />
@@ -780,6 +787,8 @@
                                                 <TextBlock Grid.Column="1" Text="{Binding SelectedIndex, Converter={StaticResource ProfiletoContent}, ConverterParameter=6, ElementName=toolkit_selection}" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                             </Grid>
                                             <TextBox Grid.Column="3" Name="import_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" VerticalContentAlignment="Center"/>
+                                            <ComboBox Grid.Column="2" x:Name="recent_sound_path" SelectionChanged="recent_sound_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent sound paths" Margin="331,0,0,0" />
+                                            
                                         </Grid>
                                         <Grid Grid.Row="2" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h2|h2codez, ElementName=toolkit_selection}">
                                             <Grid.ColumnDefinitions>
@@ -796,6 +805,7 @@
                                                 <TextBlock Grid.Column="1" Text="Select LTF file to import." HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=import_ltf_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4"/>
                                             </Grid>
                                             <TextBox Grid.Column="3" Name="import_ltf_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Top" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                            <ComboBox Grid.Column="2" x:Name="recent_sound_path_Copy" SelectionChanged="recent_sound_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent LTF paths" Margin="331,0,0,0" />
                                         </Grid>
                                         <Grid Grid.Row="4">
                                             <Grid.ColumnDefinitions>
@@ -889,6 +899,7 @@
                                                 <TextBlock Grid.Column="3" Text="Select a scenario file to package." VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=package_level_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                             </Grid>
                                             <TextBox Grid.Column="3" Name="package_level_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}"/>
+                                            <ComboBox Grid.Column="2" x:Name="recent_level_path" SelectionChanged="recent_level_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent scenario paths" Margin="331,0,0,0" />
                                         </Grid>
                                         <GroupBox Grid.Row="2" x:Name="package_settings" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="90" Visibility="{Binding SelectedIndex, Converter={StaticResource ProfiletoVisibility}, ConverterParameter=h1|mcc + h2|mcc, ElementName=toolkit_selection}">
                                             <GroupBox.Header>
@@ -995,7 +1006,9 @@
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="1" x:Name="textBlockImport" Text="Select asset folder" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource brushWatermarkForeground}" FontStyle="Italic" HorizontalAlignment="Left" Padding="4"/>
                                             </Grid>
+
                                             <TextBox Grid.Column="4" Name="xml_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" TextChanged="xml_path_TextChanged"/>
+                                            <ComboBox Grid.Column="4" x:Name="recent_sidecar_path" SelectionChanged="recent_sidecar_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent sidecar paths" Margin="331,-1,0,1" />
                                         </Grid>
                                         <Grid Grid.Row="3">
                                             <Grid.RowDefinitions>
@@ -1212,8 +1225,11 @@
                                             <GroupBox x:Name="sound_folder_box" Header="Sounds Parent Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290">
                                                 <Grid Margin="0,0,174,0">
                                                     <Button Grid.Column="0" x:Name="browse_sound_folder_fix" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4" Click="browse_sound_fix_Click" MinWidth="75" MinHeight="26" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
+                                                    
                                                     <TextBox Name="fix_sound_path" BorderBrush="{StaticResource brushWatermarkBorder}" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Background="{DynamicResource brushTextboxBackground}" MinHeight="26" MaxHeight="26" CaretBrush="{DynamicResource TextColor}" Margin="77,0,-172,0" VerticalContentAlignment="Center" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
                                                     <TextBlock Text="Select folder with bank's sound tags" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=fix_sound_path, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" FontStyle="Italic" Padding="4" Margin="75,0,-172,0" ToolTip="Select the parent folder that contains all .sound tags used by the bank."/>
+                                                    <ComboBox x:Name="recent_fmod_path" SelectionChanged="recent_fmod_path_SelectionChanged" FlowDirection="RightToLeft" IsEnabled="False" ToolTip="recent fmod paths" Margin="272,0,-184,0" />
+
                                                 </Grid>
                                             </GroupBox>
                                             <GroupBox x:Name="custom_bank_box_repair" Header="Custom Bank Extension" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="290,0,0,0" Height="48.96">
