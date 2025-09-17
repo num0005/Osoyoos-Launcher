@@ -48,16 +48,14 @@ namespace OsoyoosMB
                 { "_rmo", ApplySettingsMaterials },
                 { "_rmoh", ApplySettingsMaterials },
                 { "_mro", ApplySettingsMaterials },
-                { "_mroh", ApplySettingsMaterials },
-
-                // Terrain blend maps
-                { "_blend", ApplySettingsBlends },
-                { "_terrainblend", ApplySettingsBlends },    
+                { "_mroh", ApplySettingsMaterials },  
             };
 
             var miscSuffixRules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 //{ "_3d", "3D Texture" }, - crashes tool, disabling
+                { "_blend", "Blend Map (linear for terrains)" },
+                { "_terrainblend", "Blend Map (linear for terrains)" },
                 { "_cc", "Change Color Map" },
                 { "_change", "Change Color Map" },
                 { "_changecolor", "Change Color Map" },
@@ -70,9 +68,11 @@ namespace OsoyoosMB
                 { "_height", "Height Map (for Parallax)" },
                 { "_heightmap", "Height Map (for Parallax)" },
                 { "_parallax", "Height Map (for Parallax)" },
+                { "_displacement", "Height Map (for Parallax)" },
                 { "_illum", "Self-Illum Map" },
                 { "_illumination", "Self-Illum Map" },
                 { "_selfillum", "Self-Illum Map" },
+                { "_emissive", "Self-Illum Map" },
                 //{ "_lactxl", ApplySettingsMisc }, - unimplemented?
                 //{ "_ladxn", ApplySettingsMisc }, - unimplemented?
                 { "_msprite", "Sprite (Blend, White Background)" },
@@ -153,19 +153,6 @@ namespace OsoyoosMB
                 bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
                 bitmapFile.MipLimit.Data = -1;
                 bitmapFile.UsageFormatValue = compress_value;
-            }
-
-            void ApplySettingsBlends(TagFileBitmap bitmapFile)
-            {
-                bitmapFile.ResetUsageOverride();
-                bitmapFile.UsageValue = "Blend Map (linear for terrains)";
-                bitmapFile.CurveValue = "force PRETTY";
-                bitmapFile.BitmapFormatValue = compress_value;
-                bitmapFile.BitmapCurveValue = "linear";
-                bitmapFile.SlicerValue = "No Slicing (each source bitmap generates one element)";
-                bitmapFile.MipLimit.Data = -1;
-                bitmapFile.MipMapLevel.Data = -1;
-                bitmapFile.Gamma.Data = 1.0f;
             }
 
             void ApplySettingsMisc(TagFileBitmap bitmapFile, string usage)
