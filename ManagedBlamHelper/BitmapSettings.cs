@@ -23,7 +23,7 @@ namespace OsoyoosMB
 
             var bitmaps_to_import = GetBitmapsToImport(editingKit, tag_folder);
 
-            var mainSuffixRules = new Dictionary<string, Action<TagFileBitmap>>(StringComparer.OrdinalIgnoreCase)
+            var mainSuffixRules = new Dictionary<string, Action<TagFileBitmap>>
             {
                 // Normal maps
                 { "_normal", ApplySettingsNormals },
@@ -51,7 +51,7 @@ namespace OsoyoosMB
                 { "_mroh", ApplySettingsMaterials },  
             };
 
-            var miscSuffixRules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            var miscSuffixRules = new Dictionary<string, string>
             {
                 //{ "_3d", "3D Texture" }, - crashes tool, disabling
                 { "_blend", "Blend Map (linear for terrains)" },
